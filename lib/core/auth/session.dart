@@ -18,4 +18,14 @@ class Session {
   final String accessToken;
   final String refreshToken;
   final UserRole role;
+
+  Session copyWith({
+    String? accessToken,
+    String? refreshToken,
+    UserRole? role,
+  }) => Session(
+    accessToken: accessToken ?? this.accessToken,
+    refreshToken: refreshToken ?? this.refreshToken,
+    role: role ?? this.role,
+  );
 }

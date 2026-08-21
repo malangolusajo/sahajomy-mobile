@@ -37,18 +37,44 @@ class AuthRepository {
       );
     }
 
+    return verifySession(
+      Session(
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        role: userRoleFromApi(
+          (tokenResponse['user'] as Map<String, dynamic>?)?['role']
+                  as String? ??
+              'customer',
+        ),
+      ),
+    );
+  }
+
+  Future<Session> verifySession(Session session) async {
     final verifiedClient = ApiClient(
-      accessTokenProvider: () async => accessToken,
+      accessTokenProvider: () async => session.accessToken,
     );
     final profile = await verifiedClient.get('auth/me');
     final role = profile['role'] as String?;
     if (role == null) {
       throw const FormatException('The server did not return a user role.');
     }
-    return Session(
-      accessToken: accessToken,
-      refreshToken: refreshToken,
-      role: userRoleFromApi(role),
+    return session.copyWith(role: userRoleFromApi(role));
+  }
+
+  Future<Session> refreshSession(Session session) async {
+    final response = await _client.post(
+      'auth/refresh',
+      body: {'refresh_token': session.refreshToken},
     );
+    final accessToken = response['access_token'] as String?;
+    if (accessToken == null) {
+      throw const FormatException('The server did not return an access token.');
+    }
+    final refreshed = session.copyWith(
+      accessToken: accessToken,
+      refreshToken: response['refresh_token'] as String?,
+    );
+    return verifySession(refreshed);
   }
 }
