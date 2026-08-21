@@ -13,4 +13,32 @@ class CustomerAirCargoRepository {
       (client ?? authenticatedApiClient(_store)).getList(
         'customer/express-air-cargo/bookings',
       );
+
+  Future<Map<String, dynamic>> options() =>
+      (client ?? authenticatedApiClient(_store)).get(
+        'customer/express-air-cargo/options',
+      );
+
+  Future<Map<String, dynamic>> createBooking({
+    required String cargoTypeId,
+    required double weightKg,
+    required DateTime shipmentDate,
+    required String destinationRegion,
+    required int cartonCount,
+    String? cargoDescription,
+    bool certificationAcknowledged = false,
+  }) => (client ?? authenticatedApiClient(_store)).postForm(
+    'customer/express-air-cargo/book',
+    fields: {
+      'cargo_type_id': cargoTypeId,
+      'weight_kg': weightKg.toString(),
+      'shipment_date': shipmentDate.toUtc().toIso8601String(),
+      'destination_region': destinationRegion,
+      'carton_count': cartonCount.toString(),
+      'item_photos': '[]',
+      'certification_acknowledged': certificationAcknowledged.toString(),
+      if (cargoDescription != null && cargoDescription.isNotEmpty)
+        'cargo_description': cargoDescription,
+    },
+  );
 }

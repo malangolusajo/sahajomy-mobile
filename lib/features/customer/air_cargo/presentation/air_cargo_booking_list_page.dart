@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../data/customer_air_cargo_repository.dart';
+import 'create_air_cargo_booking_page.dart';
 
 class AirCargoBookingListPage extends StatefulWidget {
   const AirCargoBookingListPage({super.key});
@@ -19,7 +20,24 @@ class _AirCargoBookingListPageState extends State<AirCargoBookingListPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Express air cargo')),
+    appBar: AppBar(
+      title: const Text('Express air cargo'),
+      actions: [
+        IconButton(
+          tooltip: 'Book air cargo',
+          icon: const Icon(Icons.add),
+          onPressed: () async {
+            final created = await Navigator.push<bool>(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const CreateAirCargoBookingPage(),
+              ),
+            );
+            if (created == true) _retry();
+          },
+        ),
+      ],
+    ),
     body: FutureBuilder<List<Map<String, dynamic>>>(
       future: _bookings,
       builder: (context, snapshot) {

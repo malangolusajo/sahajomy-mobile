@@ -28,6 +28,10 @@ class ApiClient {
       (await _send('POST', path, body: body)) as Map<String, dynamic>;
   Future<Map<String, dynamic>> put(String path, {Object? body}) async =>
       (await _send('PUT', path, body: body)) as Map<String, dynamic>;
+  Future<Map<String, dynamic>> postForm(
+    String path, {
+    required Map<String, String> fields,
+  }) async => (await _sendForm(path, fields: fields)) as Map<String, dynamic>;
 
   Future<Object> _send(String method, String path, {Object? body}) async {
     final token = await accessTokenProvider?.call();
@@ -43,6 +47,29 @@ class ApiClient {
         );
       }
     }
+    return _decodeResponse(response);
+  }
+
+  Future<Object> _sendForm(
+    String path, {
+    required Map<String, String> fields,
+  }) async {
+    final token = await accessTokenProvider?.call();
+    var response = await _sendFormRequest(path, fields: fields, token: token);
+    if (response.statusCode == 401 && refreshAccessToken != null) {
+      final refreshedToken = await _refreshToken();
+      if (refreshedToken != null && refreshedToken.isNotEmpty) {
+        response = await _sendFormRequest(
+          path,
+          fields: fields,
+          token: refreshedToken,
+        );
+      }
+    }
+    return _decodeResponse(response);
+  }
+
+  Future<Object> _decodeResponse(http.StreamedResponse response) async {
     final bodyText = await response.stream.bytesToString();
     final decoded = bodyText.isEmpty
         ? <String, dynamic>{}
@@ -86,6 +113,20 @@ class ApiClient {
         if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
       });
     if (body != null) request.body = jsonEncode(body);
+    return _client.send(request).timeout(const Duration(seconds: 30));
+  }
+
+  Future<http.StreamedResponse> _sendFormRequest(
+    String path, {
+    required Map<String, String> fields,
+    String? token,
+  }) {
+    final request = http.MultipartRequest('POST', ApiConfig.uri(path))
+      ..fields.addAll(fields)
+      ..headers.addAll({
+        'Accept': 'application/json',
+        if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
+      });
     return _client.send(request).timeout(const Duration(seconds: 30));
   }
 
