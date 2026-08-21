@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/ui/sahajomy_ui.dart';
 import '../data/customer_containers_repository.dart';
-import '../../reservations/presentation/reserve_container_page.dart';
+import 'container_detail_page.dart';
 
 class ContainerListPage extends StatefulWidget {
   const ContainerListPage({super.key});
@@ -95,7 +95,7 @@ class _ContainerRow extends StatelessWidget {
                 final created = await Navigator.push<bool>(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => ReserveContainerPage(container: item),
+                    builder: (_) => ContainerDetailPage(container: item),
                   ),
                 );
                 if (created == true) onReserved();
