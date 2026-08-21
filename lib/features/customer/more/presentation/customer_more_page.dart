@@ -1,7 +1,34 @@
 import 'package:flutter/material.dart';
 
-class CustomerMorePage extends StatelessWidget {
+import '../../../../core/auth/session_store.dart';
+import '../../../auth/data/auth_repository.dart';
+
+class CustomerMorePage extends StatefulWidget {
   const CustomerMorePage({super.key});
+
+  @override
+  State<CustomerMorePage> createState() => _CustomerMorePageState();
+}
+
+class _CustomerMorePageState extends State<CustomerMorePage> {
+  final _store = SessionStore();
+  final _auth = AuthRepository();
+  var _isSigningOut = false;
+
+  Future<void> _signOut() async {
+    setState(() => _isSigningOut = true);
+    final session = await _store.read();
+    try {
+      if (session != null) await _auth.logout(session);
+    } catch (_) {
+      // Clearing the local encrypted session still protects this device offline.
+    } finally {
+      await _store.clear();
+      if (mounted) {
+        Navigator.pushNamedAndRemoveUntil(context, '/sign-in', (_) => false);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) => ListView(
@@ -32,6 +59,15 @@ class CustomerMorePage extends StatelessWidget {
         subtitle: 'Copy your forwarding address and shipping mark.',
         onTap: () => Navigator.pushNamed(context, '/customer/china-addresses'),
       ),
+      const SizedBox(height: 24),
+      Text('Account', style: Theme.of(context).textTheme.titleLarge),
+      const SizedBox(height: 8),
+      _MenuItem(
+        icon: Icons.logout_rounded,
+        title: _isSigningOut ? 'Signing out...' : 'Sign out',
+        subtitle: 'Remove your secure session from this device.',
+        onTap: _isSigningOut ? null : _signOut,
+      ),
     ],
   );
 }
@@ -47,7 +83,7 @@ class _MenuItem extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) => Card(

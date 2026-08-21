@@ -77,4 +77,9 @@ class AuthRepository {
     );
     return verifySession(refreshed);
   }
+
+  Future<void> logout(Session session) => _client.post(
+    'auth/logout',
+    body: {'refresh_token': session.refreshToken},
+  );
 }
