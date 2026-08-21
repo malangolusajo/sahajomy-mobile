@@ -14,6 +14,11 @@ class CustomerReservationsRepository {
         'customer/reservations',
       );
 
+  Future<Map<String, dynamic>> getReservation(String reservationId) =>
+      (client ?? authenticatedApiClient(_store)).get(
+        'customer/reservations/$reservationId',
+      );
+
   Future<Map<String, dynamic>> createReservation({
     required String containerId,
     required double reservedCbm,

@@ -203,9 +203,10 @@ class _CustomerHomeState extends State<_CustomerHome> {
             onTap: () =>
                 Navigator.pushNamed(context, '/customer/china-addresses'),
           ),
-          const _ActionCard(
+          _ActionCard(
             icon: Icons.description_outlined,
             label: 'Documents',
+            onTap: () => Navigator.pushNamed(context, '/customer/reservations'),
           ),
         ],
       ),

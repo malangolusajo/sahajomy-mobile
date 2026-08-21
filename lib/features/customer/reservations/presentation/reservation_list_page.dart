@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../data/customer_reservations_repository.dart';
+import 'reservation_detail_page.dart';
 
 class ReservationListPage extends StatefulWidget {
   const ReservationListPage({super.key});
@@ -52,6 +53,14 @@ class _ReservationListPageState extends State<ReservationListPage> {
                   ),
                   subtitle: Text('$status'),
                   trailing: const Icon(Icons.chevron_right),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ReservationDetailPage(
+                        reservationId: item['id'] as String,
+                      ),
+                    ),
+                  ),
                 ),
               );
             },
