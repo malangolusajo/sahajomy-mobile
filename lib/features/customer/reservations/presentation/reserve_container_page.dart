@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/network/api_exception.dart';
 import '../data/customer_reservations_repository.dart';
+import 'booking_confirmation_page.dart';
 
 class ReserveContainerPage extends StatefulWidget {
   const ReserveContainerPage({super.key, required this.container});
@@ -43,20 +44,10 @@ class _ReserveContainerPageState extends State<ReserveContainerPage> {
         cartonCount: int.tryParse(_cartonController.text.trim()),
       );
       if (!mounted) return;
-      await showDialog<void>(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Space reserved'),
-          content: Text(
-            'Tracking number: ${result['tracking_number'] ?? 'Pending'}\n'
-            'Charge: ${result['currency'] ?? 'TZS'} ${result['logistics_charge'] ?? 0}',
-          ),
-          actions: [
-            FilledButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Done'),
-            ),
-          ],
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => BookingConfirmationPage(reservation: result),
         ),
       );
       if (mounted) Navigator.pop(context, true);
