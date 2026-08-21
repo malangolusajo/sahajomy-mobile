@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/ui/sahajomy_ui.dart';
 import '../data/customer_reservations_repository.dart';
 
 class ReservationDetailPage extends StatefulWidget {
@@ -22,7 +23,10 @@ class _ReservationDetailPageState extends State<ReservationDetailPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Reservation details')),
+    appBar: const SahajomyScreenHeader(
+      role: 'Customer',
+      title: 'Reservation details',
+    ),
     body: FutureBuilder<Map<String, dynamic>>(
       future: _reservation,
       builder: (context, snapshot) {
@@ -45,8 +49,17 @@ class _ReservationDetailPageState extends State<ReservationDetailPage> {
         final packingLists = (reservation['packing_lists'] as List? ?? const [])
             .cast<Map<String, dynamic>>();
         return ListView(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
           children: [
+            Text(
+              'Reservation details',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            const SizedBox(height: 6),
+            const Text(
+              'Review route, CBM, payment, goods state, documents, and tracking.',
+            ),
+            const SizedBox(height: 20),
             _SectionCard(
               title: 'Shipment',
               children: [
