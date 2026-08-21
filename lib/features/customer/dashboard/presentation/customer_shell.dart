@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../data/customer_dashboard_repository.dart';
 import '../../shipments/presentation/shipment_list_page.dart';
 import '../../more/presentation/customer_more_page.dart';
 import '../../orders/presentation/customer_order_list_page.dart';
@@ -83,8 +84,18 @@ class _CustomerShellState extends State<CustomerShell> {
   );
 }
 
-class _CustomerHome extends StatelessWidget {
+class _CustomerHome extends StatefulWidget {
   const _CustomerHome();
+
+  @override
+  State<_CustomerHome> createState() => _CustomerHomeState();
+}
+
+class _CustomerHomeState extends State<_CustomerHome> {
+  final _repository = CustomerDashboardRepository();
+  late Future<CustomerDashboardSummary> _summary = _repository.loadSummary();
+
+  void _retry() => setState(() => _summary = _repository.loadSummary());
 
   @override
   Widget build(BuildContext context) => ListView(
@@ -99,20 +110,53 @@ class _CustomerHome extends StatelessWidget {
         'Your cargo is moving. Here is a quick view of your shipments and reservations.',
       ),
       const SizedBox(height: 20),
-      Card(
-        child: ListTile(
-          contentPadding: const EdgeInsets.all(16),
-          title: const Text(
-            '1 shipment in transit',
-            style: TextStyle(fontWeight: FontWeight.w800),
-          ),
-          subtitle: const Padding(
-            padding: EdgeInsets.only(top: 5),
-            child: Text('Open the live operational overview.'),
-          ),
-          trailing: const Chip(label: Text('Live')),
-          onTap: () => Navigator.pushNamed(context, '/customer/track-shipment'),
-        ),
+      FutureBuilder<CustomerDashboardSummary>(
+        future: _summary,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Card(
+              child: ListTile(
+                contentPadding: EdgeInsets.all(16),
+                title: Text('Loading your cargo overview...'),
+                trailing: SizedBox.square(
+                  dimension: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ),
+            );
+          }
+          if (snapshot.hasError) {
+            return Card(
+              child: ListTile(
+                contentPadding: const EdgeInsets.all(16),
+                title: const Text('Your overview is unavailable.'),
+                trailing: TextButton(
+                  onPressed: _retry,
+                  child: const Text('Retry'),
+                ),
+              ),
+            );
+          }
+          final summary = snapshot.data!;
+          return Card(
+            child: ListTile(
+              contentPadding: const EdgeInsets.all(16),
+              title: Text(
+                '${summary.shipments} shipment(s) and ${summary.reservations} reservation(s)',
+                style: const TextStyle(fontWeight: FontWeight.w800),
+              ),
+              subtitle: Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: Text(
+                  '${summary.orders} Agizisha order(s) in your account.',
+                ),
+              ),
+              trailing: const Chip(label: Text('Live')),
+              onTap: () =>
+                  Navigator.pushNamed(context, '/customer/track-shipment'),
+            ),
+          );
+        },
       ),
       const SizedBox(height: 12),
       Card(
@@ -124,13 +168,17 @@ class _CustomerHome extends StatelessWidget {
           ),
           subtitle: const Padding(
             padding: EdgeInsets.only(top: 5),
-            child: Text('Handle today’s next action.'),
+            child: Text('Choose an available container and reserve CBM.'),
           ),
           trailing: const Chip(label: Text('Action')),
+          onTap: () => Navigator.pushNamed(context, '/customer/containers'),
         ),
       ),
       const SizedBox(height: 20),
-      FilledButton(onPressed: () {}, child: const Text('Reserve space')),
+      FilledButton(
+        onPressed: () => Navigator.pushNamed(context, '/customer/containers'),
+        child: const Text('Reserve space'),
+      ),
       const SizedBox(height: 28),
       Text('Quick actions', style: Theme.of(context).textTheme.titleLarge),
       const SizedBox(height: 12),
