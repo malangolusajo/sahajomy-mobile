@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../shipments/presentation/shipment_list_page.dart';
+import '../../reservations/presentation/reservation_list_page.dart';
 
 class CustomerShell extends StatefulWidget {
   const CustomerShell({super.key});
@@ -52,10 +53,7 @@ class _CustomerShellState extends State<CustomerShell> {
           title: 'Agizisha marketplace',
           emptyLabel: 'Products will appear here',
         ),
-        _OperationalList(
-          title: 'Your account',
-          emptyLabel: 'Profile details are available after sign in',
-        ),
+        const ReservationListPage(),
       ],
     ),
     bottomNavigationBar: NavigationBar(
