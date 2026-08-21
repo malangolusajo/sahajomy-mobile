@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../shipments/presentation/shipment_list_page.dart';
 import '../../reservations/presentation/reservation_list_page.dart';
+import '../../containers/presentation/container_list_page.dart';
 
 class CustomerShell extends StatefulWidget {
   const CustomerShell({super.key});
@@ -49,10 +50,7 @@ class _CustomerShellState extends State<CustomerShell> {
       children: [
         const _CustomerHome(),
         const ShipmentListPage(),
-        _OperationalList(
-          title: 'Agizisha marketplace',
-          emptyLabel: 'Products will appear here',
-        ),
+        const ContainerListPage(),
         const ReservationListPage(),
       ],
     ),
@@ -178,33 +176,6 @@ class _ActionCard extends StatelessWidget {
             Text(label, style: const TextStyle(fontWeight: FontWeight.w700)),
           ],
         ),
-      ),
-    ),
-  );
-}
-
-class _OperationalList extends StatelessWidget {
-  const _OperationalList({required this.title, required this.emptyLabel});
-  final String title;
-  final String emptyLabel;
-
-  @override
-  Widget build(BuildContext context) => Center(
-    child: Padding(
-      padding: const EdgeInsets.all(32),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.inbox_outlined,
-            size: 48,
-            color: Theme.of(context).colorScheme.primary,
-          ),
-          const SizedBox(height: 16),
-          Text(title, style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: 8),
-          Text(emptyLabel, textAlign: TextAlign.center),
-        ],
       ),
     ),
   );
