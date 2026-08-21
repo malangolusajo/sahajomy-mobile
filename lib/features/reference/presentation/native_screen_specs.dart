@@ -535,3 +535,6 @@ const nativeScreenSpecs = <NativeScreenSpec>[
     title: 'Automation entitlements',
   ),
 ];
+
+NativeScreenSpec nativeScreenSpecFor(String fileName) =>
+    nativeScreenSpecs.singleWhere((spec) => spec.fileName == fileName);

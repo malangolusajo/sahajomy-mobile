@@ -19,4 +19,56 @@ class SourcingAgentBatchesRepository {
       (client ?? authenticatedApiClient(_store)).get(
         'sourcing-agent/batches/$batchId/orders',
       );
+
+  Future<Map<String, dynamic>> createBatch({
+    required String title,
+    String? description,
+    required String currency,
+    required String shippingMethod,
+    double? shippingFeePerCbm,
+  }) => (client ?? authenticatedApiClient(_store)).post(
+    'sourcing-agent/batches',
+    body: {
+      'title': title,
+      'description': description,
+      'currency': currency,
+      'shipping_method': shippingMethod,
+      'shipping_fee_per_cbm': shippingFeePerCbm,
+    },
+  );
+
+  Future<Map<String, dynamic>> createPackingList({
+    required String batchId,
+    required String name,
+    String? description,
+  }) => (client ?? authenticatedApiClient(_store)).post(
+    'sourcing-agent/batches/$batchId/packing-lists',
+    body: {'name': name, 'description': description},
+  );
+
+  Future<Map<String, dynamic>> createProduct({
+    required String batchId,
+    required String goodsTypeId,
+    required String name,
+    String? description,
+    required double pricePerUnit,
+    required int minimumOrderQuantity,
+    required String imageUrl,
+  }) => (client ?? authenticatedApiClient(_store)).post(
+    'sourcing-agent/batches/$batchId/products',
+    body: {
+      'goods_type_id': goodsTypeId,
+      'name': name,
+      'description': description,
+      'price_per_unit': pricePerUnit,
+      'minimum_order_quantity': minimumOrderQuantity,
+      'image_url': imageUrl,
+      'status': 'draft',
+    },
+  );
+
+  Future<Map<String, dynamic>> listGoodsCategories() =>
+      (client ?? authenticatedApiClient(_store)).get(
+        'sourcing_agent/goods/categories',
+      );
 }

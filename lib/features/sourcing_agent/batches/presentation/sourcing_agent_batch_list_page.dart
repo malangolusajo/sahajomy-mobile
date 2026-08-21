@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/ui/sahajomy_ui.dart';
 import '../data/sourcing_agent_batches_repository.dart';
 import 'sourcing_agent_batch_detail_page.dart';
+import 'sourcing_agent_batch_workflow_pages.dart';
 
 class SourcingAgentBatchListPage extends StatefulWidget {
   const SourcingAgentBatchListPage({super.key});
@@ -33,39 +35,66 @@ class _SourcingAgentBatchListPageState
       }
       final batches = (snapshot.data!['batches'] as List? ?? const [])
           .cast<Map<String, dynamic>>();
-      if (batches.isEmpty) {
-        return const Center(child: Text('No sourcing batches yet.'));
-      }
-      return ListView.separated(
+      return ListView(
         padding: const EdgeInsets.all(20),
-        itemCount: batches.length,
-        separatorBuilder: (_, _) => const SizedBox(height: 12),
-        itemBuilder: (_, index) {
-          final batch = batches[index];
-          return Card(
-            child: ListTile(
-              leading: const CircleAvatar(
-                child: Icon(Icons.inventory_2_outlined),
-              ),
-              title: Text(
-                batch['title'] as String? ?? 'Sourcing batch',
-                style: const TextStyle(fontWeight: FontWeight.w800),
-              ),
-              subtitle: Text(
-                '${batch['total_products'] ?? 0} products | ${batch['total_orders'] ?? 0} orders\n${batch['shipping_method'] ?? 'Shipping'} | ${batch['currency'] ?? 'TZS'} ${batch['shipping_fee_per_cbm'] ?? 0}/CBM',
-              ),
-              trailing: Chip(label: Text('${batch['status'] ?? 'Draft'}')),
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => SourcingAgentBatchDetailPage(
-                    batchId: batch['id'] as String,
-                  ),
-                ),
+        children: [
+          Text(
+            'Sourcing batches',
+            style: Theme.of(context).textTheme.headlineMedium,
+          ),
+          const SizedBox(height: 6),
+          const Text(
+            'Open a live batch, review its orders, and move it toward packing-list readiness.',
+          ),
+          const SizedBox(height: 20),
+          Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              border: Border.symmetric(
+                vertical: BorderSide(color: Color(0xFFE2E8F0)),
               ),
             ),
-          );
-        },
+            child: Column(
+              children: [
+                for (final batch in batches)
+                  SahajomyPreviewRow(
+                    title: batch['title'] as String? ?? 'Sourcing batch',
+                    subtitle:
+                        '${batch['total_orders'] ?? 0} orders · ${batch['shipping_method'] ?? 'Shipping'} · ${batch['status'] ?? 'Draft'}',
+                    icon: Icons.inventory_2_outlined,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => SourcingAgentBatchDetailPage(
+                          batchId: batch['id'] as String,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          if (batches.isNotEmpty) const SizedBox(height: 18),
+          FilledButton(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const SourcingAgentCreateBatchPage(),
+              ),
+            ),
+            child: const Text('Create batch'),
+          ),
+          const SizedBox(height: 18),
+          if (batches.isEmpty)
+            const SahajomySectionCard(
+              title: 'No sourcing batches yet',
+              children: [
+                Text(
+                  'Create the first batch to start collecting products and customer orders.',
+                ),
+              ],
+            ),
+        ],
       );
     },
   );

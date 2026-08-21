@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/ui/sahajomy_ui.dart';
 import '../batches/presentation/sourcing_agent_batch_list_page.dart';
+import '../dashboard/presentation/sourcing_agent_dashboard_page.dart';
+import '../notifications/presentation/sourcing_agent_notifications_page.dart';
+import '../products/presentation/sourcing_agent_product_management_page.dart';
 
 class SourcingAgentShell extends StatefulWidget {
   const SourcingAgentShell({super.key});
@@ -10,59 +14,40 @@ class SourcingAgentShell extends StatefulWidget {
 
 class _SourcingAgentShellState extends State<SourcingAgentShell> {
   var _index = 0;
-  static const _titles = ['Home', 'Batches', 'Orders', 'More'];
+  static const _titles = ['Home', 'Batches', 'Products', 'Alerts'];
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: Text(_titles[_index])),
+    appBar: SahajomyWorkspaceHeader(
+      role: 'Sourcing Agent',
+      title: _titles[_index],
+    ),
     body: IndexedStack(
       index: _index,
       children: const [
-        _AgentPendingPage(title: 'Sourcing Agent home'),
+        SourcingAgentDashboardPage(),
         SourcingAgentBatchListPage(),
-        _AgentPendingPage(title: 'Orders'),
-        _AgentPendingPage(title: 'More'),
+        SourcingAgentProductManagementPage(),
+        SourcingAgentNotificationsPage(),
       ],
     ),
-    bottomNavigationBar: NavigationBar(
+    bottomNavigationBar: SahajomyPreviewNavigation(
       selectedIndex: _index,
-      onDestinationSelected: (value) => setState(() => _index = value),
+      onSelected: (value) => setState(() => _index = value),
       destinations: const [
-        NavigationDestination(
-          icon: Icon(Icons.home_outlined),
-          selectedIcon: Icon(Icons.home),
-          label: 'Home',
-        ),
-        NavigationDestination(
-          icon: Icon(Icons.inventory_2_outlined),
-          selectedIcon: Icon(Icons.inventory_2),
+        SahajomyNavigationDestination(label: 'Home', icon: Icons.home_outlined),
+        SahajomyNavigationDestination(
           label: 'Batches',
+          icon: Icons.inventory_2_outlined,
         ),
-        NavigationDestination(
-          icon: Icon(Icons.shopping_bag_outlined),
-          selectedIcon: Icon(Icons.shopping_bag),
-          label: 'Orders',
+        SahajomyNavigationDestination(
+          label: 'Products',
+          icon: Icons.inventory_outlined,
         ),
-        NavigationDestination(
-          icon: Icon(Icons.grid_view_outlined),
-          selectedIcon: Icon(Icons.grid_view),
-          label: 'More',
+        SahajomyNavigationDestination(
+          label: 'Alerts',
+          icon: Icons.notifications_none_rounded,
         ),
       ],
-    ),
-  );
-}
-
-class _AgentPendingPage extends StatelessWidget {
-  const _AgentPendingPage({required this.title});
-  final String title;
-  @override
-  Widget build(BuildContext context) => Center(
-    child: Padding(
-      padding: const EdgeInsets.all(32),
-      child: Text(
-        '$title is the next Sourcing Agent checkpoint.',
-        textAlign: TextAlign.center,
-      ),
     ),
   );
 }

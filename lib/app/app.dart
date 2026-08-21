@@ -12,6 +12,7 @@ import '../features/customer/notifications/presentation/customer_notifications_p
 import '../features/customer/documents/presentation/customer_documents_page.dart';
 import '../features/customer/tracking/presentation/shipment_tracking_page.dart';
 import '../features/reference/presentation/native_reference_screen.dart';
+import '../features/reference/presentation/dedicated_preview_pages.dart';
 import '../features/reference/presentation/native_screen_specs.dart';
 import '../features/sourcing_agent/presentation/sourcing_agent_shell.dart';
 import '../features/super_admin/presentation/super_admin_shell.dart';
@@ -52,7 +53,7 @@ class SahajomyApp extends StatelessWidget {
         if (spec.routeName == name) {
           return MaterialPageRoute(
             settings: settings,
-            builder: (_) => NativeReferenceScreen(spec: spec),
+            builder: (_) => dedicatedPreviewPageFor(spec),
           );
         }
       }

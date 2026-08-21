@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/ui/sahajomy_ui.dart';
 import '../data/sourcing_agent_batches_repository.dart';
+import 'sourcing_agent_batch_workflow_pages.dart';
 
 class SourcingAgentBatchDetailPage extends StatefulWidget {
   const SourcingAgentBatchDetailPage({super.key, required this.batchId});
@@ -22,7 +24,10 @@ class _SourcingAgentBatchDetailPageState
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Batch details')),
+    appBar: const SahajomyScreenHeader(
+      role: 'Sourcing Agent',
+      title: 'Batch details',
+    ),
     body: FutureBuilder<List<Map<String, dynamic>>>(
       future: _data,
       builder: (context, snapshot) {
@@ -43,28 +48,94 @@ class _SourcingAgentBatchDetailPageState
         return ListView(
           padding: const EdgeInsets.all(20),
           children: [
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+            Text(
+              batch['title'] as String? ?? 'Sourcing batch',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              batch['description'] as String? ??
+                  'No description available for this batch.',
+            ),
+            const SizedBox(height: 20),
+            Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              children: [
+                SahajomyMetricTile(label: 'Orders', value: orders.length),
+                SahajomyMetricTile(
+                  label: 'Products',
+                  value: batch['total_products'],
+                ),
+                SahajomyMetricTile(
+                  label: 'Revenue',
+                  value:
+                      '${batch['currency'] ?? 'TZS'} ${batch['total_revenue'] ?? 0}',
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            SahajomySectionCard(
+              title: 'Quick actions',
+              children: [
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
                   children: [
-                    Text(
-                      batch['title'] as String? ?? 'Sourcing batch',
-                      style: Theme.of(context).textTheme.titleLarge,
+                    OutlinedButton.icon(
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => SourcingAgentAddProductPage(
+                            batchId: widget.batchId,
+                            batchTitle: batch['title'] as String?,
+                          ),
+                        ),
+                      ),
+                      icon: const Icon(Icons.add_box_outlined),
+                      label: const Text('Add product'),
                     ),
-                    const SizedBox(height: 8),
-                    Text(batch['description'] as String? ?? 'No description.'),
-                    const SizedBox(height: 12),
-                    Text(
-                      '${batch['currency'] ?? 'TZS'} ${batch['total_revenue'] ?? 0} revenue | ${batch['order_count'] ?? 0} orders',
+                    OutlinedButton.icon(
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => SourcingAgentGenerateOrdersPage(
+                            batchId: widget.batchId,
+                            batchTitle: batch['title'] as String?,
+                          ),
+                        ),
+                      ),
+                      icon: const Icon(Icons.shopping_bag_outlined),
+                      label: const Text('Orders'),
                     ),
-                    Text(
-                      '${batch['currency'] ?? 'TZS'} ${batch['net_earnings'] ?? 0} net earnings',
+                    OutlinedButton.icon(
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => SourcingAgentBatchFinancialsPage(
+                            batchId: widget.batchId,
+                          ),
+                        ),
+                      ),
+                      icon: const Icon(Icons.payments_outlined),
+                      label: const Text('Financials'),
+                    ),
+                    OutlinedButton.icon(
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => SourcingAgentPackingListCreatePage(
+                            batchId: widget.batchId,
+                            batchTitle: batch['title'] as String?,
+                          ),
+                        ),
+                      ),
+                      icon: const Icon(Icons.description_outlined),
+                      label: const Text('Create packing list'),
                     ),
                   ],
                 ),
-              ),
+              ],
             ),
             const SizedBox(height: 20),
             Text('Orders', style: Theme.of(context).textTheme.titleLarge),
@@ -77,6 +148,16 @@ class _SourcingAgentBatchDetailPageState
                   title: Text(order['order_reference'] as String? ?? 'Order'),
                   subtitle: Text(
                     '${order['customer_name'] ?? 'Customer'} | ${order['payment_status'] ?? 'Pending'} | ${order['delivery_status'] ?? 'Pending'}',
+                  ),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => SourcingAgentOrderDetailPage(
+                        batchTitle: batch['title'] as String?,
+                        order: order,
+                      ),
+                    ),
                   ),
                 ),
               ),

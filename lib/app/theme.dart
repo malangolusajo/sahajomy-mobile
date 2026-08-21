@@ -61,8 +61,8 @@ final ThemeData sahajomyTheme = ThemeData(
   dividerTheme: const DividerThemeData(color: Color(0xFFE2E8F0), space: 1),
   textTheme: const TextTheme(
     headlineMedium: TextStyle(
-      fontSize: 30,
-      height: 1.2,
+      fontSize: 26,
+      height: 1.15,
       fontWeight: FontWeight.w800,
       color: brandNavy,
     ),
