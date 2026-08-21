@@ -1,135 +1,142 @@
 import 'package:flutter/material.dart';
 
-class ShipmentTrackingPage extends StatelessWidget {
+import '../data/customer_tracking_repository.dart';
+
+class ShipmentTrackingPage extends StatefulWidget {
   const ShipmentTrackingPage({super.key});
+
+  @override
+  State<ShipmentTrackingPage> createState() => _ShipmentTrackingPageState();
+}
+
+class _ShipmentTrackingPageState extends State<ShipmentTrackingPage> {
+  final _repository = CustomerTrackingRepository();
+  late Future<List<Map<String, dynamic>>> _events = _repository.listEvents();
+
+  void _retry() => setState(() => _events = _repository.listEvents());
 
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(title: const Text('Track shipment')),
-    body: ListView(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
-      children: [
-        Text(
-          'Shipment progress',
-          style: Theme.of(context).textTheme.headlineMedium,
-        ),
-        const SizedBox(height: 6),
-        const Text(
-          'Follow your container from departure to delivery with the latest logistics updates.',
-        ),
-        const SizedBox(height: 24),
-        Container(
+    body: FutureBuilder<List<Map<String, dynamic>>>(
+      future: _events,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return _TrackingMessage(
+            message: 'We could not load your tracking updates.',
+            actionLabel: 'Try again',
+            onAction: _retry,
+          );
+        }
+        final events = snapshot.data ?? [];
+        if (events.isEmpty) {
+          return const _TrackingMessage(
+            message: 'Tracking updates will appear here once your cargo starts moving.',
+          );
+        }
+        return ListView.separated(
           padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: const Color(0xFF0F3D5E),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: const Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'CONTAINER',
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 1.2,
-                  color: Color(0xFFBFDBFE),
-                ),
-              ),
-              SizedBox(height: 6),
-              Text(
-                'MSKU 8392014',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w800,
-                  color: Colors.white,
-                  fontFamily: 'monospace',
-                ),
-              ),
-              SizedBox(height: 18),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Shanghai', style: TextStyle(color: Colors.white)),
-                  Text(
-                    'In transit',
-                    style: TextStyle(color: Color(0xFFFFB5A4)),
-                  ),
-                  Text('Dar es Salaam', style: TextStyle(color: Colors.white)),
-                ],
-              ),
-              SizedBox(height: 10),
-              LinearProgressIndicator(
-                value: .6,
-                minHeight: 6,
-                color: Color(0xFFFF6B4A),
-                backgroundColor: Color(0x33FFFFFF),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 28),
-        const _TimelineRow(
-          icon: Icons.check,
-          color: Color(0xFF059669),
-          title: 'Departed Shanghai',
-          subtitle: '02 Aug, 09:30',
-        ),
-        const _TimelineRow(
-          icon: Icons.circle,
-          color: Color(0xFFFF6B4A),
-          title: 'At sea',
-          subtitle: 'Current location',
-        ),
-        const _TimelineRow(
-          icon: Icons.circle_outlined,
-          color: Color(0xFF94A3B8),
-          title: 'Arrives Dar es Salaam',
-          subtitle: '18 Aug, estimated',
-        ),
-        const SizedBox(height: 20),
-        FilledButton(
-          onPressed: () {},
-          child: const Text('View shipment details'),
-        ),
-      ],
+          itemCount: events.length,
+          separatorBuilder: (_, _) => const SizedBox(height: 12),
+          itemBuilder: (_, index) => _TrackingEventCard(event: events[index]),
+        );
+      },
     ),
   );
 }
 
-class _TimelineRow extends StatelessWidget {
-  const _TimelineRow({
-    required this.icon,
-    required this.color,
-    required this.title,
-    required this.subtitle,
-  });
-  final IconData icon;
-  final Color color;
-  final String title;
-  final String subtitle;
+class _TrackingEventCard extends StatelessWidget {
+  const _TrackingEventCard({required this.event});
+
+  final Map<String, dynamic> event;
 
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(bottom: 20),
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CircleAvatar(
-          radius: 14,
-          backgroundColor: color.withValues(alpha: .14),
-          child: Icon(icon, size: 16, color: color),
-        ),
-        const SizedBox(width: 12),
-        Column(
+  Widget build(BuildContext context) {
+    final progress = event['progress'];
+    final progressValue = progress is num ? progress.clamp(0, 100) / 100 : null;
+    final stage =
+        event['stage_label'] as String? ??
+        event['event_type'] as String? ??
+        'Tracking update';
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
-            const SizedBox(height: 2),
-            Text(subtitle),
+            Row(
+              children: [
+                Icon(
+                  Icons.local_shipping_outlined,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    stage,
+                    style: const TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                ),
+                Text(_formatTimestamp(event['timestamp'] as String?)),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Text(
+              event['description'] as String? ?? 'Your shipment was updated.',
+            ),
+            if (progressValue != null) ...[
+              const SizedBox(height: 12),
+              LinearProgressIndicator(value: progressValue),
+            ],
+            const SizedBox(height: 10),
+            Text(
+              event['display_reference'] as String? ?? 'Sahajomy shipment',
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
           ],
         ),
-      ],
+      ),
+    );
+  }
+
+  String _formatTimestamp(String? value) {
+    if (value == null || value.isEmpty) return 'Recent';
+    final parsed = DateTime.tryParse(value);
+    if (parsed == null) return value;
+    return '${parsed.year}-${parsed.month.toString().padLeft(2, '0')}-${parsed.day.toString().padLeft(2, '0')}';
+  }
+}
+
+class _TrackingMessage extends StatelessWidget {
+  const _TrackingMessage({
+    required this.message,
+    this.actionLabel,
+    this.onAction,
+  });
+
+  final String message;
+  final String? actionLabel;
+  final VoidCallback? onAction;
+
+  @override
+  Widget build(BuildContext context) => Center(
+    child: Padding(
+      padding: const EdgeInsets.all(32),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.route_outlined, size: 44),
+          const SizedBox(height: 14),
+          Text(message, textAlign: TextAlign.center),
+          if (onAction != null) ...[
+            const SizedBox(height: 16),
+            OutlinedButton(onPressed: onAction, child: Text(actionLabel!)),
+          ],
+        ],
+      ),
     ),
   );
 }
