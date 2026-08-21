@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../dashboard/presentation/super_admin_dashboard_page.dart';
+import '../users/presentation/super_admin_user_list_page.dart';
 
 class SuperAdminShell extends StatefulWidget {
   const SuperAdminShell({super.key});
@@ -18,7 +19,7 @@ class _SuperAdminShellState extends State<SuperAdminShell> {
       index: _index,
       children: const [
         SuperAdminDashboardPage(),
-        _PendingPage('Users'),
+        SuperAdminUserListPage(),
         _PendingPage('Activity'),
         _PendingPage('More'),
       ],
