@@ -190,9 +190,11 @@ class _CustomerHomeState extends State<_CustomerHome> {
             icon: Icons.qr_code_scanner_rounded,
             label: 'Scan collection QR',
           ),
-          const _ActionCard(
+          _ActionCard(
             icon: Icons.flight_takeoff_outlined,
             label: 'Express air cargo',
+            onTap: () =>
+                Navigator.pushNamed(context, '/customer/express-air-cargo'),
           ),
           _ActionCard(
             icon: Icons.location_on_outlined,
