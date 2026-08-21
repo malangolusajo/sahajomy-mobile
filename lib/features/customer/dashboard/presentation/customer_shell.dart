@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../shipments/presentation/shipment_list_page.dart';
-import '../../reservations/presentation/reservation_list_page.dart';
+import '../../more/presentation/customer_more_page.dart';
 import '../../orders/presentation/customer_order_list_page.dart';
 
 class CustomerShell extends StatefulWidget {
@@ -51,7 +51,7 @@ class _CustomerShellState extends State<CustomerShell> {
         const _CustomerHome(),
         const ShipmentListPage(),
         const CustomerOrderListPage(),
-        const ReservationListPage(),
+        const CustomerMorePage(),
       ],
     ),
     bottomNavigationBar: NavigationBar(
