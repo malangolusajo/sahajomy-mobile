@@ -13,5 +13,22 @@ class CustomerReservationsRepository {
         'customer/reservations',
       );
 
+  Future<Map<String, dynamic>> createReservation({
+    required String containerId,
+    required double reservedCbm,
+    required String destinationRegion,
+    String destinationCountry = 'Tanzania',
+    int? cartonCount,
+  }) => (client ?? ApiClient(accessTokenProvider: _accessToken)).post(
+    'customer/reservations',
+    body: {
+      'container_id': containerId,
+      'reserved_cbm': reservedCbm,
+      'destination_region': destinationRegion,
+      'destination_country': destinationCountry,
+      'carton_count': ?cartonCount,
+    },
+  );
+
   Future<String?> _accessToken() async => (await _store.read())?.accessToken;
 }
