@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../features/auth/presentation/sign_in_page.dart';
 import '../features/cargo_admin/presentation/cargo_admin_shell.dart';
 import '../features/customer/dashboard/presentation/customer_shell.dart';
+import '../features/customer/china_addresses/presentation/china_address_list_page.dart';
 import '../features/customer/tracking/presentation/shipment_tracking_page.dart';
 import '../features/sourcing_agent/presentation/sourcing_agent_shell.dart';
 import '../features/super_admin/presentation/super_admin_shell.dart';
@@ -24,6 +25,7 @@ class SahajomyApp extends StatelessWidget {
       '/sign-in': (_) => const SignInPage(),
       '/customer': (_) => const CustomerShell(),
       '/customer/track-shipment': (_) => const ShipmentTrackingPage(),
+      '/customer/china-addresses': (_) => const ChinaAddressListPage(),
       '/cargo-admin': (_) => const CargoAdminShell(),
       '/sourcing-agent': (_) => const SourcingAgentShell(),
       '/super-admin': (_) => const SuperAdminShell(),

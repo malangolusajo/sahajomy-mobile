@@ -134,23 +134,28 @@ class _CustomerHome extends StatelessWidget {
       const SizedBox(height: 28),
       Text('Quick actions', style: Theme.of(context).textTheme.titleLarge),
       const SizedBox(height: 12),
-      const Wrap(
+      Wrap(
         spacing: 12,
         runSpacing: 12,
         children: [
-          _ActionCard(
+          const _ActionCard(
             icon: Icons.qr_code_scanner_rounded,
             label: 'Scan collection QR',
           ),
-          _ActionCard(
+          const _ActionCard(
             icon: Icons.flight_takeoff_outlined,
             label: 'Express air cargo',
           ),
           _ActionCard(
             icon: Icons.location_on_outlined,
             label: 'China addresses',
+            onTap: () =>
+                Navigator.pushNamed(context, '/customer/china-addresses'),
           ),
-          _ActionCard(icon: Icons.description_outlined, label: 'Documents'),
+          const _ActionCard(
+            icon: Icons.description_outlined,
+            label: 'Documents',
+          ),
         ],
       ),
     ],
@@ -158,23 +163,28 @@ class _CustomerHome extends StatelessWidget {
 }
 
 class _ActionCard extends StatelessWidget {
-  const _ActionCard({required this.icon, required this.label});
+  const _ActionCard({required this.icon, required this.label, this.onTap});
   final IconData icon;
   final String label;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) => SizedBox(
     width: 164,
     child: Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(icon, color: const Color(0xFFFF6B4A)),
-            const SizedBox(height: 16),
-            Text(label, style: const TextStyle(fontWeight: FontWeight.w700)),
-          ],
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(icon, color: const Color(0xFFFF6B4A)),
+              const SizedBox(height: 16),
+              Text(label, style: const TextStyle(fontWeight: FontWeight.w700)),
+            ],
+          ),
         ),
       ),
     ),
