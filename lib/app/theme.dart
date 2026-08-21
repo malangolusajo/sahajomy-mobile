@@ -28,6 +28,23 @@ final ThemeData sahajomyTheme = ThemeData(
       textStyle: const TextStyle(fontWeight: FontWeight.w700),
     ),
   ),
+  inputDecorationTheme: InputDecorationTheme(
+    filled: true,
+    fillColor: Colors.white,
+    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+    ),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(color: brandCoral, width: 1.5),
+    ),
+  ),
   navigationBarTheme: const NavigationBarThemeData(
     backgroundColor: Colors.white,
     indicatorColor: Color(0xFFFFE2DB),

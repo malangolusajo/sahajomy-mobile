@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/ui/sahajomy_ui.dart';
 import '../data/auth_repository.dart';
 import '../../../core/network/api_exception.dart';
 import 'otp_page.dart';
@@ -18,6 +19,7 @@ class _SignInPageState extends State<SignInPage> {
   final _emailController = TextEditingController();
   final _repository = AuthRepository();
   var _isSubmitting = false;
+  var _rememberMe = true;
   String? _errorMessage;
 
   @override
@@ -63,69 +65,66 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(),
+    appBar: const SahajomyScreenHeader(role: 'Customer', title: 'Sign in'),
     body: SafeArea(
+      top: false,
       child: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
           children: [
-            const Text(
-              'CUSTOMER',
-              style: TextStyle(
-                fontSize: 11,
-                letterSpacing: 1.3,
-                fontWeight: FontWeight.w800,
-                color: Color(0xFFFF6B4A),
-              ),
-            ),
-            const SizedBox(height: 10),
             Text(
               'Welcome back',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Use your mobile number to receive a verification code.',
-            ),
+            const Text('Use your mobile number to continue to Sahajomy.'),
             const SizedBox(height: 28),
+            const Text(
+              'CUSTOMER',
+              style: TextStyle(
+                color: Color(0xFFFF6B4A),
+                fontSize: 12,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 1.4,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Welcome back',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            const SizedBox(height: 8),
+            const Text('A few details get you moving.'),
+            const SizedBox(height: 24),
+            const Text(
+              'MOBILE NUMBER',
+              style: TextStyle(
+                color: Color(0xFF64748B),
+                fontSize: 12,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 1.1,
+              ),
+            ),
+            const SizedBox(height: 8),
             TextFormField(
               controller: _phoneController,
               keyboardType: TextInputType.phone,
               autofillHints: const [AutofillHints.telephoneNumber],
-              decoration: const InputDecoration(
-                labelText: 'Mobile number',
-                hintText: '+255 7XX XXX XXX',
-              ),
+              decoration: const InputDecoration(hintText: '+255 7XX XXX XXX'),
               validator: (value) => value == null || value.trim().length < 7
                   ? 'Enter a valid mobile number.'
                   : null,
             ),
-            const SizedBox(height: 20),
-            Text(
-              'New to Sahajomy?',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 4),
-            const Text(
-              'New accounts require your name and email before we can send the code.',
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _nameController,
-              textCapitalization: TextCapitalization.words,
-              decoration: const InputDecoration(
-                labelText: 'Full name (new accounts)',
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _emailController,
-              keyboardType: TextInputType.emailAddress,
-              autofillHints: const [AutofillHints.email],
-              decoration: const InputDecoration(
-                labelText: 'Email address (new accounts)',
-              ),
+            const SizedBox(height: 8),
+            CheckboxListTile(
+              value: _rememberMe,
+              onChanged: (value) =>
+                  setState(() => _rememberMe = value ?? false),
+              contentPadding: EdgeInsets.zero,
+              controlAffinity: ListTileControlAffinity.leading,
+              activeColor: const Color(0xFFFF6B4A),
+              title: const Text('Remember me'),
             ),
             if (_errorMessage != null) ...[
               const SizedBox(height: 16),
@@ -137,7 +136,7 @@ class _SignInPageState extends State<SignInPage> {
                 ),
               ),
             ],
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
             FilledButton(
               onPressed: _isSubmitting ? null : _sendOtp,
               child: _isSubmitting

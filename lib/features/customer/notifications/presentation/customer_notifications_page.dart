@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/ui/sahajomy_ui.dart';
 import '../data/customer_notifications_repository.dart';
 
 class CustomerNotificationsPage extends StatefulWidget {
@@ -53,14 +54,9 @@ class _CustomerNotificationsPageState extends State<CustomerNotificationsPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: const Text('Notifications'),
-      actions: [
-        TextButton(
-          onPressed: _isMarkingAllRead ? null : _markAllRead,
-          child: const Text('Mark all read'),
-        ),
-      ],
+    appBar: const SahajomyScreenHeader(
+      role: 'Customer',
+      title: 'Notifications',
     ),
     body: FutureBuilder<List<Map<String, dynamic>>>(
       future: _notifications,
@@ -80,14 +76,31 @@ class _CustomerNotificationsPageState extends State<CustomerNotificationsPage> {
         if (notifications.isEmpty) {
           return const Center(child: Text('You have no notifications yet.'));
         }
-        return ListView.separated(
-          padding: const EdgeInsets.all(20),
-          itemCount: notifications.length,
-          separatorBuilder: (_, _) => const SizedBox(height: 10),
-          itemBuilder: (_, index) => _NotificationCard(
-            notification: notifications[index],
-            onTap: () => _markRead(notifications[index]),
-          ),
+        return ListView(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
+          children: [
+            Text(
+              'Updates for you',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            const SizedBox(height: 6),
+            const Text(
+              'Important shipping, payment, and order activity appears here.',
+            ),
+            const SizedBox(height: 20),
+            for (final notification in notifications) ...[
+              _NotificationCard(
+                notification: notification,
+                onTap: () => _markRead(notification),
+              ),
+              const SizedBox(height: 12),
+            ],
+            const SizedBox(height: 8),
+            FilledButton(
+              onPressed: _isMarkingAllRead ? null : _markAllRead,
+              child: const Text('Mark all as read'),
+            ),
+          ],
         );
       },
     ),
@@ -105,26 +118,43 @@ class _NotificationCard extends StatelessWidget {
     final isRead = notification['is_read'] == true;
     final priority = notification['priority'] as String? ?? 'info';
     return Card(
-      color: isRead ? null : Theme.of(context).colorScheme.primaryContainer,
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(16),
-        leading: Icon(
-          priority == 'warning'
-              ? Icons.warning_amber_rounded
-              : Icons.info_outline,
-        ),
-        title: Text(
-          notification['type'] as String? ?? 'Sahajomy update',
-          style: TextStyle(
-            fontWeight: isRead ? FontWeight.w600 : FontWeight.w800,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      notification['type'] as String? ?? 'Sahajomy update',
+                      style: TextStyle(
+                        fontWeight: isRead ? FontWeight.w600 : FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      notification['message'] as String? ?? '',
+                      style: const TextStyle(fontSize: 12, height: 1.5),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              SahajomyStatusPill(
+                label: isRead
+                    ? 'Read'
+                    : priority == 'warning'
+                    ? 'Action'
+                    : 'New',
+              ),
+            ],
           ),
         ),
-        subtitle: Padding(
-          padding: const EdgeInsets.only(top: 5),
-          child: Text(notification['message'] as String? ?? ''),
-        ),
-        trailing: isRead ? null : const Icon(Icons.circle, size: 10),
-        onTap: onTap,
       ),
     );
   }

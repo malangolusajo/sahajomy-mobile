@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../../core/ui/sahajomy_ui.dart';
 import '../data/customer_china_addresses_repository.dart';
 
 class ChinaAddressListPage extends StatefulWidget {
@@ -19,7 +20,10 @@ class _ChinaAddressListPageState extends State<ChinaAddressListPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('China addresses')),
+    appBar: const SahajomyScreenHeader(
+      role: 'Customer',
+      title: 'China addresses',
+    ),
     body: FutureBuilder<List<Map<String, dynamic>>>(
       future: _addresses,
       builder: (context, snapshot) {
@@ -39,11 +43,23 @@ class _ChinaAddressListPageState extends State<ChinaAddressListPage> {
             message: 'Your China delivery addresses will appear here when you reserve sea or air cargo.',
           );
         }
-        return ListView.separated(
-          padding: const EdgeInsets.all(20),
-          itemCount: addresses.length,
-          separatorBuilder: (_, _) => const SizedBox(height: 12),
-          itemBuilder: (_, index) => _AddressCard(address: addresses[index]),
+        return ListView(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
+          children: [
+            Text(
+              'My China addresses',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            const SizedBox(height: 6),
+            const Text(
+              'Use the correct warehouse address and shipping mark for every shipment.',
+            ),
+            const SizedBox(height: 20),
+            for (final address in addresses) ...[
+              _AddressCard(address: address),
+              const SizedBox(height: 12),
+            ],
+          ],
         );
       },
     ),

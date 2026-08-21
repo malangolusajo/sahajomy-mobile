@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/ui/sahajomy_ui.dart';
 import '../data/customer_tracking_repository.dart';
 
 class ShipmentTrackingPage extends StatefulWidget {
@@ -17,7 +18,10 @@ class _ShipmentTrackingPageState extends State<ShipmentTrackingPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('Track shipment')),
+    appBar: const SahajomyScreenHeader(
+      role: 'Customer',
+      title: 'Track shipment',
+    ),
     body: FutureBuilder<List<Map<String, dynamic>>>(
       future: _events,
       builder: (context, snapshot) {
@@ -37,11 +41,32 @@ class _ShipmentTrackingPageState extends State<ShipmentTrackingPage> {
             message: 'Tracking updates will appear here once your cargo starts moving.',
           );
         }
-        return ListView.separated(
-          padding: const EdgeInsets.all(20),
-          itemCount: events.length,
-          separatorBuilder: (_, _) => const SizedBox(height: 12),
-          itemBuilder: (_, index) => _TrackingEventCard(event: events[index]),
+        final first = events.first;
+        final progress = first['progress'];
+        final progressValue = progress is num
+            ? progress.clamp(0, 100) / 100
+            : .6;
+        return ListView(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
+          children: [
+            Text(
+              'Shipment progress',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            const SizedBox(height: 6),
+            const Text(
+              'Follow your container from departure to delivery with the latest logistics updates.',
+            ),
+            const SizedBox(height: 20),
+            _ShipmentBanner(event: first, progress: progressValue),
+            const SizedBox(height: 20),
+            for (final event in events) _TrackingEventCard(event: event),
+            const SizedBox(height: 20),
+            FilledButton(
+              onPressed: () {},
+              child: const Text('View shipment details'),
+            ),
+          ],
         );
       },
     ),
@@ -55,49 +80,39 @@ class _TrackingEventCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final progress = event['progress'];
-    final progressValue = progress is num ? progress.clamp(0, 100) / 100 : null;
     final stage =
         event['stage_label'] as String? ??
         event['event_type'] as String? ??
         'Tracking update';
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 18),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const CircleAvatar(
+            radius: 14,
+            backgroundColor: Color(0xFFFFEEE9),
+            child: Icon(Icons.circle, size: 10, color: Color(0xFFE85A3A)),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(
-                  Icons.local_shipping_outlined,
-                  color: Theme.of(context).colorScheme.primary,
+                Text(
+                  stage,
+                  style: const TextStyle(fontWeight: FontWeight.w800),
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    stage,
-                    style: const TextStyle(fontWeight: FontWeight.w800),
-                  ),
+                const SizedBox(height: 3),
+                Text(
+                  event['description'] as String? ??
+                      _formatTimestamp(event['timestamp'] as String?),
+                  style: const TextStyle(fontSize: 12),
                 ),
-                Text(_formatTimestamp(event['timestamp'] as String?)),
               ],
             ),
-            const SizedBox(height: 10),
-            Text(
-              event['description'] as String? ?? 'Your shipment was updated.',
-            ),
-            if (progressValue != null) ...[
-              const SizedBox(height: 12),
-              LinearProgressIndicator(value: progressValue),
-            ],
-            const SizedBox(height: 10),
-            Text(
-              event['display_reference'] as String? ?? 'Sahajomy shipment',
-              style: Theme.of(context).textTheme.labelMedium,
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -108,6 +123,74 @@ class _TrackingEventCard extends StatelessWidget {
     if (parsed == null) return value;
     return '${parsed.year}-${parsed.month.toString().padLeft(2, '0')}-${parsed.day.toString().padLeft(2, '0')}';
   }
+}
+
+class _ShipmentBanner extends StatelessWidget {
+  const _ShipmentBanner({required this.event, required this.progress});
+  final Map<String, dynamic> event;
+  final double progress;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.all(20),
+    decoration: BoxDecoration(
+      color: const Color(0xFF0F3D5E),
+      borderRadius: BorderRadius.circular(16),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'CONTAINER',
+          style: TextStyle(
+            color: Color(0xFFBFDBFE),
+            fontSize: 12,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 1,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          '${event['display_reference'] ?? 'Sahajomy shipment'}',
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        const SizedBox(height: 18),
+        const Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Origin',
+              style: TextStyle(color: Colors.white70, fontSize: 12),
+            ),
+            Text(
+              'In transit',
+              style: TextStyle(
+                color: Color(0xFFFFB5A4),
+                fontSize: 12,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+            Text(
+              'Destination',
+              style: TextStyle(color: Colors.white70, fontSize: 12),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        LinearProgressIndicator(
+          value: progress,
+          minHeight: 6,
+          borderRadius: BorderRadius.circular(10),
+          backgroundColor: Colors.white24,
+          color: const Color(0xFFFF6B4A),
+        ),
+      ],
+    ),
+  );
 }
 
 class _TrackingMessage extends StatelessWidget {

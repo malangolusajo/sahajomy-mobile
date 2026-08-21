@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/ui/sahajomy_ui.dart';
 import '../data/customer_orders_repository.dart';
 
 class CustomerOrderListPage extends StatefulWidget {
@@ -38,11 +39,26 @@ class _CustomerOrderListPageState extends State<CustomerOrderListPage> {
               'No Agizisha orders yet. Your sourcing orders will appear here.',
         );
       }
-      return ListView.separated(
-        padding: const EdgeInsets.all(20),
-        itemCount: orders.length,
-        separatorBuilder: (_, _) => const SizedBox(height: 12),
-        itemBuilder: (_, index) => _OrderCard(order: orders[index]),
+      return ListView(
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
+        children: [
+          Text(
+            'Your orders',
+            style: Theme.of(context).textTheme.headlineMedium,
+          ),
+          const SizedBox(height: 6),
+          const Text('Track sourcing and shipping orders from one place.'),
+          const SizedBox(height: 20),
+          for (final order in orders) ...[
+            _OrderCard(order: order),
+            const SizedBox(height: 12),
+          ],
+          const SizedBox(height: 8),
+          FilledButton(
+            onPressed: () {},
+            child: const Text('Create sourcing request'),
+          ),
+        ],
       );
     },
   );
@@ -55,25 +71,36 @@ class _OrderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currency = order['currency'] as String? ?? 'TZS';
-    final amount = order['total_product_amount'];
-    final total = amount is num ? amount.toStringAsFixed(0) : '$amount';
     final itemCount = order['items_count'] ?? 0;
-    final status = order['delivery_status'] ?? 'Pending';
+    final status = order['delivery_status'] as String? ?? 'Review';
+    final reference = order['order_number'] ?? order['id'] ?? 'Agizisha order';
 
     return Card(
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(16),
-        leading: const CircleAvatar(child: Icon(Icons.shopping_bag_outlined)),
-        title: Text(
-          order['batch_title'] as String? ?? 'Agizisha order',
-          style: const TextStyle(fontWeight: FontWeight.w800),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '$reference',
+                    style: const TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '$itemCount item(s) · $status',
+                    style: const TextStyle(fontSize: 12, height: 1.5),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            SahajomyStatusPill(label: status),
+          ],
         ),
-        subtitle: Padding(
-          padding: const EdgeInsets.only(top: 6),
-          child: Text('$itemCount item(s)  |  $currency $total\n$status'),
-        ),
-        trailing: const Icon(Icons.chevron_right),
       ),
     );
   }

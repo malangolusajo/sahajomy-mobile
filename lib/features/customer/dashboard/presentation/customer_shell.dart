@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/ui/sahajomy_ui.dart';
 import '../data/customer_dashboard_repository.dart';
 import '../../shipments/presentation/shipment_list_page.dart';
 import '../../more/presentation/customer_more_page.dart';
@@ -103,7 +104,7 @@ class _CustomerHomeState extends State<_CustomerHome> {
     padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
     children: [
       Text(
-        'Good morning, customer',
+        'Good morning, Amina',
         style: Theme.of(context).textTheme.headlineMedium,
       ),
       const SizedBox(height: 6),
@@ -115,128 +116,89 @@ class _CustomerHomeState extends State<_CustomerHome> {
         future: _summary,
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
-            return const Card(
-              child: ListTile(
-                contentPadding: EdgeInsets.all(16),
-                title: Text('Loading your cargo overview...'),
-                trailing: SizedBox.square(
-                  dimension: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-              ),
+            return const _DashboardRow(
+              title: 'Loading your cargo overview...',
+              description: 'Fetching the latest shipment details.',
+              status: 'Loading',
             );
           }
           if (snapshot.hasError) {
-            return Card(
-              child: ListTile(
-                contentPadding: const EdgeInsets.all(16),
-                title: const Text('Your overview is unavailable.'),
-                trailing: TextButton(
-                  onPressed: _retry,
-                  child: const Text('Retry'),
-                ),
-              ),
+            return _DashboardRow(
+              title: 'Your overview is unavailable.',
+              description: 'Check your connection, then try again.',
+              status: 'Retry',
+              onTap: _retry,
             );
           }
           final summary = snapshot.data!;
-          return Card(
-            child: ListTile(
-              contentPadding: const EdgeInsets.all(16),
-              title: Text(
-                '${summary.shipments} shipment(s) and ${summary.reservations} reservation(s)',
-                style: const TextStyle(fontWeight: FontWeight.w800),
-              ),
-              subtitle: Padding(
-                padding: const EdgeInsets.only(top: 5),
-                child: Text(
-                  '${summary.orders} Agizisha order(s) in your account.',
-                ),
-              ),
-              trailing: const Chip(label: Text('Live')),
-              onTap: () =>
-                  Navigator.pushNamed(context, '/customer/track-shipment'),
-            ),
+          return _DashboardRow(
+            title:
+                '${summary.shipments} shipment${summary.shipments == 1 ? '' : 's'} in transit',
+            description: 'Open the live operational overview.',
+            status: 'Live',
+            onTap: () =>
+                Navigator.pushNamed(context, '/customer/track-shipment'),
           );
         },
       ),
       const SizedBox(height: 12),
-      Card(
-        child: ListTile(
-          contentPadding: const EdgeInsets.all(16),
-          title: const Text(
-            'Reserve container space',
-            style: TextStyle(fontWeight: FontWeight.w800),
-          ),
-          subtitle: const Padding(
-            padding: EdgeInsets.only(top: 5),
-            child: Text('Choose an available container and reserve CBM.'),
-          ),
-          trailing: const Chip(label: Text('Action')),
-          onTap: () => Navigator.pushNamed(context, '/customer/containers'),
-        ),
+      _DashboardRow(
+        title: 'Reserve container space',
+        description: 'Handle today\'s next action.',
+        status: 'Action',
+        onTap: () => Navigator.pushNamed(context, '/customer/containers'),
       ),
       const SizedBox(height: 20),
       FilledButton(
         onPressed: () => Navigator.pushNamed(context, '/customer/containers'),
         child: const Text('Reserve space'),
       ),
-      const SizedBox(height: 28),
-      Text('Quick actions', style: Theme.of(context).textTheme.titleLarge),
-      const SizedBox(height: 12),
-      Wrap(
-        spacing: 12,
-        runSpacing: 12,
-        children: [
-          const _ActionCard(
-            icon: Icons.qr_code_scanner_rounded,
-            label: 'Scan collection QR',
-          ),
-          _ActionCard(
-            icon: Icons.flight_takeoff_outlined,
-            label: 'Express air cargo',
-            onTap: () =>
-                Navigator.pushNamed(context, '/customer/express-air-cargo'),
-          ),
-          _ActionCard(
-            icon: Icons.location_on_outlined,
-            label: 'China addresses',
-            onTap: () =>
-                Navigator.pushNamed(context, '/customer/china-addresses'),
-          ),
-          _ActionCard(
-            icon: Icons.description_outlined,
-            label: 'Documents',
-            onTap: () => Navigator.pushNamed(context, '/customer/reservations'),
-          ),
-        ],
-      ),
     ],
   );
 }
 
-class _ActionCard extends StatelessWidget {
-  const _ActionCard({required this.icon, required this.label, this.onTap});
-  final IconData icon;
-  final String label;
+class _DashboardRow extends StatelessWidget {
+  const _DashboardRow({
+    required this.title,
+    required this.description,
+    required this.status,
+    this.onTap,
+  });
+
+  final String title;
+  final String description;
+  final String status;
   final VoidCallback? onTap;
 
   @override
-  Widget build(BuildContext context) => SizedBox(
-    width: 164,
-    child: Card(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(icon, color: const Color(0xFFFF6B4A)),
-              const SizedBox(height: 16),
-              Text(label, style: const TextStyle(fontWeight: FontWeight.w700)),
-            ],
-          ),
+  Widget build(BuildContext context) => Card(
+    child: InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(fontWeight: FontWeight.w800),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    description,
+                    style: const TextStyle(fontSize: 12, height: 1.5),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            SahajomyStatusPill(label: status),
+          ],
         ),
       ),
     ),

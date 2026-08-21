@@ -28,6 +28,10 @@ class ApiClient {
       (await _send('POST', path, body: body)) as Map<String, dynamic>;
   Future<Map<String, dynamic>> put(String path, {Object? body}) async =>
       (await _send('PUT', path, body: body)) as Map<String, dynamic>;
+  Future<Map<String, dynamic>> patch(String path, {Object? body}) async =>
+      (await _send('PATCH', path, body: body)) as Map<String, dynamic>;
+  Future<Map<String, dynamic>> delete(String path) async =>
+      (await _send('DELETE', path)) as Map<String, dynamic>;
   Future<Map<String, dynamic>> postForm(
     String path, {
     required Map<String, String> fields,

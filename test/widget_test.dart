@@ -9,7 +9,7 @@ void main() {
       MaterialApp(theme: sahajomyTheme, home: const WelcomePage()),
     );
 
-    expect(find.text('Sahajomy'), findsOneWidget);
-    expect(find.text('Sign in with phone number'), findsOneWidget);
+    expect(find.text('SAHAJOMY'), findsOneWidget);
+    expect(find.text('Get started'), findsOneWidget);
   });
 }
