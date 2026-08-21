@@ -8,6 +8,7 @@ import '../features/customer/containers/presentation/container_list_page.dart';
 import '../features/customer/reservations/presentation/reservation_list_page.dart';
 import '../features/customer/profile/presentation/customer_profile_page.dart';
 import '../features/customer/air_cargo/presentation/air_cargo_booking_list_page.dart';
+import '../features/customer/notifications/presentation/customer_notifications_page.dart';
 import '../features/customer/tracking/presentation/shipment_tracking_page.dart';
 import '../features/sourcing_agent/presentation/sourcing_agent_shell.dart';
 import '../features/super_admin/presentation/super_admin_shell.dart';
@@ -34,6 +35,7 @@ class SahajomyApp extends StatelessWidget {
       '/customer/reservations': (_) => const ReservationListPage(),
       '/customer/profile': (_) => const CustomerProfilePage(),
       '/customer/express-air-cargo': (_) => const AirCargoBookingListPage(),
+      '/customer/notifications': (_) => const CustomerNotificationsPage(),
       '/cargo-admin': (_) => const CargoAdminShell(),
       '/sourcing-agent': (_) => const SourcingAgentShell(),
       '/super-admin': (_) => const SuperAdminShell(),

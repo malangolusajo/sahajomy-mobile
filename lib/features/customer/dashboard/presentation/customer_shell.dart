@@ -41,7 +41,8 @@ class _CustomerShellState extends State<CustomerShell> {
       actions: [
         IconButton(
           tooltip: 'Notifications',
-          onPressed: () {},
+          onPressed: () =>
+              Navigator.pushNamed(context, '/customer/notifications'),
           icon: const Badge(child: Icon(Icons.notifications_none_rounded)),
         ),
       ],

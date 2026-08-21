@@ -26,6 +26,8 @@ class ApiClient {
       ((await _send('GET', path)) as List).cast<Map<String, dynamic>>();
   Future<Map<String, dynamic>> post(String path, {Object? body}) async =>
       (await _send('POST', path, body: body)) as Map<String, dynamic>;
+  Future<Map<String, dynamic>> put(String path, {Object? body}) async =>
+      (await _send('PUT', path, body: body)) as Map<String, dynamic>;
 
   Future<Object> _send(String method, String path, {Object? body}) async {
     final token = await accessTokenProvider?.call();
