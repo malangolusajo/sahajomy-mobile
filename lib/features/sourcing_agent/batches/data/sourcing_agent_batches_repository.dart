@@ -9,4 +9,14 @@ class SourcingAgentBatchesRepository {
   final SessionStore _store;
   Future<Map<String, dynamic>> listBatches() =>
       (client ?? authenticatedApiClient(_store)).get('sourcing-agent/batches');
+
+  Future<Map<String, dynamic>> getBatch(String batchId) =>
+      (client ?? authenticatedApiClient(_store)).get(
+        'sourcing-agent/batches/$batchId',
+      );
+
+  Future<Map<String, dynamic>> listOrders(String batchId) =>
+      (client ?? authenticatedApiClient(_store)).get(
+        'sourcing-agent/batches/$batchId/orders',
+      );
 }

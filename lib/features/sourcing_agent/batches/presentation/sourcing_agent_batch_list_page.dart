@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../data/sourcing_agent_batches_repository.dart';
+import 'sourcing_agent_batch_detail_page.dart';
 
 class SourcingAgentBatchListPage extends StatefulWidget {
   const SourcingAgentBatchListPage({super.key});
@@ -54,6 +55,14 @@ class _SourcingAgentBatchListPageState
                 '${batch['total_products'] ?? 0} products | ${batch['total_orders'] ?? 0} orders\n${batch['shipping_method'] ?? 'Shipping'} | ${batch['currency'] ?? 'TZS'} ${batch['shipping_fee_per_cbm'] ?? 0}/CBM',
               ),
               trailing: Chip(label: Text('${batch['status'] ?? 'Draft'}')),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => SourcingAgentBatchDetailPage(
+                    batchId: batch['id'] as String,
+                  ),
+                ),
+              ),
             ),
           );
         },
