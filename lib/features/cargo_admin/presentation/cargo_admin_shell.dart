@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../dashboard/presentation/cargo_admin_dashboard_page.dart';
+import '../containers/presentation/cargo_admin_container_list_page.dart';
 
 class CargoAdminShell extends StatefulWidget {
   const CargoAdminShell({super.key});
@@ -20,7 +21,7 @@ class _CargoAdminShellState extends State<CargoAdminShell> {
       index: _index,
       children: const [
         CargoAdminDashboardPage(),
-        _CargoAdminPendingPage(title: 'Operations'),
+        CargoAdminContainerListPage(),
         _CargoAdminPendingPage(title: 'Documents'),
         _CargoAdminPendingPage(title: 'More'),
       ],
