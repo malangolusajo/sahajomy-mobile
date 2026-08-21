@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../shipments/presentation/shipment_list_page.dart';
 import '../../reservations/presentation/reservation_list_page.dart';
-import '../../containers/presentation/container_list_page.dart';
+import '../../orders/presentation/customer_order_list_page.dart';
 
 class CustomerShell extends StatefulWidget {
   const CustomerShell({super.key});
@@ -50,7 +50,7 @@ class _CustomerShellState extends State<CustomerShell> {
       children: [
         const _CustomerHome(),
         const ShipmentListPage(),
-        const ContainerListPage(),
+        const CustomerOrderListPage(),
         const ReservationListPage(),
       ],
     ),
