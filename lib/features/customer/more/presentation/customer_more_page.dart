@@ -59,6 +59,12 @@ class _CustomerMorePageState extends State<CustomerMorePage> {
         subtitle: 'Copy your forwarding address and shipping mark.',
         onTap: () => Navigator.pushNamed(context, '/customer/china-addresses'),
       ),
+      _MenuItem(
+        icon: Icons.description_outlined,
+        title: 'Shipping documents',
+        subtitle: 'View invoices, receipts, and packing lists.',
+        onTap: () => Navigator.pushNamed(context, '/customer/documents'),
+      ),
       const SizedBox(height: 24),
       Text('Account', style: Theme.of(context).textTheme.titleLarge),
       const SizedBox(height: 8),

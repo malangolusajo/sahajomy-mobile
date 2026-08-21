@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/auth/session_store.dart';
+import '../../../../core/ui/sahajomy_ui.dart';
 import '../../../auth/data/auth_repository.dart';
 
 class CustomerProfilePage extends StatefulWidget {
@@ -25,7 +26,7 @@ class _CustomerProfilePageState extends State<CustomerProfilePage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(title: const Text('My profile')),
+    appBar: const SahajomyScreenHeader(role: 'Customer', title: 'Profile'),
     body: FutureBuilder<Map<String, dynamic>>(
       future: _profile,
       builder: (context, snapshot) {
@@ -43,35 +44,59 @@ class _CustomerProfilePageState extends State<CustomerProfilePage> {
         final profile = snapshot.data!;
         final name = profile['name'] as String? ?? 'Sahajomy customer';
         final imageUrl = profile['profile_image_url'] as String?;
+        final initials = name
+            .split(' ')
+            .where((part) => part.isNotEmpty)
+            .take(2)
+            .map((part) => part[0])
+            .join()
+            .toUpperCase();
         return ListView(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
           children: [
-            Center(
-              child: CircleAvatar(
-                radius: 40,
-                foregroundImage: imageUrl == null || imageUrl.isEmpty
-                    ? null
-                    : NetworkImage(imageUrl),
-                child: Text(name.isEmpty ? 'S' : name[0].toUpperCase()),
-              ),
-            ),
-            const SizedBox(height: 14),
+            Text(name, style: Theme.of(context).textTheme.headlineMedium),
+            const SizedBox(height: 4),
             Text(
-              name,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.headlineSmall,
+              'Customer account · ${profile['email'] ?? 'No email provided'}',
+            ),
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 32,
+                  foregroundImage: imageUrl == null || imageUrl.isEmpty
+                      ? null
+                      : NetworkImage(imageUrl),
+                  child: Text(initials.isEmpty ? 'S' : initials),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(name, style: Theme.of(context).textTheme.titleLarge),
+                      Text(profile['email']?.toString() ?? 'No email provided'),
+                    ],
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 24),
             _ProfileField(
-              label: 'Mobile number',
+              label: 'Personal details',
               value: profile['phone_number'],
             ),
-            _ProfileField(label: 'Email', value: profile['email']),
-            _ProfileField(label: 'Account role', value: profile['role']),
+            _ProfileField(label: 'Business details', value: profile['role']),
             _ProfileField(
-              label: 'Verification',
+              label: 'Saved addresses',
+              value: profile['address'] ?? 'Manage delivery addresses',
+            ),
+            _ProfileField(
+              label: 'Security and privacy',
               value: profile['is_verified'] == true ? 'Verified' : 'Pending',
             ),
+            const SizedBox(height: 12),
+            FilledButton(onPressed: () {}, child: const Text('Edit profile')),
           ],
         );
       },

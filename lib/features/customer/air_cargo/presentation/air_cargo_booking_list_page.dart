@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/ui/sahajomy_ui.dart';
 import '../data/customer_air_cargo_repository.dart';
 import 'create_air_cargo_booking_page.dart';
 
@@ -18,52 +19,77 @@ class _AirCargoBookingListPageState extends State<AirCargoBookingListPage> {
 
   void _retry() => setState(() => _bookings = _repository.listBookings());
 
+  Future<void> _openBooking() async {
+    final created = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(builder: (_) => const CreateAirCargoBookingPage()),
+    );
+    if (created == true) _retry();
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: const Text('Express air cargo'),
-      actions: [
-        IconButton(
-          tooltip: 'Book air cargo',
-          icon: const Icon(Icons.add),
-          onPressed: () async {
-            final created = await Navigator.push<bool>(
-              context,
-              MaterialPageRoute(
-                builder: (_) => const CreateAirCargoBookingPage(),
+    appBar: SahajomyScreenHeader(role: 'Customer', title: 'Express Air Cargo'),
+    body: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.fromLTRB(20, 20, 20, 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Express Air Cargo',
+                style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800),
               ),
-            );
-            if (created == true) _retry();
-          },
+              SizedBox(height: 4),
+              Text(
+                'Book air cargo, upload cargo photos, and review existing bookings.',
+              ),
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+          child: SizedBox(
+            width: double.infinity,
+            child: FilledButton(
+              onPressed: _openBooking,
+              child: const Text('Book air cargo'),
+            ),
+          ),
+        ),
+        Expanded(
+          child: FutureBuilder<List<Map<String, dynamic>>>(
+            future: _bookings,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState != ConnectionState.done) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (snapshot.hasError) {
+                return _AirCargoMessage(
+                  message: 'We could not load your air cargo bookings.',
+                  actionLabel: 'Try again',
+                  onAction: _retry,
+                );
+              }
+              final bookings = snapshot.data ?? [];
+              if (bookings.isEmpty) {
+                return const _AirCargoMessage(
+                  message: 'No Express Air Cargo bookings yet.',
+                );
+              }
+              return ListView.separated(
+                padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
+                itemCount: bookings.length,
+                separatorBuilder: (_, _) => const SizedBox(height: 12),
+                itemBuilder: (_, index) =>
+                    _AirCargoCard(booking: bookings[index]),
+              );
+            },
+          ),
         ),
       ],
-    ),
-    body: FutureBuilder<List<Map<String, dynamic>>>(
-      future: _bookings,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (snapshot.hasError) {
-          return _AirCargoMessage(
-            message: 'We could not load your air cargo bookings.',
-            actionLabel: 'Try again',
-            onAction: _retry,
-          );
-        }
-        final bookings = snapshot.data ?? [];
-        if (bookings.isEmpty) {
-          return const _AirCargoMessage(
-            message: 'No Express Air Cargo bookings yet.',
-          );
-        }
-        return ListView.separated(
-          padding: const EdgeInsets.all(20),
-          itemCount: bookings.length,
-          separatorBuilder: (_, _) => const SizedBox(height: 12),
-          itemBuilder: (_, index) => _AirCargoCard(booking: bookings[index]),
-        );
-      },
     ),
   );
 }
