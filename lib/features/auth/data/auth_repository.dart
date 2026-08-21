@@ -62,6 +62,10 @@ class AuthRepository {
     return session.copyWith(role: userRoleFromApi(role));
   }
 
+  Future<Map<String, dynamic>> getProfile(Session session) =>
+      ApiClient(accessTokenProvider: () async => session.accessToken)
+          .get('auth/me');
+
   Future<Session> refreshSession(Session session) async {
     final response = await _client.post(
       'auth/refresh',

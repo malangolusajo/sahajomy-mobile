@@ -63,6 +63,12 @@ class _CustomerMorePageState extends State<CustomerMorePage> {
       Text('Account', style: Theme.of(context).textTheme.titleLarge),
       const SizedBox(height: 8),
       _MenuItem(
+        icon: Icons.person_outline,
+        title: 'My profile',
+        subtitle: 'View your verified account details.',
+        onTap: () => Navigator.pushNamed(context, '/customer/profile'),
+      ),
+      _MenuItem(
         icon: Icons.logout_rounded,
         title: _isSigningOut ? 'Signing out...' : 'Sign out',
         subtitle: 'Remove your secure session from this device.',
