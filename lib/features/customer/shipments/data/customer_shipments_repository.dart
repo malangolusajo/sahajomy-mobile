@@ -1,4 +1,5 @@
 import '../../../../core/auth/session_store.dart';
+import '../../../../core/network/authenticated_api_client.dart';
 import '../../../../core/network/api_client.dart';
 
 class CustomerShipmentsRepository {
@@ -9,9 +10,7 @@ class CustomerShipmentsRepository {
   final ApiClient? _client;
 
   Future<List<Map<String, dynamic>>> listShipmentOrders() {
-    final client = _client ?? ApiClient(accessTokenProvider: _accessToken);
+    final client = _client ?? authenticatedApiClient(_store);
     return client.getList('customer/shipment-orders');
   }
-
-  Future<String?> _accessToken() async => (await _store.read())?.accessToken;
 }

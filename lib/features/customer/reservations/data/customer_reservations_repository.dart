@@ -1,4 +1,5 @@
 import '../../../../core/auth/session_store.dart';
+import '../../../../core/network/authenticated_api_client.dart';
 import '../../../../core/network/api_client.dart';
 
 class CustomerReservationsRepository {
@@ -9,7 +10,7 @@ class CustomerReservationsRepository {
   final SessionStore _store;
 
   Future<List<Map<String, dynamic>>> listReservations() =>
-      (client ?? ApiClient(accessTokenProvider: _accessToken)).getList(
+      (client ?? authenticatedApiClient(_store)).getList(
         'customer/reservations',
       );
 
@@ -19,7 +20,7 @@ class CustomerReservationsRepository {
     required String destinationRegion,
     String destinationCountry = 'Tanzania',
     int? cartonCount,
-  }) => (client ?? ApiClient(accessTokenProvider: _accessToken)).post(
+  }) => (client ?? authenticatedApiClient(_store)).post(
     'customer/reservations',
     body: {
       'container_id': containerId,
@@ -29,6 +30,4 @@ class CustomerReservationsRepository {
       'carton_count': ?cartonCount,
     },
   );
-
-  Future<String?> _accessToken() async => (await _store.read())?.accessToken;
 }

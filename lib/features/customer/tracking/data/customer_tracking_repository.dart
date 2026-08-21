@@ -1,4 +1,5 @@
 import '../../../../core/auth/session_store.dart';
+import '../../../../core/network/authenticated_api_client.dart';
 import '../../../../core/network/api_client.dart';
 
 class CustomerTrackingRepository {
@@ -9,7 +10,7 @@ class CustomerTrackingRepository {
   final SessionStore _store;
 
   Future<List<Map<String, dynamic>>> listEvents() async {
-    final api = client ?? ApiClient(accessTokenProvider: _token);
+    final api = client ?? authenticatedApiClient(_store);
     final results = await Future.wait([
       api.getList('tracking/customer/reservations'),
       api.getList('tracking/customer/bookings'),
@@ -23,6 +24,4 @@ class CustomerTrackingRepository {
     });
     return events;
   }
-
-  Future<String?> _token() async => (await _store.read())?.accessToken;
 }

@@ -1,5 +1,7 @@
 import '../../../core/auth/session.dart';
+import '../../../core/auth/session_store.dart';
 import '../../../core/network/api_client.dart';
+import '../../../core/network/authenticated_api_client.dart';
 
 class AuthRepository {
   AuthRepository({ApiClient? client}) : _client = client ?? ApiClient();
@@ -62,9 +64,8 @@ class AuthRepository {
     return session.copyWith(role: userRoleFromApi(role));
   }
 
-  Future<Map<String, dynamic>> getProfile(Session session) =>
-      ApiClient(accessTokenProvider: () async => session.accessToken)
-          .get('auth/me');
+  Future<Map<String, dynamic>> getProfile(Session _) =>
+      authenticatedApiClient(SessionStore()).get('auth/me');
 
   Future<Session> refreshSession(Session session) async {
     final response = await _client.post(

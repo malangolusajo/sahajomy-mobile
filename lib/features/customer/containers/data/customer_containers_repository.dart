@@ -1,4 +1,5 @@
 import '../../../../core/auth/session_store.dart';
+import '../../../../core/network/authenticated_api_client.dart';
 import '../../../../core/network/api_client.dart';
 
 class CustomerContainersRepository {
@@ -7,8 +8,5 @@ class CustomerContainersRepository {
   final ApiClient? client;
   final SessionStore _store;
   Future<List<Map<String, dynamic>>> listContainers() =>
-      (client ?? ApiClient(accessTokenProvider: _token)).getList(
-        'customer/containers',
-      );
-  Future<String?> _token() async => (await _store.read())?.accessToken;
+      (client ?? authenticatedApiClient(_store)).getList('customer/containers');
 }

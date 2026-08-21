@@ -1,4 +1,5 @@
 import '../../../../core/auth/session_store.dart';
+import '../../../../core/network/authenticated_api_client.dart';
 import '../../../../core/network/api_client.dart';
 
 class CustomerChinaAddressesRepository {
@@ -9,9 +10,7 @@ class CustomerChinaAddressesRepository {
   final SessionStore _store;
 
   Future<List<Map<String, dynamic>>> listAddresses() =>
-      (client ?? ApiClient(accessTokenProvider: _token)).getList(
+      (client ?? authenticatedApiClient(_store)).getList(
         'customer/china-addresses',
       );
-
-  Future<String?> _token() async => (await _store.read())?.accessToken;
 }

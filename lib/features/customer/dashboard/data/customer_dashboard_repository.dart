@@ -1,4 +1,5 @@
 import '../../../../core/auth/session_store.dart';
+import '../../../../core/network/authenticated_api_client.dart';
 import '../../../../core/network/api_client.dart';
 
 class CustomerDashboardRepository {
@@ -9,7 +10,7 @@ class CustomerDashboardRepository {
   final SessionStore _store;
 
   Future<CustomerDashboardSummary> loadSummary() async {
-    final api = client ?? ApiClient(accessTokenProvider: _token);
+    final api = client ?? authenticatedApiClient(_store);
     final results = await Future.wait([
       api.getList('customer/shipment-orders'),
       api.getList('customer/reservations'),
@@ -21,8 +22,6 @@ class CustomerDashboardRepository {
       orders: results[2].length,
     );
   }
-
-  Future<String?> _token() async => (await _store.read())?.accessToken;
 }
 
 class CustomerDashboardSummary {

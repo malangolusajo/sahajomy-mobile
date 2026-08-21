@@ -6,13 +6,19 @@ import '../config/api_config.dart';
 import 'api_exception.dart';
 
 typedef AccessTokenProvider = Future<String?> Function();
+typedef RefreshAccessToken = Future<String?> Function();
 
 class ApiClient {
-  ApiClient({http.Client? client, this.accessTokenProvider})
-    : _client = client ?? http.Client();
+  ApiClient({
+    http.Client? client,
+    this.accessTokenProvider,
+    this.refreshAccessToken,
+  }) : _client = client ?? http.Client();
 
+  static Future<String?>? _refreshInFlight;
   final http.Client _client;
   final AccessTokenProvider? accessTokenProvider;
+  final RefreshAccessToken? refreshAccessToken;
 
   Future<Map<String, dynamic>> get(String path) async =>
       (await _send('GET', path)) as Map<String, dynamic>;
@@ -23,16 +29,18 @@ class ApiClient {
 
   Future<Object> _send(String method, String path, {Object? body}) async {
     final token = await accessTokenProvider?.call();
-    final request = http.Request(method, ApiConfig.uri(path))
-      ..headers.addAll({
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
-      });
-    if (body != null) request.body = jsonEncode(body);
-    final response = await _client
-        .send(request)
-        .timeout(const Duration(seconds: 30));
+    var response = await _sendRequest(method, path, body: body, token: token);
+    if (response.statusCode == 401 && refreshAccessToken != null) {
+      final refreshedToken = await _refreshToken();
+      if (refreshedToken != null && refreshedToken.isNotEmpty) {
+        response = await _sendRequest(
+          method,
+          path,
+          body: body,
+          token: refreshedToken,
+        );
+      }
+    }
     final bodyText = await response.stream.bytesToString();
     final decoded = bodyText.isEmpty
         ? <String, dynamic>{}
@@ -51,6 +59,32 @@ class ApiClient {
       );
     }
     return decoded;
+  }
+
+  Future<String?> _refreshToken() {
+    final activeRefresh = _refreshInFlight;
+    if (activeRefresh != null) return activeRefresh;
+    final refresh = refreshAccessToken!();
+    _refreshInFlight = refresh;
+    return refresh.whenComplete(() {
+      if (identical(_refreshInFlight, refresh)) _refreshInFlight = null;
+    });
+  }
+
+  Future<http.StreamedResponse> _sendRequest(
+    String method,
+    String path, {
+    Object? body,
+    String? token,
+  }) {
+    final request = http.Request(method, ApiConfig.uri(path))
+      ..headers.addAll({
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
+      });
+    if (body != null) request.body = jsonEncode(body);
+    return _client.send(request).timeout(const Duration(seconds: 30));
   }
 
   void close() => _client.close();
