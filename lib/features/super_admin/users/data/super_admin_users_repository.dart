@@ -9,4 +9,20 @@ class SuperAdminUsersRepository {
   final SessionStore _store;
   Future<Map<String, dynamic>> listUsers() =>
       (client ?? authenticatedApiClient(_store)).get('super-admin/users');
+
+  Future<Map<String, dynamic>> updateStatus({
+    required String userId,
+    required String status,
+  }) => (client ?? authenticatedApiClient(_store)).patch(
+    'super_admin/users/$userId/status',
+    body: {'status': status},
+  );
+
+  Future<Map<String, dynamic>> updateVerification({
+    required String userId,
+    required bool isVerified,
+  }) => (client ?? authenticatedApiClient(_store)).patch(
+    'super_admin/users/$userId/verification',
+    body: {'is_verified': isVerified},
+  );
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/ui/sahajomy_ui.dart';
+import '../data/cargo_admin_documents_repository.dart';
 import '../../dashboard/data/cargo_admin_dashboard_repository.dart';
 import '../../warehouse_automation/data/warehouse_automation_repository.dart';
 
@@ -118,10 +119,12 @@ class CargoAdminPackingListsPage extends StatefulWidget {
 
 class _CargoAdminPackingListsPageState
     extends State<CargoAdminPackingListsPage> {
-  final _repository = CargoAdminDashboardRepository();
-  late Future<Map<String, dynamic>> _dashboard = _repository.loadDashboard();
+  final _repository = CargoAdminDocumentsRepository();
+  late Future<List<Map<String, dynamic>>> _packingLists = _repository
+      .listCustomsPackingLists();
 
-  void _retry() => setState(() => _dashboard = _repository.loadDashboard());
+  void _retry() =>
+      setState(() => _packingLists = _repository.listCustomsPackingLists());
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -129,8 +132,8 @@ class _CargoAdminPackingListsPageState
       role: 'Cargo Admin',
       title: 'Consolidated packing lists',
     ),
-    body: FutureBuilder<Map<String, dynamic>>(
-      future: _dashboard,
+    body: FutureBuilder<List<Map<String, dynamic>>>(
+      future: _packingLists,
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return const Center(child: CircularProgressIndicator());
@@ -144,9 +147,7 @@ class _CargoAdminPackingListsPageState
           );
         }
 
-        final dashboard = snapshot.data!;
-        final actions = (dashboard['pending_actions'] as List? ?? const [])
-            .cast<Map<String, dynamic>>();
+        final packingLists = snapshot.data!;
         return ListView(
           padding: const EdgeInsets.all(20),
           children: [
@@ -160,31 +161,20 @@ class _CargoAdminPackingListsPageState
             ),
             const SizedBox(height: 20),
             SahajomySectionCard(
-              title: 'Operational checklist',
+              title: 'Current packing lists',
               children: [
-                SahajomyKeyValueList(
-                  entries: {
-                    'reserved_cbm': dashboard['total_reserved_cbm'],
-                    'active_containers': dashboard['active_containers'],
-                    'reservations': dashboard['total_reservations'],
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            SahajomySectionCard(
-              title: 'Queues affecting documentation',
-              children: [
-                if (actions.isEmpty)
-                  const Text(
-                    'No operational blockers are delaying packing-list work.',
-                  ),
-                for (final action in actions)
+                if (packingLists.isEmpty)
+                  const Text('No customs packing lists have been created yet.'),
+                for (final packingList in packingLists)
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    leading: const Icon(Icons.task_alt_outlined),
-                    title: Text(action['label'] as String? ?? 'Action'),
-                    trailing: Chip(label: Text('${action['count'] ?? 0}')),
+                    leading: const Icon(Icons.description_outlined),
+                    title: Text(
+                      packingList['reference'] as String? ??
+                          packingList['id'] as String? ??
+                          'Packing list',
+                    ),
+                    subtitle: Text('${packingList['status'] ?? 'Draft'}'),
                   ),
               ],
             ),
@@ -203,10 +193,13 @@ class CargoAdminReceiptsPage extends StatefulWidget {
 }
 
 class _CargoAdminReceiptsPageState extends State<CargoAdminReceiptsPage> {
-  final _repository = CargoAdminDashboardRepository();
-  late Future<Map<String, dynamic>> _dashboard = _repository.loadDashboard();
+  final _repository = CargoAdminDocumentsRepository();
+  late Future<List<List<Map<String, dynamic>>>> _documents = _load();
 
-  void _retry() => setState(() => _dashboard = _repository.loadDashboard());
+  Future<List<List<Map<String, dynamic>>>> _load() =>
+      Future.wait([_repository.listReceipts(), _repository.listInvoices()]);
+
+  void _retry() => setState(() => _documents = _load());
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -214,8 +207,8 @@ class _CargoAdminReceiptsPageState extends State<CargoAdminReceiptsPage> {
       role: 'Cargo Admin',
       title: 'Receipts and invoices',
     ),
-    body: FutureBuilder<Map<String, dynamic>>(
-      future: _dashboard,
+    body: FutureBuilder<List<List<Map<String, dynamic>>>>(
+      future: _documents,
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return const Center(child: CircularProgressIndicator());
@@ -229,7 +222,8 @@ class _CargoAdminReceiptsPageState extends State<CargoAdminReceiptsPage> {
           );
         }
 
-        final dashboard = snapshot.data!;
+        final receipts = snapshot.data![0];
+        final invoices = snapshot.data![1];
         return ListView(
           padding: const EdgeInsets.all(20),
           children: [
@@ -242,48 +236,35 @@ class _CargoAdminReceiptsPageState extends State<CargoAdminReceiptsPage> {
               'Search financial follow-ups and share authoritative documents with customers.',
             ),
             const SizedBox(height: 20),
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
+            SahajomySectionCard(
+              title: 'Recent receipts',
               children: [
-                SahajomyMetricTile(
-                  label: 'Pending payments',
-                  value: dashboard['pending_payments'],
-                ),
-                SahajomyMetricTile(
-                  label: 'Reservations',
-                  value: dashboard['total_reservations'],
-                ),
+                if (receipts.isEmpty) const Text('No receipts found.'),
+                for (final receipt in receipts)
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.receipt_long_outlined),
+                    title: Text(
+                      '${receipt['receipt_number'] ?? receipt['id'] ?? 'Receipt'}',
+                    ),
+                    subtitle: Text('${receipt['status'] ?? 'Issued'}'),
+                  ),
               ],
             ),
-            const SizedBox(height: 24),
-            const SahajomySectionCard(
-              title: 'Document lanes',
+            const SizedBox(height: 20),
+            SahajomySectionCard(
+              title: 'Invoices',
               children: [
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: Icon(Icons.receipt_long_outlined),
-                  title: Text('Recent receipts'),
-                  subtitle: Text(
-                    'Follow up on reservations waiting for payment confirmation.',
+                if (invoices.isEmpty) const Text('No invoices found.'),
+                for (final invoice in invoices)
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.request_quote_outlined),
+                    title: Text(
+                      '${invoice['invoice_number'] ?? invoice['id'] ?? 'Invoice'}',
+                    ),
+                    subtitle: Text('${invoice['status'] ?? 'Issued'}'),
                   ),
-                ),
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: Icon(Icons.request_quote_outlined),
-                  title: Text('Invoices by reservation'),
-                  subtitle: Text(
-                    'Use reservation and customer references to locate the authoritative PDF.',
-                  ),
-                ),
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: Icon(Icons.share_outlined),
-                  title: Text('Share and void controls'),
-                  subtitle: Text(
-                    'Preserve the server as the source of truth when document actions are added.',
-                  ),
-                ),
               ],
             ),
           ],
@@ -303,10 +284,11 @@ class CargoAdminCustomerRecordsPage extends StatefulWidget {
 
 class _CargoAdminCustomerRecordsPageState
     extends State<CargoAdminCustomerRecordsPage> {
-  final _repository = CargoAdminDashboardRepository();
-  late Future<Map<String, dynamic>> _dashboard = _repository.loadDashboard();
+  final _repository = CargoAdminDocumentsRepository();
+  late Future<List<Map<String, dynamic>>> _customers = _repository
+      .listCustomers();
 
-  void _retry() => setState(() => _dashboard = _repository.loadDashboard());
+  void _retry() => setState(() => _customers = _repository.listCustomers());
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -314,8 +296,8 @@ class _CargoAdminCustomerRecordsPageState
       role: 'Cargo Admin',
       title: 'Customer management',
     ),
-    body: FutureBuilder<Map<String, dynamic>>(
-      future: _dashboard,
+    body: FutureBuilder<List<Map<String, dynamic>>>(
+      future: _customers,
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return const Center(child: CircularProgressIndicator());
@@ -329,7 +311,7 @@ class _CargoAdminCustomerRecordsPageState
           );
         }
 
-        final dashboard = snapshot.data!;
+        final customers = snapshot.data!;
         return ListView(
           padding: const EdgeInsets.all(20),
           children: [
@@ -343,33 +325,18 @@ class _CargoAdminCustomerRecordsPageState
             ),
             const SizedBox(height: 20),
             SahajomySectionCard(
-              title: 'Current workload',
+              title: 'Customer records',
               children: [
-                SahajomyKeyValueList(
-                  entries: {
-                    'active_containers': dashboard['active_containers'],
-                    'reservations': dashboard['total_reservations'],
-                    'pending_payments': dashboard['pending_payments'],
-                    'air_bookings': dashboard['pending_air_bookings'],
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            const SahajomySectionCard(
-              title: 'Customer records flow',
-              children: [
-                Text(
-                  '1. Find the customer by reservation, parcel, or receipt reference.',
-                ),
-                SizedBox(height: 8),
-                Text(
-                  '2. Confirm payment and documentation state before release or escalation.',
-                ),
-                SizedBox(height: 8),
-                Text(
-                  '3. Keep warehouse automation and manual intake linked back to the same customer record.',
-                ),
+                if (customers.isEmpty) const Text('No cargo customers found.'),
+                for (final customer in customers)
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.people_outline_rounded),
+                    title: Text(
+                      '${customer['name'] ?? customer['company_name'] ?? 'Customer'}',
+                    ),
+                    subtitle: Text('${customer['status'] ?? 'Active'}'),
+                  ),
               ],
             ),
           ],

@@ -13,6 +13,21 @@ class _SuperAdminUserListPageState extends State<SuperAdminUserListPage> {
   late Future<Map<String, dynamic>> _users = _repository.listUsers();
   void _retry() => setState(() => _users = _repository.listUsers());
 
+  Future<void> _setVerification(Map<String, dynamic> user, bool value) async {
+    final id = '${user['id']}';
+    try {
+      await _repository.updateVerification(userId: id, isVerified: value);
+      if (!mounted) return;
+      _retry();
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Unable to update verification.')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) => FutureBuilder<Map<String, dynamic>>(
     future: _users,
@@ -46,6 +61,7 @@ class _SuperAdminUserListPageState extends State<SuperAdminUserListPage> {
                   user['is_verified'] == true ? 'Verified' : 'Pending',
                 ),
               ),
+              onTap: () => _setVerification(user, user['is_verified'] != true),
             ),
           );
         },
