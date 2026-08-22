@@ -11,6 +11,6 @@ class CargoAdminContainersRepository {
 
   Future<List<Map<String, dynamic>>> listContainers() =>
       (client ?? authenticatedApiClient(_store)).getList(
-        'cargo-admin/containers',
+        'cargo_admin/containers',
       );
 }

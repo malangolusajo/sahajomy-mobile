@@ -8,7 +8,7 @@ class SuperAdminUsersRepository {
   final ApiClient? client;
   final SessionStore _store;
   Future<Map<String, dynamic>> listUsers() =>
-      (client ?? authenticatedApiClient(_store)).get('super-admin/users');
+      (client ?? authenticatedApiClient(_store)).get('super_admin/users');
 
   Future<Map<String, dynamic>> updateStatus({
     required String userId,

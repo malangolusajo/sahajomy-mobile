@@ -22,6 +22,7 @@ class ApiClient {
 
   Future<Map<String, dynamic>> get(String path) async =>
       (await _send('GET', path)) as Map<String, dynamic>;
+  Future<Object> getObject(String path) => _send('GET', path);
   Future<List<Map<String, dynamic>>> getList(String path) async =>
       ((await _send('GET', path)) as List).cast<Map<String, dynamic>>();
   Future<Map<String, dynamic>> post(String path, {Object? body}) async =>

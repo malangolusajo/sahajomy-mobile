@@ -10,5 +10,5 @@ class CargoAdminDashboardRepository {
   final SessionStore _store;
 
   Future<Map<String, dynamic>> loadDashboard() =>
-      (client ?? authenticatedApiClient(_store)).get('cargo-admin/dashboard');
+      (client ?? authenticatedApiClient(_store)).get('cargo_admin/dashboard');
 }

@@ -9,6 +9,6 @@ class SuperAdminDashboardRepository {
   final SessionStore _store;
   Future<Map<String, dynamic>> loadOverview() =>
       (client ?? authenticatedApiClient(_store)).get(
-        'super-admin/analytics/overview',
+        'super_admin/analytics/overview',
       );
 }

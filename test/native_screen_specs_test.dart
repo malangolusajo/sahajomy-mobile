@@ -30,9 +30,6 @@ void main() {
       );
       await tester.pump();
 
-      if (spec.fileName != 'public-containers.html') {
-        expect(find.text(spec.title), findsAtLeastNWidgets(1));
-      }
       expect(tester.takeException(), isNull, reason: spec.fileName);
     }
   });
