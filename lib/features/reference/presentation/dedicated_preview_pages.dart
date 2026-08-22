@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'native_reference_screen.dart';
 import 'native_screen_specs.dart';
+import '../../public_services/presentation/public_containers_page.dart';
 
 Widget dedicatedPreviewPageFor(
   NativeScreenSpec spec,
@@ -736,8 +737,7 @@ class PublicContainersPreviewPage extends StatelessWidget {
   const PublicContainersPreviewPage({super.key});
 
   @override
-  Widget build(BuildContext context) =>
-      PreviewPageLayout(spec: nativeScreenSpecFor('public-containers.html'));
+  Widget build(BuildContext context) => const PublicContainersPage();
 }
 
 class PublicCookiesPreviewPage extends StatelessWidget {

@@ -22,6 +22,7 @@ $lines.Add("import 'package:flutter/material.dart';")
 $lines.Add("")
 $lines.Add("import 'native_reference_screen.dart';")
 $lines.Add("import 'native_screen_specs.dart';")
+$lines.Add("import '../../public_services/presentation/public_containers_page.dart';")
 $lines.Add("")
 $lines.Add("Widget dedicatedPreviewPageFor(NativeScreenSpec spec) => switch (spec.fileName) {")
 foreach ($match in $matches) {
@@ -39,9 +40,13 @@ foreach ($match in $matches) {
   $lines.Add("  const $className({super.key});")
   $lines.Add("")
   $lines.Add("  @override")
-  $lines.Add("  Widget build(BuildContext context) => PreviewPageLayout(")
-  $lines.Add("    spec: nativeScreenSpecFor('$fileName'),")
-  $lines.Add("  );")
+  if ($fileName -eq 'public-containers.html') {
+    $lines.Add("  Widget build(BuildContext context) => const PublicContainersPage();")
+  } else {
+    $lines.Add("  Widget build(BuildContext context) => PreviewPageLayout(")
+    $lines.Add("    spec: nativeScreenSpecFor('$fileName'),")
+    $lines.Add("  );")
+  }
   $lines.Add("}")
   $lines.Add("")
 }
