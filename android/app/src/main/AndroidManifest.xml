@@ -1,9 +1,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET" />
     <application
-        android:label="sahajomy_mobile"
+        android:label="Sahajomy"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@drawable/ic_sahajomy_launcher"
+        android:allowBackup="false"
+        android:fullBackupContent="@xml/backup_rules"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:usesCleartextTraffic="false"
+        android:networkSecurityConfig="@xml/network_security_config">
         <activity
             android:name=".MainActivity"
             android:exported="true"
