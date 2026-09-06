@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-import '../data/auth_repository.dart';
 import '../../../core/auth/session.dart';
-import '../../../core/auth/session_store.dart';
 import '../../../core/network/api_exception.dart';
+import '../../../core/providers.dart';
+import '../../../features/auth/data/auth_repository.dart';
 import '../../../core/ui/sahajomy_ui.dart';
 
-class OtpPage extends StatefulWidget {
+class OtpPage extends ConsumerStatefulWidget {
   const OtpPage({super.key, required this.phoneNumber});
   final String phoneNumber;
 
   @override
-  State<OtpPage> createState() => _OtpPageState();
+  ConsumerState<OtpPage> createState() => _OtpPageState();
 }
 
-class _OtpPageState extends State<OtpPage> {
+class _OtpPageState extends ConsumerState<OtpPage> {
   final _codeController = TextEditingController();
-  final _repository = AuthRepository();
-  final _sessionStore = SessionStore();
   var _isSubmitting = false;
   String? _errorMessage;
 
@@ -40,14 +40,22 @@ class _OtpPageState extends State<OtpPage> {
       _errorMessage = null;
     });
     try {
-      final session = await _repository.verifyOtp(
+      final authRepository = ref.read(authRepositoryProvider);
+      final sessionStore = ref.read(sessionStoreProvider);
+      final session = await authRepository.verifyOtp(
         phoneNumber: widget.phoneNumber,
         otpCode: _codeController.text.trim(),
       );
-      await _sessionStore.save(session);
+      await sessionStore.save(session);
       if (!mounted) return;
-      Navigator.of(context)
-          .pushNamedAndRemoveUntil(_routeFor(session.role), (_) => false);
+      final route = _routeFor(session.role);
+      final pendingDestination = ref.read(pendingDestinationProvider);
+      ref.read(pendingDestinationProvider.notifier).state = null;
+      ref.invalidate(workspaceProvider);
+      ref.invalidate(apiClientProvider);
+      if (mounted) {
+        context.go(pendingDestination ?? route);
+      }
     } on ApiException catch (error) {
       if (mounted) setState(() => _errorMessage = error.message);
     } on FormatException catch (error) {

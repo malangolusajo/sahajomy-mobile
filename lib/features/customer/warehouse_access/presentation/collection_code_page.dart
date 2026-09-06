@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../../../app/theme.dart';
 import '../../../../core/ui/sahajomy_ui.dart';
@@ -45,6 +47,11 @@ class _CollectionCodePageState extends State<CollectionCodePage> {
     final seconds = _remaining.isNegative
         ? 0
         : _remaining.inSeconds.remainder(60);
+    final expiry = DateTime.tryParse('${widget.request['expires_at']}')
+        ?.toLocal();
+    final collectionCode =
+        '${widget.request['collection_code'] ?? widget.request['code'] ?? ''}';
+    final pin = '${widget.request['pin'] ?? '------'}';
     return Scaffold(
       appBar: const SahajomyScreenHeader(
         role: 'Collection request',
@@ -71,7 +78,24 @@ class _CollectionCodePageState extends State<CollectionCodePage> {
             color: Colors.white,
             child: Column(
               children: [
-                const Icon(Icons.qr_code_2_rounded, size: 176, color: appInk),
+                Semantics(
+                  label: 'Collection QR code. A text alternative is available below.',
+                  image: true,
+                  child: collectionCode.isEmpty
+                      ? const Icon(
+                          Icons.qr_code_2_rounded,
+                          size: 176,
+                          color: appInk,
+                        )
+                      : QrImageView(
+                          data: collectionCode,
+                          size: 176,
+                          eyeStyle: const QrEyeStyle(color: appInk),
+                          dataModuleStyle: const QrDataModuleStyle(
+                            color: appInk,
+                          ),
+                        ),
+                ),
                 const SizedBox(height: 20),
                 const Text(
                   'COLLECTION PIN',
@@ -82,15 +106,45 @@ class _CollectionCodePageState extends State<CollectionCodePage> {
                   ),
                 ),
                 const SizedBox(height: 6),
-                Text(
-                  '${widget.request['pin'] ?? '------'}',
-                  style: const TextStyle(
-                    fontSize: 36,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 8,
-                    color: brandNavy,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ExcludeSemantics(
+                      child: Text(
+                        pin,
+                        style: const TextStyle(
+                          fontSize: 36,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 8,
+                          color: brandNavy,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      tooltip: 'Read collection PIN',
+                      onPressed: () => SemanticsService.sendAnnouncement(
+                        View.of(context),
+                        'Collection PIN $pin',
+                        TextDirection.ltr,
+                      ),
+                      icon: const Icon(Icons.volume_up_outlined),
+                    ),
+                  ],
                 ),
+                if (collectionCode.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  ExpansionTile(
+                    tilePadding: EdgeInsets.zero,
+                    title: const Text('Text alternative'),
+                    children: [
+                      SelectableText(
+                        collectionCode,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontFamily: 'monospace'),
+                      ),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),
@@ -103,6 +157,14 @@ class _CollectionCodePageState extends State<CollectionCodePage> {
               fontWeight: FontWeight.w800,
             ),
           ),
+          if (expiry != null) ...[
+            const SizedBox(height: 4),
+            Text(
+              'Valid until ${expiry.toString().substring(0, 16)}',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
           const SizedBox(height: 20),
           const SahajomySectionCard(
             title: 'Single use',

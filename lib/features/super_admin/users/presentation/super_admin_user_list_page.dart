@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sahajomy_mobile/features/repository_providers.dart';
 
 import '../data/super_admin_users_repository.dart';
 
-class SuperAdminUserListPage extends StatefulWidget {
+class SuperAdminUserListPage extends ConsumerStatefulWidget {
   const SuperAdminUserListPage({super.key});
   @override
-  State<SuperAdminUserListPage> createState() => _SuperAdminUserListPageState();
+  ConsumerState<SuperAdminUserListPage> createState() =>
+      _SuperAdminUserListPageState();
 }
 
-class _SuperAdminUserListPageState extends State<SuperAdminUserListPage> {
-  final _repository = SuperAdminUsersRepository();
-  late Future<Map<String, dynamic>> _users = _repository.listUsers();
+class _SuperAdminUserListPageState
+    extends ConsumerState<SuperAdminUserListPage> {
+  SuperAdminUsersRepository get _repository =>
+      ref.read(superAdminUsersRepositoryProvider);
+  late Future<Map<String, dynamic>> _users = Future.microtask(
+    () => _repository.listUsers(),
+  );
   void _retry() => setState(() => _users = _repository.listUsers());
 
   Future<void> _setVerification(Map<String, dynamic> user, bool value) async {

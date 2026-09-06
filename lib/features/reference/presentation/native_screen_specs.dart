@@ -534,6 +534,111 @@ const nativeScreenSpecs = <NativeScreenSpec>[
     role: 'Super Admin',
     title: 'Automation entitlements',
   ),
+  NativeScreenSpec(
+    fileName: 'agent-china-addresses.html',
+    role: 'Sourcing Agent',
+    title: 'My China addresses',
+  ),
+  NativeScreenSpec(
+    fileName: 'agent-sea-bookings.html',
+    role: 'Sourcing Agent',
+    title: 'My sea bookings',
+  ),
+  NativeScreenSpec(
+    fileName: 'cargo-admin-billing-usage.html',
+    role: 'Cargo Admin',
+    title: 'Billing and usage',
+  ),
+  NativeScreenSpec(
+    fileName: 'cargo-admin-documentation-customers.html',
+    role: 'Cargo Admin',
+    title: 'Customers and contacts',
+  ),
+  NativeScreenSpec(
+    fileName: 'cargo-admin-financial-analytics.html',
+    role: 'Cargo Admin',
+    title: 'Financial analytics',
+  ),
+  NativeScreenSpec(
+    fileName: 'cargo-admin-pending-approval.html',
+    role: 'Cargo Admin',
+    title: 'Approval pending',
+  ),
+  NativeScreenSpec(
+    fileName: 'cargo-admin-sea-bookings.html',
+    role: 'Cargo Admin',
+    title: 'Sea bookings',
+  ),
+  NativeScreenSpec(
+    fileName: 'cargo-admin-staff-branches.html',
+    role: 'Cargo Admin',
+    title: 'Staff and branches',
+  ),
+  NativeScreenSpec(
+    fileName: 'customer-sea-booking-detail.html',
+    role: 'Customer',
+    title: 'Sea booking details',
+  ),
+  NativeScreenSpec(
+    fileName: 'customer-sea-bookings.html',
+    role: 'Customer',
+    title: 'My sea bookings',
+  ),
+  NativeScreenSpec(
+    fileName: 'public-air-cargo-africa.html',
+    role: 'Public',
+    title: 'Air cargo across Africa',
+  ),
+  NativeScreenSpec(
+    fileName: 'public-cargo-company-registration.html',
+    role: 'Public',
+    title: 'Register a cargo company',
+  ),
+  NativeScreenSpec(
+    fileName: 'public-china-sourcing-africa.html',
+    role: 'Public',
+    title: 'China sourcing for Africa',
+  ),
+  NativeScreenSpec(
+    fileName: 'public-sea-freight-africa.html',
+    role: 'Public',
+    title: 'Sea freight across Africa',
+  ),
+  NativeScreenSpec(
+    fileName: 'public-staff-invitation.html',
+    role: 'Public',
+    title: 'Cargo company invitation',
+  ),
+  NativeScreenSpec(
+    fileName: 'shared-workspace-selection.html',
+    role: 'Shared',
+    title: 'Switch workspace',
+  ),
+  NativeScreenSpec(
+    fileName: 'super-admin-bookings.html',
+    role: 'Super Admin',
+    title: 'Platform bookings',
+  ),
+  NativeScreenSpec(
+    fileName: 'super-admin-companies.html',
+    role: 'Super Admin',
+    title: 'Cargo companies',
+  ),
+  NativeScreenSpec(
+    fileName: 'super-admin-company-detail.html',
+    role: 'Super Admin',
+    title: 'Cargo company details',
+  ),
+  NativeScreenSpec(
+    fileName: 'super-admin-operator-detail.html',
+    role: 'Super Admin',
+    title: 'Cargo administrator',
+  ),
+  NativeScreenSpec(
+    fileName: 'super-admin-subscriptions.html',
+    role: 'Super Admin',
+    title: 'Subscriptions and costs',
+  ),
 ];
 
 NativeScreenSpec nativeScreenSpecFor(String fileName) =>

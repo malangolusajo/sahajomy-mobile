@@ -1,22 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sahajomy_mobile/features/repository_providers.dart';
 
 import '../../../../core/ui/sahajomy_ui.dart';
 import '../data/cargo_admin_documents_repository.dart';
 import '../../dashboard/data/cargo_admin_dashboard_repository.dart';
 import '../../warehouse_automation/data/warehouse_automation_repository.dart';
 
-class CargoAdminDocumentationWorkspacePage extends StatefulWidget {
+class CargoAdminDocumentationWorkspacePage extends ConsumerStatefulWidget {
   const CargoAdminDocumentationWorkspacePage({super.key});
 
   @override
-  State<CargoAdminDocumentationWorkspacePage> createState() =>
+  ConsumerState<CargoAdminDocumentationWorkspacePage> createState() =>
       _CargoAdminDocumentationWorkspacePageState();
 }
 
 class _CargoAdminDocumentationWorkspacePageState
-    extends State<CargoAdminDocumentationWorkspacePage> {
-  final _repository = CargoAdminDashboardRepository();
-  late Future<Map<String, dynamic>> _dashboard = _repository.loadDashboard();
+    extends ConsumerState<CargoAdminDocumentationWorkspacePage> {
+  CargoAdminDashboardRepository get _repository =>
+      ref.read(cargoAdminDashboardRepositoryProvider);
+  late Future<Map<String, dynamic>> _dashboard = Future.microtask(
+    () => _repository.loadDashboard(),
+  );
 
   void _retry() => setState(() => _dashboard = _repository.loadDashboard());
 
@@ -109,19 +114,21 @@ class _CargoAdminDocumentationWorkspacePageState
   );
 }
 
-class CargoAdminPackingListsPage extends StatefulWidget {
+class CargoAdminPackingListsPage extends ConsumerStatefulWidget {
   const CargoAdminPackingListsPage({super.key});
 
   @override
-  State<CargoAdminPackingListsPage> createState() =>
+  ConsumerState<CargoAdminPackingListsPage> createState() =>
       _CargoAdminPackingListsPageState();
 }
 
 class _CargoAdminPackingListsPageState
-    extends State<CargoAdminPackingListsPage> {
-  final _repository = CargoAdminDocumentsRepository();
-  late Future<List<Map<String, dynamic>>> _packingLists = _repository
-      .listCustomsPackingLists();
+    extends ConsumerState<CargoAdminPackingListsPage> {
+  CargoAdminDocumentsRepository get _repository =>
+      ref.read(cargoAdminDocumentsRepositoryProvider);
+  late Future<List<Map<String, dynamic>>> _packingLists = Future.microtask(
+    () => _repository.listCustomsPackingLists(),
+  );
 
   void _retry() =>
       setState(() => _packingLists = _repository.listCustomsPackingLists());
@@ -185,16 +192,21 @@ class _CargoAdminPackingListsPageState
   );
 }
 
-class CargoAdminReceiptsPage extends StatefulWidget {
+class CargoAdminReceiptsPage extends ConsumerStatefulWidget {
   const CargoAdminReceiptsPage({super.key});
 
   @override
-  State<CargoAdminReceiptsPage> createState() => _CargoAdminReceiptsPageState();
+  ConsumerState<CargoAdminReceiptsPage> createState() =>
+      _CargoAdminReceiptsPageState();
 }
 
-class _CargoAdminReceiptsPageState extends State<CargoAdminReceiptsPage> {
-  final _repository = CargoAdminDocumentsRepository();
-  late Future<List<List<Map<String, dynamic>>>> _documents = _load();
+class _CargoAdminReceiptsPageState
+    extends ConsumerState<CargoAdminReceiptsPage> {
+  CargoAdminDocumentsRepository get _repository =>
+      ref.read(cargoAdminDocumentsRepositoryProvider);
+  late Future<List<List<Map<String, dynamic>>>> _documents = Future.microtask(
+    () => _load(),
+  );
 
   Future<List<List<Map<String, dynamic>>>> _load() =>
       Future.wait([_repository.listReceipts(), _repository.listInvoices()]);
@@ -274,19 +286,21 @@ class _CargoAdminReceiptsPageState extends State<CargoAdminReceiptsPage> {
   );
 }
 
-class CargoAdminCustomerRecordsPage extends StatefulWidget {
+class CargoAdminCustomerRecordsPage extends ConsumerStatefulWidget {
   const CargoAdminCustomerRecordsPage({super.key});
 
   @override
-  State<CargoAdminCustomerRecordsPage> createState() =>
+  ConsumerState<CargoAdminCustomerRecordsPage> createState() =>
       _CargoAdminCustomerRecordsPageState();
 }
 
 class _CargoAdminCustomerRecordsPageState
-    extends State<CargoAdminCustomerRecordsPage> {
-  final _repository = CargoAdminDocumentsRepository();
-  late Future<List<Map<String, dynamic>>> _customers = _repository
-      .listCustomers();
+    extends ConsumerState<CargoAdminCustomerRecordsPage> {
+  CargoAdminDocumentsRepository get _repository =>
+      ref.read(cargoAdminDocumentsRepositoryProvider);
+  late Future<List<Map<String, dynamic>>> _customers = Future.microtask(
+    () => _repository.listCustomers(),
+  );
 
   void _retry() => setState(() => _customers = _repository.listCustomers());
 
@@ -346,17 +360,18 @@ class _CargoAdminCustomerRecordsPageState
   );
 }
 
-class CargoAdminManualIntakePage extends StatefulWidget {
+class CargoAdminManualIntakePage extends ConsumerStatefulWidget {
   const CargoAdminManualIntakePage({super.key});
 
   @override
-  State<CargoAdminManualIntakePage> createState() =>
+  ConsumerState<CargoAdminManualIntakePage> createState() =>
       _CargoAdminManualIntakePageState();
 }
 
 class _CargoAdminManualIntakePageState
-    extends State<CargoAdminManualIntakePage> {
-  final _repository = WarehouseAutomationRepository();
+    extends ConsumerState<CargoAdminManualIntakePage> {
+  WarehouseAutomationRepository get _repository =>
+      ref.read(warehouseAutomationRepositoryProvider);
   final _formKey = GlobalKey<FormState>();
   final _customerController = TextEditingController();
   final _itemController = TextEditingController();
@@ -365,7 +380,9 @@ class _CargoAdminManualIntakePageState
   final _weightController = TextEditingController(text: '1.0');
   final _scanTextController = TextEditingController();
   final _bookingController = TextEditingController();
-  late Future<Map<String, dynamic>> _status = _repository.loadStatus();
+  late Future<Map<String, dynamic>> _status = Future.microtask(
+    () => _repository.loadStatus(),
+  );
   Map<String, dynamic>? _matchResult;
   String? _selectedWarehouseId;
   bool _matching = false;

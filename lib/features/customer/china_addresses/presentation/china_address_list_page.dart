@@ -1,20 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sahajomy_mobile/features/repository_providers.dart';
 import 'package:flutter/services.dart';
 
 import '../../../../core/ui/sahajomy_ui.dart';
 import '../data/customer_china_addresses_repository.dart';
 
-class ChinaAddressListPage extends StatefulWidget {
+class ChinaAddressListPage extends ConsumerStatefulWidget {
   const ChinaAddressListPage({super.key});
 
   @override
-  State<ChinaAddressListPage> createState() => _ChinaAddressListPageState();
+  ConsumerState<ChinaAddressListPage> createState() =>
+      _ChinaAddressListPageState();
 }
 
-class _ChinaAddressListPageState extends State<ChinaAddressListPage> {
-  final _repository = CustomerChinaAddressesRepository();
-  late Future<List<Map<String, dynamic>>> _addresses = _repository
-      .listAddresses();
+class _ChinaAddressListPageState extends ConsumerState<ChinaAddressListPage> {
+  CustomerChinaAddressesRepository get _repository =>
+      ref.read(customerChinaAddressesRepositoryProvider);
+  late Future<List<Map<String, dynamic>>> _addresses = Future.microtask(
+    () => _repository.listAddresses(),
+  );
 
   void _retry() => setState(() => _addresses = _repository.listAddresses());
 

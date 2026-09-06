@@ -1,20 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sahajomy_mobile/features/repository_providers.dart';
 
 import '../../../../core/ui/sahajomy_ui.dart';
 import '../data/customer_reservations_repository.dart';
 
-class ReservationDetailPage extends StatefulWidget {
+class ReservationDetailPage extends ConsumerStatefulWidget {
   const ReservationDetailPage({super.key, required this.reservationId});
 
   final String reservationId;
 
   @override
-  State<ReservationDetailPage> createState() => _ReservationDetailPageState();
+  ConsumerState<ReservationDetailPage> createState() =>
+      _ReservationDetailPageState();
 }
 
-class _ReservationDetailPageState extends State<ReservationDetailPage> {
-  final _repository = CustomerReservationsRepository();
-  late Future<Map<String, dynamic>> _reservation = _load();
+class _ReservationDetailPageState extends ConsumerState<ReservationDetailPage> {
+  CustomerReservationsRepository get _repository =>
+      ref.read(customerReservationsRepositoryProvider);
+  late Future<Map<String, dynamic>> _reservation = Future.microtask(
+    () => _load(),
+  );
 
   Future<Map<String, dynamic>> _load() =>
       _repository.getReservation(widget.reservationId);

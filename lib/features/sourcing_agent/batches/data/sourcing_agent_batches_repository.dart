@@ -1,24 +1,18 @@
-import '../../../../core/auth/session_store.dart';
 import '../../../../core/network/api_client.dart';
-import '../../../../core/network/authenticated_api_client.dart';
 
 class SourcingAgentBatchesRepository {
-  SourcingAgentBatchesRepository({this.client, SessionStore? sessionStore})
-    : _store = sessionStore ?? SessionStore();
-  final ApiClient? client;
-  final SessionStore _store;
+  SourcingAgentBatchesRepository({required this.client});
+
+  final ApiClient client;
+
   Future<Map<String, dynamic>> listBatches() =>
-      (client ?? authenticatedApiClient(_store)).get('sourcing_agent/batches');
+      client.getObject('sourcing_agent/batches');
 
   Future<Map<String, dynamic>> getBatch(String batchId) =>
-      (client ?? authenticatedApiClient(_store)).get(
-        'sourcing_agent/batches/$batchId',
-      );
+      client.getObject('sourcing_agent/batches/$batchId');
 
   Future<Map<String, dynamic>> listOrders(String batchId) =>
-      (client ?? authenticatedApiClient(_store)).get(
-        'sourcing_agent/batches/$batchId/orders',
-      );
+      client.getObject('sourcing_agent/batches/$batchId/orders');
 
   Future<Map<String, dynamic>> createBatch({
     required String title,
@@ -26,9 +20,9 @@ class SourcingAgentBatchesRepository {
     required String currency,
     required String shippingMethod,
     double? shippingFeePerCbm,
-  }) => (client ?? authenticatedApiClient(_store)).post(
+  }) => client.post<Map<String, dynamic>>(
     'sourcing_agent/batches',
-    body: {
+    data: {
       'title': title,
       'description': description,
       'currency': currency,
@@ -41,9 +35,9 @@ class SourcingAgentBatchesRepository {
     required String batchId,
     required String name,
     String? description,
-  }) => (client ?? authenticatedApiClient(_store)).post(
+  }) => client.post<Map<String, dynamic>>(
     'sourcing_agent/batches/$batchId/packing-lists',
-    body: {'name': name, 'description': description},
+    data: {'name': name, 'description': description},
   );
 
   Future<Map<String, dynamic>> createProduct({
@@ -54,9 +48,9 @@ class SourcingAgentBatchesRepository {
     required double pricePerUnit,
     required int minimumOrderQuantity,
     required String imageUrl,
-  }) => (client ?? authenticatedApiClient(_store)).post(
+  }) => client.post<Map<String, dynamic>>(
     'sourcing_agent/batches/$batchId/products',
-    body: {
+    data: {
       'goods_type_id': goodsTypeId,
       'name': name,
       'description': description,
@@ -68,7 +62,5 @@ class SourcingAgentBatchesRepository {
   );
 
   Future<Map<String, dynamic>> listGoodsCategories() =>
-      (client ?? authenticatedApiClient(_store)).get(
-        'sourcing_agent/goods/categories',
-      );
+      client.getObject('sourcing_agent/goods/categories');
 }

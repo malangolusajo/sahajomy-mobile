@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sahajomy_mobile/features/repository_providers.dart';
 
 import '../../../core/ui/sahajomy_ui.dart';
 import '../data/workflow_api_repository.dart';
@@ -20,7 +22,7 @@ class ApiFormField {
 }
 
 /// A schema-aligned API form used for workflows defined by the backend contract.
-class ApiFormPage extends StatefulWidget {
+class ApiFormPage extends ConsumerStatefulWidget {
   const ApiFormPage({
     required this.role,
     required this.title,
@@ -37,11 +39,12 @@ class ApiFormPage extends StatefulWidget {
   final bool multipart;
 
   @override
-  State<ApiFormPage> createState() => _ApiFormPageState();
+  ConsumerState<ApiFormPage> createState() => _ApiFormPageState();
 }
 
-class _ApiFormPageState extends State<ApiFormPage> {
-  final _repository = WorkflowApiRepository();
+class _ApiFormPageState extends ConsumerState<ApiFormPage> {
+  WorkflowApiRepository get _repository =>
+      ref.read(workflowApiRepositoryProvider);
   final _formKey = GlobalKey<FormState>();
   late final Map<String, TextEditingController> _controllers = {
     for (final field in widget.fields) field.name: TextEditingController(),

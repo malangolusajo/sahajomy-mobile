@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../app/theme.dart';
 import '../../../core/ui/sahajomy_ui.dart';
@@ -71,7 +72,7 @@ class NativeScreenCatalog extends StatelessWidget {
         title: spec.title,
         subtitle: '${_kind(spec.fileName).name} screen',
         icon: _icon(spec),
-        onTap: () => Navigator.pushNamed(context, spec.routeName),
+        onTap: () => context.push(spec.routeName),
       );
 }
 

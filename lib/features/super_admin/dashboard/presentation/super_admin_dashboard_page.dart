@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sahajomy_mobile/features/repository_providers.dart';
 
 import '../data/super_admin_dashboard_repository.dart';
 
-class SuperAdminDashboardPage extends StatefulWidget {
+class SuperAdminDashboardPage extends ConsumerStatefulWidget {
   const SuperAdminDashboardPage({super.key});
   @override
-  State<SuperAdminDashboardPage> createState() =>
+  ConsumerState<SuperAdminDashboardPage> createState() =>
       _SuperAdminDashboardPageState();
 }
 
-class _SuperAdminDashboardPageState extends State<SuperAdminDashboardPage> {
-  final _repository = SuperAdminDashboardRepository();
-  late Future<Map<String, dynamic>> _overview = _repository.loadOverview();
+class _SuperAdminDashboardPageState
+    extends ConsumerState<SuperAdminDashboardPage> {
+  SuperAdminDashboardRepository get _repository =>
+      ref.read(superAdminDashboardRepositoryProvider);
+  late Future<Map<String, dynamic>> _overview = Future.microtask(
+    () => _repository.loadOverview(),
+  );
   void _retry() => setState(() => _overview = _repository.loadOverview());
   @override
   Widget build(BuildContext context) => FutureBuilder<Map<String, dynamic>>(

@@ -1,23 +1,25 @@
-import '../../../core/auth/session_store.dart';
+import 'package:dio/dio.dart';
+
 import '../../../core/network/api_client.dart';
-import '../../../core/network/authenticated_api_client.dart';
 
 /// Provides live data for reference routes that do not need a dedicated form.
 class WorkflowApiRepository {
-  WorkflowApiRepository({ApiClient? client, SessionStore? sessionStore})
-    : _api = client ?? authenticatedApiClient(sessionStore ?? SessionStore());
+  WorkflowApiRepository({required this.client});
 
-  final ApiClient _api;
+  final ApiClient client;
 
-  Future<Object> load(String endpoint) => _api.getObject(endpoint);
+  Future<Object> load(String endpoint) => client.get<Object>(endpoint);
 
   Future<Map<String, dynamic>> submit(
     String endpoint,
     Map<String, dynamic> payload,
-  ) => _api.post(endpoint, body: payload);
+  ) => client.post<Map<String, dynamic>>(endpoint, data: payload);
 
   Future<Map<String, dynamic>> submitForm(
     String endpoint,
     Map<String, String> fields,
-  ) => _api.postForm(endpoint, fields: fields);
+  ) => client.postForm<Map<String, dynamic>>(
+    endpoint,
+    data: FormData.fromMap(fields),
+  );
 }

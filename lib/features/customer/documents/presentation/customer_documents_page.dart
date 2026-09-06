@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sahajomy_mobile/features/repository_providers.dart';
 
 import '../../../../core/ui/sahajomy_ui.dart';
 import '../../reservations/data/customer_reservations_repository.dart';
 import '../../reservations/presentation/reservation_detail_page.dart';
 
-class CustomerDocumentsPage extends StatefulWidget {
+class CustomerDocumentsPage extends ConsumerStatefulWidget {
   const CustomerDocumentsPage({super.key});
 
   @override
-  State<CustomerDocumentsPage> createState() => _CustomerDocumentsPageState();
+  ConsumerState<CustomerDocumentsPage> createState() =>
+      _CustomerDocumentsPageState();
 }
 
-class _CustomerDocumentsPageState extends State<CustomerDocumentsPage> {
-  final _repository = CustomerReservationsRepository();
-  late Future<List<_CustomerDocument>> _documents = _loadDocuments();
+class _CustomerDocumentsPageState extends ConsumerState<CustomerDocumentsPage> {
+  CustomerReservationsRepository get _repository =>
+      ref.read(customerReservationsRepositoryProvider);
+  late Future<List<_CustomerDocument>> _documents = Future.microtask(
+    () => _loadDocuments(),
+  );
 
   Future<List<_CustomerDocument>> _loadDocuments() async {
     final reservations = await _repository.listReservations();

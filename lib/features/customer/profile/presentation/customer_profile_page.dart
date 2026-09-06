@@ -1,25 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/auth/session_store.dart';
+import '../../../../core/providers.dart';
 import '../../../../core/ui/sahajomy_ui.dart';
 import '../../../auth/data/auth_repository.dart';
 
-class CustomerProfilePage extends StatefulWidget {
+class CustomerProfilePage extends ConsumerStatefulWidget {
   const CustomerProfilePage({super.key});
 
   @override
-  State<CustomerProfilePage> createState() => _CustomerProfilePageState();
+  ConsumerState<CustomerProfilePage> createState() =>
+      _CustomerProfilePageState();
 }
 
-class _CustomerProfilePageState extends State<CustomerProfilePage> {
-  final _store = SessionStore();
-  final _auth = AuthRepository();
-  late Future<Map<String, dynamic>> _profile = _loadProfile();
+class _CustomerProfilePageState extends ConsumerState<CustomerProfilePage> {
+  SessionStore get _store => ref.read(sessionStoreProvider);
+  AuthRepository get _auth => ref.read(authRepositoryProvider);
+  late Future<Map<String, dynamic>> _profile;
+
+  @override
+  void initState() {
+    super.initState();
+    _profile = _loadProfile();
+  }
 
   Future<Map<String, dynamic>> _loadProfile() async {
     final session = await _store.read();
     if (session == null) throw StateError('Your session has expired.');
-    return _auth.getProfile(session);
+    return _auth.getProfile();
   }
 
   void _retry() => setState(() => _profile = _loadProfile());

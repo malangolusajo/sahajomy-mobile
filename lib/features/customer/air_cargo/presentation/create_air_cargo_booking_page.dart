@@ -1,24 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sahajomy_mobile/features/repository_providers.dart';
 
 import '../../../../core/network/api_exception.dart';
 import '../data/customer_air_cargo_repository.dart';
 
-class CreateAirCargoBookingPage extends StatefulWidget {
+class CreateAirCargoBookingPage extends ConsumerStatefulWidget {
   const CreateAirCargoBookingPage({super.key});
 
   @override
-  State<CreateAirCargoBookingPage> createState() =>
+  ConsumerState<CreateAirCargoBookingPage> createState() =>
       _CreateAirCargoBookingPageState();
 }
 
-class _CreateAirCargoBookingPageState extends State<CreateAirCargoBookingPage> {
+class _CreateAirCargoBookingPageState
+    extends ConsumerState<CreateAirCargoBookingPage> {
   final _formKey = GlobalKey<FormState>();
-  final _repository = CustomerAirCargoRepository();
+  CustomerAirCargoRepository get _repository =>
+      ref.read(customerAirCargoRepositoryProvider);
   final _weight = TextEditingController();
   final _destination = TextEditingController();
   final _cartons = TextEditingController(text: '1');
   final _description = TextEditingController();
-  late Future<Map<String, dynamic>> _options = _repository.options();
+  late Future<Map<String, dynamic>> _options = Future.microtask(
+    () => _repository.options(),
+  );
   DateTime _shipmentDate = DateTime.now().add(const Duration(days: 1));
   String? _cargoTypeId;
   var _certified = false;

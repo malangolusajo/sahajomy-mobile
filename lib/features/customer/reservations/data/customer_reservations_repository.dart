@@ -1,23 +1,15 @@
-import '../../../../core/auth/session_store.dart';
-import '../../../../core/network/authenticated_api_client.dart';
 import '../../../../core/network/api_client.dart';
 
 class CustomerReservationsRepository {
-  CustomerReservationsRepository({this.client, SessionStore? sessionStore})
-    : _store = sessionStore ?? SessionStore();
+  CustomerReservationsRepository({required this.client});
 
-  final ApiClient? client;
-  final SessionStore _store;
+  final ApiClient client;
 
   Future<List<Map<String, dynamic>>> listReservations() =>
-      (client ?? authenticatedApiClient(_store)).getList(
-        'customer/reservations',
-      );
+      client.getList('customer/reservations');
 
   Future<Map<String, dynamic>> getReservation(String reservationId) =>
-      (client ?? authenticatedApiClient(_store)).get(
-        'customer/reservations/$reservationId',
-      );
+      client.getObject('customer/reservations/$reservationId');
 
   Future<Map<String, dynamic>> createReservation({
     required String containerId,
@@ -25,9 +17,9 @@ class CustomerReservationsRepository {
     required String destinationRegion,
     String destinationCountry = 'Tanzania',
     int? cartonCount,
-  }) => (client ?? authenticatedApiClient(_store)).post(
+  }) => client.post<Map<String, dynamic>>(
     'customer/reservations',
-    body: {
+    data: {
       'container_id': containerId,
       'reserved_cbm': reservedCbm,
       'destination_region': destinationRegion,

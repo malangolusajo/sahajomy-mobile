@@ -1,21 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sahajomy_mobile/features/repository_providers.dart';
 
 import '../../../../core/ui/sahajomy_ui.dart';
 import '../data/super_admin_warehouse_automation_repository.dart';
 
-class SuperAdminWarehouseAutomationPage extends StatefulWidget {
+class SuperAdminWarehouseAutomationPage extends ConsumerStatefulWidget {
   const SuperAdminWarehouseAutomationPage({super.key});
 
   @override
-  State<SuperAdminWarehouseAutomationPage> createState() =>
+  ConsumerState<SuperAdminWarehouseAutomationPage> createState() =>
       _SuperAdminWarehouseAutomationPageState();
 }
 
 class _SuperAdminWarehouseAutomationPageState
-    extends State<SuperAdminWarehouseAutomationPage> {
-  final _repository = SuperAdminWarehouseAutomationRepository();
-  late Future<List<Map<String, dynamic>>> _cargoAdmins = _repository
-      .listCargoAdmins();
+    extends ConsumerState<SuperAdminWarehouseAutomationPage> {
+  SuperAdminWarehouseAutomationRepository get _repository =>
+      ref.read(superAdminWarehouseAutomationRepositoryProvider);
+  late Future<List<Map<String, dynamic>>> _cargoAdmins = Future.microtask(
+    () => _repository.listCargoAdmins(),
+  );
   String? _savingId;
 
   void _reload() =>

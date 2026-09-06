@@ -18,6 +18,20 @@
 	<string>sahajomy_mobile</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>sahajomy</string>
+				<string>sajajomy</string>
+			</array>
+		</dict>
+	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Scan parcel, warehouse access, and collection QR codes.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Select a cargo label image for staff-assisted intake.</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>

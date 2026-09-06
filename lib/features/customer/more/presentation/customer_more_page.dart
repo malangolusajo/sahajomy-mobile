@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/auth/session_store.dart';
+import '../../../../core/providers.dart';
 import '../../../auth/data/auth_repository.dart';
 
-class CustomerMorePage extends StatefulWidget {
+class CustomerMorePage extends ConsumerStatefulWidget {
   const CustomerMorePage({super.key});
 
   @override
-  State<CustomerMorePage> createState() => _CustomerMorePageState();
+  ConsumerState<CustomerMorePage> createState() => _CustomerMorePageState();
 }
 
-class _CustomerMorePageState extends State<CustomerMorePage> {
-  final _store = SessionStore();
-  final _auth = AuthRepository();
+class _CustomerMorePageState extends ConsumerState<CustomerMorePage> {
+  SessionStore get _store => ref.read(sessionStoreProvider);
+  AuthRepository get _auth => ref.read(authRepositoryProvider);
   var _isSigningOut = false;
 
   Future<void> _signOut() async {
@@ -25,7 +28,7 @@ class _CustomerMorePageState extends State<CustomerMorePage> {
     } finally {
       await _store.clear();
       if (mounted) {
-        Navigator.pushNamedAndRemoveUntil(context, '/sign-in', (_) => false);
+        context.go('/sign-in');
       }
     }
   }
@@ -45,25 +48,37 @@ class _CustomerMorePageState extends State<CustomerMorePage> {
         icon: Icons.event_available_outlined,
         title: 'Reservations',
         subtitle: 'View your container space reservations.',
-        onTap: () => Navigator.pushNamed(context, '/customer/reservations'),
+        onTap: () => context.push('/customer/reservations'),
       ),
       _MenuItem(
         icon: Icons.inventory_2_outlined,
         title: 'Available containers',
         subtitle: 'Browse active container options.',
-        onTap: () => Navigator.pushNamed(context, '/customer/containers'),
+        onTap: () => context.push('/customer/containers'),
+      ),
+      _MenuItem(
+        icon: Icons.directions_boat_outlined,
+        title: 'Sea bookings',
+        subtitle: 'Review sea bookings, payments, and documents.',
+        onTap: () => context.push('/customer/sea-bookings'),
+      ),
+      _MenuItem(
+        icon: Icons.flight_outlined,
+        title: 'Express Air Cargo',
+        subtitle: 'Create and track air cargo bookings.',
+        onTap: () => context.push('/customer/express-air-cargo'),
       ),
       _MenuItem(
         icon: Icons.location_on_outlined,
         title: 'China addresses',
         subtitle: 'Copy your forwarding address and shipping mark.',
-        onTap: () => Navigator.pushNamed(context, '/customer/china-addresses'),
+        onTap: () => context.push('/customer/china-addresses'),
       ),
       _MenuItem(
         icon: Icons.description_outlined,
         title: 'Shipping documents',
         subtitle: 'View invoices, receipts, and packing lists.',
-        onTap: () => Navigator.pushNamed(context, '/customer/documents'),
+        onTap: () => context.push('/customer/documents'),
       ),
       const SizedBox(height: 24),
       Text('Account', style: Theme.of(context).textTheme.titleLarge),
@@ -72,7 +87,13 @@ class _CustomerMorePageState extends State<CustomerMorePage> {
         icon: Icons.person_outline,
         title: 'My profile',
         subtitle: 'View your verified account details.',
-        onTap: () => Navigator.pushNamed(context, '/customer/profile'),
+        onTap: () => context.push('/customer/profile'),
+      ),
+      _MenuItem(
+        icon: Icons.swap_horiz_rounded,
+        title: 'Switch workspace',
+        subtitle: 'Change company or branch context securely.',
+        onTap: () => context.push('/account/workspaces'),
       ),
       _MenuItem(
         icon: Icons.logout_rounded,

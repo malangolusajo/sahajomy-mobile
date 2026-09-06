@@ -1,16 +1,10 @@
-import '../../../../core/auth/session_store.dart';
-import '../../../../core/network/authenticated_api_client.dart';
 import '../../../../core/network/api_client.dart';
 
 class CustomerChinaAddressesRepository {
-  CustomerChinaAddressesRepository({this.client, SessionStore? sessionStore})
-    : _store = sessionStore ?? SessionStore();
+  CustomerChinaAddressesRepository({required this.client});
 
-  final ApiClient? client;
-  final SessionStore _store;
+  final ApiClient client;
 
   Future<List<Map<String, dynamic>>> listAddresses() =>
-      (client ?? authenticatedApiClient(_store)).getList(
-        'customer/china-addresses',
-      );
+      client.getList('customer/china-addresses');
 }

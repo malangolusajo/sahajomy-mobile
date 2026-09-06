@@ -57,6 +57,10 @@ $pageBuilders = @{
   'super-admin-user-management.html' = 'const SuperAdminUserListPage()'
   'super-admin-user-details.html' = 'const SuperAdminUserListPage()'
   'super-admin-warehouse-automation.html' = 'const SuperAdminWarehouseAutomationPage()'
+  'cargo-admin-documentation-customers.html' = 'const CargoAdminCustomerRecordsPage()'
+  'shared-workspace-selection.html' = 'const WorkspaceSelectionPage()'
+  'customer-sea-bookings.html' = "const LiveWorkflowPage(role: 'Customer', title: 'My sea bookings', endpoint: 'customer/sea-bookings', actionLabel: 'Book sea cargo', actionRoute: '/customer/sea-bookings/new')"
+  'agent-sea-bookings.html' = "const LiveWorkflowPage(role: 'Sourcing Agent', title: 'My sea bookings', endpoint: 'sourcing_agent/sea-bookings', actionLabel: 'Book sea cargo', actionRoute: '/agent/sea-bookings/new')"
 }
 
 $liveEndpoints = @{
@@ -97,6 +101,21 @@ $liveEndpoints = @{
   'super-admin-sourcing-agents.html' = 'super_admin/sourcing-agents'
   'super-admin-track-shipment.html' = 'tracking/admin/shipment_orders'
   'super-admin-user-details.html' = 'super_admin/users/recent'
+  'agent-china-addresses.html' = 'sourcing_agent/china-addresses'
+  'agent-sea-bookings.html' = 'sourcing_agent/sea-bookings'
+  'cargo-admin-billing-usage.html' = 'cargo_admin/billing/usage'
+  'cargo-admin-financial-analytics.html' = 'cargo_admin/financial/analytics'
+  'cargo-admin-pending-approval.html' = 'cargo_admin/approval-status'
+  'cargo-admin-sea-bookings.html' = 'cargo_admin/sea-bookings'
+  'cargo-admin-staff-branches.html' = 'workspaces'
+  'customer-sea-booking-detail.html' = 'customer/sea-bookings'
+  'customer-sea-bookings.html' = 'customer/sea-bookings'
+  'shared-workspace-selection.html' = 'workspaces'
+  'super-admin-bookings.html' = 'super_admin/bookings'
+  'super-admin-companies.html' = 'super_admin/companies'
+  'super-admin-company-detail.html' = 'super_admin/companies'
+  'super-admin-operator-detail.html' = 'super_admin/operators'
+  'super-admin-subscriptions.html' = 'super_admin/subscriptions'
 }
 
 $formBuilders = @{
@@ -159,6 +178,7 @@ $lines.Add("import '../../super_admin/activity/presentation/super_admin_platform
 $lines.Add("import '../../super_admin/dashboard/presentation/super_admin_dashboard_page.dart';")
 $lines.Add("import '../../super_admin/users/presentation/super_admin_user_list_page.dart';")
 $lines.Add("import '../../super_admin/warehouse_automation/presentation/super_admin_warehouse_automation_page.dart';")
+$lines.Add("import '../../workspaces/presentation/workspace_selection_page.dart';")
 $lines.Add("")
 $lines.Add("Widget dedicatedPreviewPageFor(NativeScreenSpec spec) => switch (spec.fileName) {")
 foreach ($match in $matches) {

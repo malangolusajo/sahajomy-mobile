@@ -1,22 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sahajomy_mobile/features/repository_providers.dart';
 
 import '../../../../core/ui/sahajomy_ui.dart';
 import '../../batches/data/sourcing_agent_batches_repository.dart';
 import '../../batches/presentation/sourcing_agent_batch_list_page.dart';
 import '../../batches/presentation/sourcing_agent_batch_workflow_pages.dart';
 
-class SourcingAgentDashboardPage extends StatefulWidget {
+class SourcingAgentDashboardPage extends ConsumerStatefulWidget {
   const SourcingAgentDashboardPage({super.key});
 
   @override
-  State<SourcingAgentDashboardPage> createState() =>
+  ConsumerState<SourcingAgentDashboardPage> createState() =>
       _SourcingAgentDashboardPageState();
 }
 
 class _SourcingAgentDashboardPageState
-    extends State<SourcingAgentDashboardPage> {
-  final _repository = SourcingAgentBatchesRepository();
-  late Future<Map<String, dynamic>> _batches = _repository.listBatches();
+    extends ConsumerState<SourcingAgentDashboardPage> {
+  SourcingAgentBatchesRepository get _repository =>
+      ref.read(sourcingAgentBatchesRepositoryProvider);
+  late Future<Map<String, dynamic>> _batches = Future.microtask(
+    () => _repository.listBatches(),
+  );
 
   void _retry() => setState(() => _batches = _repository.listBatches());
 

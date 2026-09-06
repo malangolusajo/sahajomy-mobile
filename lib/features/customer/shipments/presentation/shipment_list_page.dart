@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sahajomy_mobile/features/repository_providers.dart';
 
 import '../data/customer_shipments_repository.dart';
 
-class ShipmentListPage extends StatefulWidget {
+class ShipmentListPage extends ConsumerStatefulWidget {
   const ShipmentListPage({super.key});
   @override
-  State<ShipmentListPage> createState() => _ShipmentListPageState();
+  ConsumerState<ShipmentListPage> createState() => _ShipmentListPageState();
 }
 
-class _ShipmentListPageState extends State<ShipmentListPage> {
-  final _repository = CustomerShipmentsRepository();
-  late Future<List<Map<String, dynamic>>> _shipments = _repository
-      .listShipmentOrders();
+class _ShipmentListPageState extends ConsumerState<ShipmentListPage> {
+  CustomerShipmentsRepository get _repository =>
+      ref.read(customerShipmentsRepositoryProvider);
+  late Future<List<Map<String, dynamic>>> _shipments = Future.microtask(
+    () => _repository.listShipmentOrders(),
+  );
 
   void _retry() =>
       setState(() => _shipments = _repository.listShipmentOrders());

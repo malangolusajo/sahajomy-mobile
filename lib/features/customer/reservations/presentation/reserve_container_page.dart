@@ -1,24 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sahajomy_mobile/features/repository_providers.dart';
 
 import '../../../../core/network/api_exception.dart';
 import '../data/customer_reservations_repository.dart';
 import 'booking_confirmation_page.dart';
 
-class ReserveContainerPage extends StatefulWidget {
+class ReserveContainerPage extends ConsumerStatefulWidget {
   const ReserveContainerPage({super.key, required this.container});
 
   final Map<String, dynamic> container;
 
   @override
-  State<ReserveContainerPage> createState() => _ReserveContainerPageState();
+  ConsumerState<ReserveContainerPage> createState() =>
+      _ReserveContainerPageState();
 }
 
-class _ReserveContainerPageState extends State<ReserveContainerPage> {
+class _ReserveContainerPageState extends ConsumerState<ReserveContainerPage> {
   final _formKey = GlobalKey<FormState>();
   final _cbmController = TextEditingController();
   final _destinationController = TextEditingController();
   final _cartonController = TextEditingController();
-  final _repository = CustomerReservationsRepository();
+  CustomerReservationsRepository get _repository =>
+      ref.read(customerReservationsRepositoryProvider);
   var _isSubmitting = false;
   String? _error;
 

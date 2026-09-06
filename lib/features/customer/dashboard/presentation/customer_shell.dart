@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:sahajomy_mobile/features/repository_providers.dart';
 
 import '../../../../core/ui/sahajomy_ui.dart';
-import '../data/customer_dashboard_repository.dart';
+import '../domain/dashboard_summary.dart';
 import '../../shipments/presentation/shipment_list_page.dart';
 import '../../more/presentation/customer_more_page.dart';
 import '../../orders/presentation/customer_order_list_page.dart';
 
-class CustomerShell extends StatefulWidget {
+class CustomerShell extends ConsumerStatefulWidget {
   const CustomerShell({super.key});
 
   @override
-  State<CustomerShell> createState() => _CustomerShellState();
+  ConsumerState<CustomerShell> createState() => _CustomerShellState();
 }
 
-class _CustomerShellState extends State<CustomerShell> {
+class _CustomerShellState extends ConsumerState<CustomerShell> {
   var _selectedIndex = 0;
   static const _titles = ['Home', 'Shipments', 'Agizisha', 'More'];
 
@@ -42,8 +45,7 @@ class _CustomerShellState extends State<CustomerShell> {
       actions: [
         IconButton(
           tooltip: 'Notifications',
-          onPressed: () =>
-              Navigator.pushNamed(context, '/customer/notifications'),
+          onPressed: () => context.go('/customer/notifications'),
           icon: const Badge(child: Icon(Icons.notifications_none_rounded)),
         ),
       ],
@@ -86,18 +88,28 @@ class _CustomerShellState extends State<CustomerShell> {
   );
 }
 
-class _CustomerHome extends StatefulWidget {
+class _CustomerHome extends ConsumerStatefulWidget {
   const _CustomerHome();
 
   @override
-  State<_CustomerHome> createState() => _CustomerHomeState();
+  ConsumerState<_CustomerHome> createState() => _CustomerHomeState();
 }
 
-class _CustomerHomeState extends State<_CustomerHome> {
-  final _repository = CustomerDashboardRepository();
-  late Future<CustomerDashboardSummary> _summary = _repository.loadSummary();
+class _CustomerHomeState extends ConsumerState<_CustomerHome> {
+  late Future<CustomerDashboardSummary> _summary;
 
-  void _retry() => setState(() => _summary = _repository.loadSummary());
+  @override
+  void initState() {
+    super.initState();
+    _loadSummary();
+  }
+
+  void _loadSummary() {
+    final repository = ref.read(customerDashboardRepositoryProvider);
+    _summary = repository.loadSummary();
+  }
+
+  void _retry() => setState(_loadSummary);
 
   @override
   Widget build(BuildContext context) => ListView(
@@ -136,8 +148,7 @@ class _CustomerHomeState extends State<_CustomerHome> {
                 '${summary.shipments} shipment${summary.shipments == 1 ? '' : 's'} in transit',
             description: 'Open the live operational overview.',
             status: 'Live',
-            onTap: () =>
-                Navigator.pushNamed(context, '/customer/track-shipment'),
+            onTap: () => context.go('/customer/track-shipment'),
           );
         },
       ),
@@ -146,11 +157,11 @@ class _CustomerHomeState extends State<_CustomerHome> {
         title: 'Reserve container space',
         description: 'Handle today\'s next action.',
         status: 'Action',
-        onTap: () => Navigator.pushNamed(context, '/customer/containers'),
+        onTap: () => context.go('/customer/containers'),
       ),
       const SizedBox(height: 20),
       FilledButton(
-        onPressed: () => Navigator.pushNamed(context, '/customer/containers'),
+        onPressed: () => context.go('/customer/containers'),
         child: const Text('Reserve space'),
       ),
     ],

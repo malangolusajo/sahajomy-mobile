@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/ui/sahajomy_ui.dart';
-import '../data/auth_repository.dart';
 import '../../../core/network/api_exception.dart';
-import 'otp_page.dart';
+import '../../../features/auth/data/auth_repository.dart';
 
-class SignInPage extends StatefulWidget {
+class SignInPage extends ConsumerStatefulWidget {
   const SignInPage({super.key});
 
   @override
-  State<SignInPage> createState() => _SignInPageState();
+  ConsumerState<SignInPage> createState() => _SignInPageState();
 }
 
-class _SignInPageState extends State<SignInPage> {
+class _SignInPageState extends ConsumerState<SignInPage> {
   final _formKey = GlobalKey<FormState>();
   final _phoneController = TextEditingController();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
-  final _repository = AuthRepository();
   var _isSubmitting = false;
   var _rememberMe = true;
   String? _errorMessage;
@@ -37,17 +37,15 @@ class _SignInPageState extends State<SignInPage> {
       _errorMessage = null;
     });
     try {
-      await _repository.sendOtp(
+      final authRepository = ref.read(authRepositoryProvider);
+      await authRepository.sendOtp(
         phoneNumber: _phoneController.text.trim(),
         name: _nameController.text.trim(),
         email: _emailController.text.trim(),
       );
       if (!mounted) return;
-      await Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (_) => OtpPage(phoneNumber: _phoneController.text.trim()),
-        ),
-      );
+      final phone = _phoneController.text.trim();
+      context.go('/otp?phone=$phone');
     } on ApiException catch (error) {
       if (mounted) setState(() => _errorMessage = error.message);
     } on FormatException catch (error) {

@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sahajomy_mobile/features/repository_providers.dart';
 
 import '../data/cargo_admin_dashboard_repository.dart';
 
-class CargoAdminDashboardPage extends StatefulWidget {
+class CargoAdminDashboardPage extends ConsumerStatefulWidget {
   const CargoAdminDashboardPage({super.key});
 
   @override
-  State<CargoAdminDashboardPage> createState() =>
+  ConsumerState<CargoAdminDashboardPage> createState() =>
       _CargoAdminDashboardPageState();
 }
 
-class _CargoAdminDashboardPageState extends State<CargoAdminDashboardPage> {
-  final _repository = CargoAdminDashboardRepository();
-  late Future<Map<String, dynamic>> _dashboard = _repository.loadDashboard();
+class _CargoAdminDashboardPageState
+    extends ConsumerState<CargoAdminDashboardPage> {
+  CargoAdminDashboardRepository get _repository =>
+      ref.read(cargoAdminDashboardRepositoryProvider);
+  late Future<Map<String, dynamic>> _dashboard = Future.microtask(
+    () => _repository.loadDashboard(),
+  );
 
   void _retry() => setState(() => _dashboard = _repository.loadDashboard());
 

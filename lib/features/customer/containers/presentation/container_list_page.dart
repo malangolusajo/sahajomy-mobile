@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sahajomy_mobile/features/repository_providers.dart';
 
 import '../../../../core/ui/sahajomy_ui.dart';
 import '../data/customer_containers_repository.dart';
 import 'container_detail_page.dart';
 
-class ContainerListPage extends StatefulWidget {
+class ContainerListPage extends ConsumerStatefulWidget {
   const ContainerListPage({super.key});
   @override
-  State<ContainerListPage> createState() => _ContainerListPageState();
+  ConsumerState<ContainerListPage> createState() => _ContainerListPageState();
 }
 
-class _ContainerListPageState extends State<ContainerListPage> {
-  final _repository = CustomerContainersRepository();
-  late Future<List<Map<String, dynamic>>> _items = _repository.listContainers();
+class _ContainerListPageState extends ConsumerState<ContainerListPage> {
+  CustomerContainersRepository get _repository =>
+      ref.read(customerContainersRepositoryProvider);
+  late Future<List<Map<String, dynamic>>> _items = Future.microtask(
+    () => _repository.listContainers(),
+  );
   void _retry() => setState(() => _items = _repository.listContainers());
   @override
   Widget build(BuildContext context) =>

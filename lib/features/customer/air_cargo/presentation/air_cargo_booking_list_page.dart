@@ -1,21 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sahajomy_mobile/features/repository_providers.dart';
 
 import '../../../../core/ui/sahajomy_ui.dart';
 import '../data/customer_air_cargo_repository.dart';
 import 'create_air_cargo_booking_page.dart';
 
-class AirCargoBookingListPage extends StatefulWidget {
+class AirCargoBookingListPage extends ConsumerStatefulWidget {
   const AirCargoBookingListPage({super.key});
 
   @override
-  State<AirCargoBookingListPage> createState() =>
+  ConsumerState<AirCargoBookingListPage> createState() =>
       _AirCargoBookingListPageState();
 }
 
-class _AirCargoBookingListPageState extends State<AirCargoBookingListPage> {
-  final _repository = CustomerAirCargoRepository();
-  late Future<List<Map<String, dynamic>>> _bookings = _repository
-      .listBookings();
+class _AirCargoBookingListPageState
+    extends ConsumerState<AirCargoBookingListPage> {
+  CustomerAirCargoRepository get _repository =>
+      ref.read(customerAirCargoRepositoryProvider);
+  late Future<List<Map<String, dynamic>>> _bookings = Future.microtask(
+    () => _repository.listBookings(),
+  );
 
   void _retry() => setState(() => _bookings = _repository.listBookings());
 

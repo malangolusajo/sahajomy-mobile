@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/ui/sahajomy_ui.dart';
+import '../../../shared/presentation/feature_menu_page.dart';
+import '../../reference/presentation/live_workflow_page.dart';
 import '../batches/presentation/sourcing_agent_batch_list_page.dart';
 import '../dashboard/presentation/sourcing_agent_dashboard_page.dart';
-import '../notifications/presentation/sourcing_agent_notifications_page.dart';
-import '../products/presentation/sourcing_agent_product_management_page.dart';
 
 class SourcingAgentShell extends StatefulWidget {
   const SourcingAgentShell({super.key});
@@ -14,7 +14,7 @@ class SourcingAgentShell extends StatefulWidget {
 
 class _SourcingAgentShellState extends State<SourcingAgentShell> {
   var _index = 0;
-  static const _titles = ['Home', 'Batches', 'Products', 'Alerts'];
+  static const _titles = ['Home', 'Batches', 'Orders', 'More'];
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: SahajomyWorkspaceHeader(
@@ -26,8 +26,12 @@ class _SourcingAgentShellState extends State<SourcingAgentShell> {
       children: const [
         SourcingAgentDashboardPage(),
         SourcingAgentBatchListPage(),
-        SourcingAgentProductManagementPage(),
-        SourcingAgentNotificationsPage(),
+        LiveWorkflowPage(
+          role: 'Sourcing Agent',
+          title: 'Agizisha orders',
+          endpoint: 'sourcing_agent/agizisha-orders',
+        ),
+        _SourcingAgentMorePage(),
       ],
     ),
     bottomNavigationBar: SahajomyPreviewNavigation(
@@ -40,14 +44,92 @@ class _SourcingAgentShellState extends State<SourcingAgentShell> {
           icon: Icons.inventory_2_outlined,
         ),
         SahajomyNavigationDestination(
-          label: 'Products',
-          icon: Icons.inventory_outlined,
+          label: 'Orders',
+          icon: Icons.shopping_bag_outlined,
         ),
         SahajomyNavigationDestination(
-          label: 'Alerts',
-          icon: Icons.notifications_none_rounded,
+          label: 'More',
+          icon: Icons.more_horiz_rounded,
         ),
       ],
     ),
+  );
+}
+
+class _SourcingAgentMorePage extends StatelessWidget {
+  const _SourcingAgentMorePage();
+
+  @override
+  Widget build(BuildContext context) => const FeatureMenuPage(
+    title: 'Sourcing operations',
+    description: 'Manage your storefront, cargo, documents, and earnings.',
+    entries: [
+      FeatureMenuEntry(
+        title: 'Storefront',
+        subtitle: 'Manage the public agent catalogue.',
+        icon: Icons.storefront_outlined,
+        route: '/agent/agizisha-storefront',
+      ),
+      FeatureMenuEntry(
+        title: 'Products',
+        subtitle: 'Add and manage sourcing products.',
+        icon: Icons.inventory_outlined,
+        route: '/reference/agent-product-management',
+      ),
+      FeatureMenuEntry(
+        title: 'Packing lists',
+        subtitle: 'Create and review batch packing lists.',
+        icon: Icons.description_outlined,
+        route: '/agent/packing-lists',
+      ),
+      FeatureMenuEntry(
+        title: 'Financials',
+        subtitle: 'Income, commissions, and batch totals.',
+        icon: Icons.account_balance_wallet_outlined,
+        route: '/agent/financials',
+      ),
+      FeatureMenuEntry(
+        title: 'Sea bookings',
+        subtitle: 'Track sea freight reservations.',
+        icon: Icons.directions_boat_outlined,
+        route: '/agent/sea-bookings',
+      ),
+      FeatureMenuEntry(
+        title: 'Express Air Cargo',
+        subtitle: 'Create and manage air cargo bookings.',
+        icon: Icons.flight_outlined,
+        route: '/agent/express-air-cargo',
+      ),
+      FeatureMenuEntry(
+        title: 'China addresses',
+        subtitle: 'View provider-scoped forwarding addresses.',
+        icon: Icons.location_on_outlined,
+        route: '/agent/china-addresses',
+      ),
+      FeatureMenuEntry(
+        title: 'Containers',
+        subtitle: 'Browse and reserve available capacity.',
+        icon: Icons.inventory_2_outlined,
+        route: '/agent/containers',
+      ),
+      FeatureMenuEntry(
+        title: 'Reservations',
+        subtitle: 'Review active space reservations.',
+        icon: Icons.event_available_outlined,
+        route: '/reference/agent-reservations',
+      ),
+      FeatureMenuEntry(
+        title: 'Tracking',
+        subtitle: 'Follow sourcing shipment milestones.',
+        icon: Icons.route_outlined,
+        route: '/agent/track-shipments',
+      ),
+      FeatureMenuEntry(
+        title: 'Notifications',
+        subtitle: 'Review batch and order activity.',
+        icon: Icons.notifications_outlined,
+        route: '/reference/agent-notifications',
+      ),
+    ],
   );
 }

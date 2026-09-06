@@ -1,36 +1,42 @@
 import '../../../core/network/api_client.dart';
 
 class PublicServicesRepository {
-  PublicServicesRepository({ApiClient? client}) : _api = client ?? ApiClient();
+  PublicServicesRepository({required this.client});
 
-  final ApiClient _api;
+  final ApiClient client;
 
   Future<List<Map<String, dynamic>>> listContainers() =>
-      _api.getList('public/containers');
+      client.getList('public/containers');
 
   Future<List<Map<String, dynamic>>> listMarketplaceProducts() =>
-      _api.getList('public/agizisha/products');
+      client.getList('public/agizisha/products');
 
   Future<List<Map<String, dynamic>>> listMarketplaceAgents() =>
-      _api.getList('public/agizisha/agents');
+      client.getList('public/agizisha/agents');
 
   Future<Map<String, dynamic>> getProduct(String productId) =>
-      _api.get('public/agizisha/products/$productId');
+      client.getObject('public/agizisha/products/$productId');
 
   Future<Map<String, dynamic>> getSharedBatch(String token) =>
-      _api.get('public/batch/$token');
+      client.getObject('public/batch/$token');
 
   Future<Map<String, dynamic>> verifyReceipt(String token) =>
-      _api.get('public/receipt/verify/$token');
+      client.getObject('public/receipt/verify/$token');
 
   Future<Map<String, dynamic>> requestFclQuote(Map<String, dynamic> payload) =>
-      _api.post('fcl-quote-request', body: payload);
+      client.post<Map<String, dynamic>>('fcl-quote-request', data: payload);
 
   Future<Map<String, dynamic>> placeMarketplaceOrder(
     Map<String, dynamic> payload,
-  ) => _api.post('public/agizisha/orders', body: payload);
+  ) => client.post<Map<String, dynamic>>(
+    'public/agizisha/orders',
+    data: payload,
+  );
 
   Future<Map<String, dynamic>> registerSourcingAgent(
     Map<String, dynamic> payload,
-  ) => _api.post('public/sourcing-agents/register', body: payload);
+  ) => client.post<Map<String, dynamic>>(
+    'public/sourcing-agents/register',
+    data: payload,
+  );
 }

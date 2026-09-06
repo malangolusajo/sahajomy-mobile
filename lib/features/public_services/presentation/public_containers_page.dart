@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sahajomy_mobile/features/repository_providers.dart';
 
 import '../../../core/ui/sahajomy_ui.dart';
 import '../data/public_services_repository.dart';
 
-class PublicContainersPage extends StatefulWidget {
+class PublicContainersPage extends ConsumerStatefulWidget {
   const PublicContainersPage({super.key});
 
   @override
-  State<PublicContainersPage> createState() => _PublicContainersPageState();
+  ConsumerState<PublicContainersPage> createState() =>
+      _PublicContainersPageState();
 }
 
-class _PublicContainersPageState extends State<PublicContainersPage> {
-  final _repository = PublicServicesRepository();
-  late Future<List<Map<String, dynamic>>> _containers = _repository
-      .listContainers();
+class _PublicContainersPageState extends ConsumerState<PublicContainersPage> {
+  PublicServicesRepository get _repository =>
+      ref.read(publicServicesRepositoryProvider);
+  late Future<List<Map<String, dynamic>>> _containers = Future.microtask(
+    () => _repository.listContainers(),
+  );
 
   void _retry() => setState(() => _containers = _repository.listContainers());
 

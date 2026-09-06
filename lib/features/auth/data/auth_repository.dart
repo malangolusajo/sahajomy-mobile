@@ -1,21 +1,27 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../core/auth/session.dart';
-import '../../../core/auth/session_store.dart';
 import '../../../core/network/api_client.dart';
-import '../../../core/network/authenticated_api_client.dart';
+import '../../../core/providers.dart';
+
+final authRepositoryProvider = Provider<AuthRepository>((ref) {
+  final apiClient = ref.watch(apiClientProvider);
+  return AuthRepository(apiClient);
+});
 
 class AuthRepository {
-  AuthRepository({ApiClient? client}) : _client = client ?? ApiClient();
+  AuthRepository(this._apiClient);
 
-  final ApiClient _client;
+  final ApiClient _apiClient;
 
   Future<void> sendOtp({
     required String phoneNumber,
     String? name,
     String? email,
   }) async {
-    await _client.post(
+    await _apiClient.post(
       'auth/send-otp',
-      body: {
+      data: {
         'phone_number': phoneNumber,
         if (name != null && name.isNotEmpty) 'name': name,
         if (email != null && email.isNotEmpty) 'email': email,
@@ -27,9 +33,9 @@ class AuthRepository {
     required String phoneNumber,
     required String otpCode,
   }) async {
-    final tokenResponse = await _client.post(
+    final tokenResponse = await _apiClient.post<Map<String, dynamic>>(
       'auth/verify-otp',
-      body: {'phone_number': phoneNumber, 'otp_code': otpCode},
+      data: {'phone_number': phoneNumber, 'otp_code': otpCode},
     );
     final accessToken = tokenResponse['access_token'] as String?;
     final refreshToken = tokenResponse['refresh_token'] as String?;
@@ -39,24 +45,20 @@ class AuthRepository {
       );
     }
 
+    final userData = tokenResponse['user'] as Map<String, dynamic>?;
+    final role = userData?['role'] as String? ?? 'customer';
+
     return verifySession(
       Session(
         accessToken: accessToken,
         refreshToken: refreshToken,
-        role: userRoleFromApi(
-          (tokenResponse['user'] as Map<String, dynamic>?)?['role']
-                  as String? ??
-              'customer',
-        ),
+        role: userRoleFromApi(role),
       ),
     );
   }
 
   Future<Session> verifySession(Session session) async {
-    final verifiedClient = ApiClient(
-      accessTokenProvider: () async => session.accessToken,
-    );
-    final profile = await verifiedClient.get('auth/me');
+    final profile = await _apiClient.get<Map<String, dynamic>>('auth/me');
     final role = profile['role'] as String?;
     if (role == null) {
       throw const FormatException('The server did not return a user role.');
@@ -64,13 +66,13 @@ class AuthRepository {
     return session.copyWith(role: userRoleFromApi(role));
   }
 
-  Future<Map<String, dynamic>> getProfile(Session _) =>
-      authenticatedApiClient(SessionStore()).get('auth/me');
+  Future<Map<String, dynamic>> getProfile() =>
+      _apiClient.get<Map<String, dynamic>>('auth/me');
 
   Future<Session> refreshSession(Session session) async {
-    final response = await _client.post(
+    final response = await _apiClient.post<Map<String, dynamic>>(
       'auth/refresh',
-      body: {'refresh_token': session.refreshToken},
+      data: {'refresh_token': session.refreshToken},
     );
     final accessToken = response['access_token'] as String?;
     if (accessToken == null) {
@@ -83,8 +85,8 @@ class AuthRepository {
     return verifySession(refreshed);
   }
 
-  Future<void> logout(Session session) => _client.post(
+  Future<void> logout(Session session) => _apiClient.post(
     'auth/logout',
-    body: {'refresh_token': session.refreshToken},
+    data: {'refresh_token': session.refreshToken},
   );
 }

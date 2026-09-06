@@ -1,23 +1,17 @@
-import '../../../../core/auth/session_store.dart';
-import '../../../../core/network/authenticated_api_client.dart';
+import 'package:dio/dio.dart';
+
 import '../../../../core/network/api_client.dart';
 
 class CustomerAirCargoRepository {
-  CustomerAirCargoRepository({this.client, SessionStore? sessionStore})
-    : _store = sessionStore ?? SessionStore();
+  CustomerAirCargoRepository({required this.client});
 
-  final ApiClient? client;
-  final SessionStore _store;
+  final ApiClient client;
 
   Future<List<Map<String, dynamic>>> listBookings() =>
-      (client ?? authenticatedApiClient(_store)).getList(
-        'customer/express-air-cargo/bookings',
-      );
+      client.getList('customer/express-air-cargo/bookings');
 
   Future<Map<String, dynamic>> options() =>
-      (client ?? authenticatedApiClient(_store)).get(
-        'customer/express-air-cargo/options',
-      );
+      client.getObject('customer/express-air-cargo/options');
 
   Future<Map<String, dynamic>> createBooking({
     required String cargoTypeId,
@@ -27,9 +21,9 @@ class CustomerAirCargoRepository {
     required int cartonCount,
     String? cargoDescription,
     bool certificationAcknowledged = false,
-  }) => (client ?? authenticatedApiClient(_store)).postForm(
+  }) => client.postForm<Map<String, dynamic>>(
     'customer/express-air-cargo/book',
-    fields: {
+    data: FormData.fromMap({
       'cargo_type_id': cargoTypeId,
       'weight_kg': weightKg.toString(),
       'shipment_date': shipmentDate.toUtc().toIso8601String(),
@@ -39,6 +33,6 @@ class CustomerAirCargoRepository {
       'certification_acknowledged': certificationAcknowledged.toString(),
       if (cargoDescription != null && cargoDescription.isNotEmpty)
         'cargo_description': cargoDescription,
-    },
+    }),
   );
 }

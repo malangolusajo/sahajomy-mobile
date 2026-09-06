@@ -32,6 +32,7 @@ migrate_working_dir/
 .pub/
 /build/
 /coverage/
+/.tool_tmp/
 
 # Symbolication related
 app.*.symbols
@@ -45,6 +46,11 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 /android/.kotlin/
+
+# Android signing credentials
+/android/key.properties
+/android/*.jks
+/android/*.keystore
 
 # Widget Preview related
 .widget_preview/

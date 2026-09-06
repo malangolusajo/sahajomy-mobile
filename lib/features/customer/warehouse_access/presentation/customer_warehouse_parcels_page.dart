@@ -1,24 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sahajomy_mobile/features/repository_providers.dart';
 
 import '../../../../core/ui/sahajomy_ui.dart';
 import '../data/customer_warehouse_access_repository.dart';
 import 'collection_code_page.dart';
 
-class CustomerWarehouseParcelsPage extends StatefulWidget {
+class CustomerWarehouseParcelsPage extends ConsumerStatefulWidget {
   const CustomerWarehouseParcelsPage({required this.opaqueToken, super.key});
 
   final String opaqueToken;
 
   @override
-  State<CustomerWarehouseParcelsPage> createState() =>
+  ConsumerState<CustomerWarehouseParcelsPage> createState() =>
       _CustomerWarehouseParcelsPageState();
 }
 
 class _CustomerWarehouseParcelsPageState
-    extends State<CustomerWarehouseParcelsPage> {
-  final _repository = CustomerWarehouseAccessRepository();
-  late Future<Map<String, dynamic>> _access = _repository.loadParcels(
-    widget.opaqueToken,
+    extends ConsumerState<CustomerWarehouseParcelsPage> {
+  CustomerWarehouseAccessRepository get _repository =>
+      ref.read(customerWarehouseAccessRepositoryProvider);
+  late Future<Map<String, dynamic>> _access = Future.microtask(
+    () => _repository.loadParcels(widget.opaqueToken),
   );
   final _selected = <String>{};
   var _creating = false;

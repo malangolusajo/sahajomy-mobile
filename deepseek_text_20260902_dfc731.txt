@@ -1,0 +1,604 @@
+═══════════════════════════════════════════════════════════════════════
+        SAHAJOMY FLUTTER MOBILE APP – IMPLEMENTATION PROMPT
+                    Reconciled: 2 September 2026
+                    Platform commit: 6dc84cc
+═══════════════════════════════════════════════════════════════════════
+
+READ THIS FIRST
+
+This document is the single source of truth for building the Sahajomy
+Flutter mobile app. It defines all architecture, UI, API, and feature
+requirements based on the current web platform and FastAPI backend.
+
+The backend at /api/v1 is authoritative for:
+- Business logic, pricing, payments, RBAC, validation
+- Status transitions, workspace isolation, tenant ownership
+- All mutation outcomes (bookings, intakes, collections, etc.)
+
+Do not re-implement any business rule in the mobile layer.
+
+─────────────────────────────────────────────────────────────────────────
+1.  PRE‑IMPLEMENTATION SETUP
+─────────────────────────────────────────────────────────────────────────
+
+1.1  Environment
+     flutter clean && flutter pub get
+     flutter doctor -v
+
+1.2  Dependencies (add to pubspec.yaml)
+     -----------------------------------------------------------------
+     core:
+       dio: ^5.4.0
+       riverpod: ^2.4.0
+       riverpod_annotation: ^2.3.0
+       go_router: ^13.0.0
+       flutter_secure_storage: ^9.0.0
+
+     UI:
+       inter: ^0.1.0
+       flutter_svg: ^2.0.9
+       shimmer: ^3.0.0
+
+     scanning:
+       mobile_scanner: ^3.5.0
+       image_picker: ^1.0.0
+       qr_flutter: ^4.1.0
+
+     networking:
+       json_annotation: ^4.8.0
+       retrofit: ^4.1.0
+       logger: ^2.0.0
+
+     utilities:
+       intl: ^0.19.0
+       connectivity_plus: ^6.0.0
+       package_info_plus: ^6.0.0
+       url_launcher: ^6.2.0
+
+     dev:
+       build_runner: ^2.4.0
+       riverpod_generator: ^2.3.0
+       json_serializable: ^6.7.0
+       retrofit_generator: ^8.0.0
+       flutter_test:
+       integration_test:
+       mockito: ^5.4.0
+
+1.3  Generate OpenAPI contract (from web platform root)
+     docker-compose exec backend python scripts/generate_openapi.py
+     cp openapi.json ../mobile/api-contracts/
+
+1.4  Validate contract (run script)
+     scripts/validate_contract.mjs
+     ── must show 342 paths, 389 operations, 163 schemas
+     ── all 125 HTML previews map to current React routes
+     ── domain‑specific status enums are preserved (no universal enum)
+
+─────────────────────────────────────────────────────────────────────────
+2.  PROJECT ARCHITECTURE
+─────────────────────────────────────────────────────────────────────────
+
+2.1  Directory layout
+     lib/
+     ├── app/
+     │   ├── bootstrap.dart
+     │   ├── config.dart
+     │   ├── router.dart
+     │   ├── theme.dart
+     │   └── app_links.dart
+     ├── core/
+     │   ├── auth/
+     │   │   ├── auth_repository.dart
+     │   │   ├── auth_state.dart
+     │   │   ├── otp_service.dart
+     │   │   └── token_storage.dart
+     │   ├── workspaces/
+     │   │   ├── workspace_provider.dart
+     │   │   └── tenant_interceptor.dart
+     │   ├── network/
+     │   │   ├── api_client.dart      # Dio + interceptors
+     │   │   ├── api_contract.dart    # generated Retrofit client
+     │   │   ├── error_handler.dart
+     │   │   └── refresh_mechanism.dart
+     │   ├── storage/
+     │   │   ├── secure_storage.dart
+     │   │   └── draft_storage.dart
+     │   ├── scanning/
+     │   │   ├── camera_service.dart
+     │   │   ├── barcode_decoder.dart
+     │   │   └── manual_entry_sheet.dart
+     │   └── ui/
+     │       ├── status_chip.dart
+     │       ├── empty_state.dart
+     │       ├── loading_state.dart
+     │       ├── error_state.dart
+     │       └── confirmation_dialog.dart
+     ├── features/
+     │   ├── auth/
+     │   ├── customer/
+     │   ├── cargo_admin/
+     │   ├── sourcing_agent/
+     │   ├── super_admin/
+     │   ├── public_catalog/
+     │   └── notifications/
+     └── shared/
+         ├── dto/          # immutable DTOs
+         ├── domain/       # entities & identifiers
+         ├── formatting/   # date/currency/status
+         └── widgets/      # reusable components
+
+2.2  State Management
+     Use Riverpod exclusively. Each feature organises as:
+       data/         → repositories, DTOs
+       domain/       → entities, use cases
+       presentation/ → screens, widgets, providers
+
+2.3  API Client
+     Configure Dio with:
+       base URL       (env‑specific)
+       default timeout 30 s
+       upload timeout   5 min
+       interceptors:
+         - TenantInterceptor (adds X‑Sahajomy‑Company / Branch)
+         - AuthInterceptor   (adds Bearer token)
+         - RefreshInterceptor (handles 401, single refresh)
+         - LoggingInterceptor (redacts secrets)
+
+─────────────────────────────────────────────────────────────────────────
+3.  AUTHENTICATION & ONBOARDING
+─────────────────────────────────────────────────────────────────────────
+
+3.1  Flow
+     1. Splash → read secure storage → GET /auth/me
+     2. OTP send/verify → POST /auth/send‑otp / /verify‑otp
+     3. MFA (privileged roles) → authenticator QR + manual secret
+     4. Load workspaces → GET /workspaces
+     5. Navigate to role shell
+     6. Logout → POST /auth/logout → clear storage
+
+3.2  Token Storage
+     Use flutter_secure_storage with keys:
+       access_token
+       refresh_token
+     Save/restore atomically. Never log tokens.
+
+3.3  Refresh Mechanism
+     ─ On 401, pause all pending requests
+     ─ Issue one refresh request at a time
+     ─ Update tokens in secure storage
+     ─ Replay all paused requests with new token
+     ─ If refresh fails → clear tokens → route to login
+
+3.4  MFA Implementation
+     ─ Show QR code for authenticator apps
+     ─ Provide manual secret as fallback
+     ─ Validate 30‑second rolling codes
+     ─ Handle refresh race conditions (prevent duplicate MFA)
+
+─────────────────────────────────────────────────────────────────────────
+4.  ROLE‑BASED NAVIGATION & DEEP LINKS
+─────────────────────────────────────────────────────────────────────────
+
+4.1  Bottom Navigation (4 or 5 tabs)
+
+     Customer         │ Home, Shipments, Agizisha, More
+     Cargo Company    │ Bookings, Containers, Receipts, Account
+     Sourcing Agent   │ Home, Batches, Orders, More
+     Super Admin      │ Home, Users, Activity, More
+
+     Cargo Company NEVER shows public Home/landing.
+
+4.2  Workspace Switching
+     ─ Account role remains stable across workspaces
+     ─ Company workspace provides company role, branch, permissions
+     ─ Send X‑Sahajomy‑Company and optional X‑Sahajomy‑Branch headers
+     ─ Clear old tenant state BEFORE navigating to new workspace
+
+4.3  Deep Links (App Links)
+     Supported URIs:
+       sajajomy://customer/warehouse‑access/:token
+       sajajomy://shared/label/air/:bookingId
+       sajajomy://shared/label/sea/:seaBookingId
+       sajajomy://shared/product/:productId
+       sajajomy://shared/batch/:token
+       sajajomy://verify‑receipt/:code
+
+     Rules:
+       ─ Always verify role before navigating
+       ─ If unauthenticated, store destination and resume after login
+       ─ Never log the token/code
+       ─ Reject destinations that don't match user's role
+
+─────────────────────────────────────────────────────────────────────────
+5.  FEATURE IMPLEMENTATION BREAKDOWN
+─────────────────────────────────────────────────────────────────────────
+
+5.1  Customer (26 screens)
+     ─ Dashboard
+     ─ Sea Bookings (list + detail)
+     ─ Container Search & Reservation
+     ─ Shipment Orders (timeline)
+     ─ Tracking (real‑time)
+     ─ Express Air Cargo (guided booking)
+     ─ China Addresses (CRUD)
+     ─ Agizisha (catalogue + orders)
+     ─ Warehouse Access (parcels + collection request)
+     ─ Profile & settings
+
+5.2  Sourcing Agent (24 screens)
+     ─ Dashboard
+     ─ Batches (create, list, detail)
+     ─ Batch detail → products, orders, financials
+     ─ Agizisha Orders
+     ─ Storefront (agent catalogue)
+     ─ Packing Lists (create, view)
+     ─ Financials (income, commissions)
+     ─ Sea Bookings
+     ─ Express Air Cargo
+     ─ China Addresses
+     ─ Tracking
+
+5.3  Cargo Admin (21 screens)
+     ─ Dashboard (warehouse metrics)
+     ─ Warehouses (list, detail)
+     ─ Containers (CRUD, status)
+     ─ Sea Bookings (management)
+     ─ Documentation Workspace (4 routes):
+         - Packing Lists
+         - Manual Cargo Intake
+         - Customers & Contacts
+         - Warehouse Automation
+     ─ Financial Analytics
+     ─ Staff & Branches
+     ─ Billing & Usage
+     ─ Shipment Orders
+     ─ FCL Requests
+     ─ Express Air Cargo
+     ─ Tracking
+
+5.4  Super Admin (19 screens)
+     ─ Dashboard (platform metrics)
+     ─ Users (list, detail)
+     ─ Sourcing Agents
+     ─ Cargo Administrators
+     ─ Companies (list, detail)
+     ─ Bookings (oversight)
+     ─ Subscriptions & Costs
+     ─ Approvals (pending registrations)
+     ─ Goods Classification
+     ─ Commission
+     ─ Audit Logs
+     ─ Tracking
+
+5.5  Public & Shared (35+ screens)
+     ─ Landing
+     ─ Agizisha catalogue, product detail, storefront
+     ─ Staff invitation (acceptance flow)
+     ─ Company registration (public + super‑admin parity)
+     ─ Agent registration
+     ─ Receipt verification
+     ─ Shared batch
+     ─ Shipping labels (air/sea)
+     ─ Workspace selection
+     ─ Legal pages (privacy, terms, etc.)
+     ─ Africa service pages
+
+5.6  Notifications
+     Requirements:
+       ─ 12px vertical / 16px horizontal padding
+       ─ 32px icon container
+       ─ Title: 14px semibold, one line
+       ─ Message: 13px/20px, max two lines
+       ─ Timestamp: 11px short format
+       ─ Unread: 6px coral dot + subtle background
+       ─ Swipe to delete (88px action)
+       ─ Non‑gesture delete alternative (visible button)
+       ─ Row tap → open and mark read
+
+─────────────────────────────────────────────────────────────────────────
+6.  WAREHOUSE AUTOMATION – CRITICAL FLOWS
+─────────────────────────────────────────────────────────────────────────
+
+6.1  Customer Warehouse Access
+     1. Scan opaque warehouse access QR
+     2. Authenticate (if needed) and resume app link
+     3. Fetch only current customer's parcels for that warehouse
+     4. Enable selection only when `eligible_for_collection` is true
+     5. Submit collection request (one or more intake UUIDs)
+     6. Display returned collection QR + PIN with expiry countdown
+     7. Never expose a "mark collected" button
+
+6.2  Cargo Admin Scanning & Intake
+     1. Check automation status (GET /automation/status)
+     2. Manual Cargo Intake remains available in all modes
+     3. Scan barcode/QR or choose a label image
+     4. Show manual text entry immediately as fallback
+     5. Render high/medium/low confidence
+     6. Staff confirms → create intake/parcel
+     7. Link to booking → update Shipment Order tracking/location/status
+     8. Notify customer
+     9. Loading scans: detect wrong booking / duplicate / already‑loaded
+     10. Milestones: update tracking & Shipment Order state
+
+     Important:
+       ─ Never silently confirm medium/low‑confidence suggestions.
+       ─ Confirmation is a deliberate staff action.
+       ─ Treat 409 (duplicate/conflicting) and 410 (expired) without retry.
+
+6.3  Super Admin Entitlement
+     ─ List Cargo Admins with automation enabled/disabled
+     ─ Enable/disable with PUT /super_admin/warehouse‑automation/...
+     ─ No billing logic – just toggle the flag.
+
+─────────────────────────────────────────────────────────────────────────
+7.  SEA & AIR BOOKING STATE MACHINE (Shared Shell)
+─────────────────────────────────────────────────────────────────────────
+
+Both Customer and Sourcing Agent use the same three‑step shell.
+
+  Step 1: Choose Service
+    ─ Show three recommendations first.
+    ─ "Browse all" → search + incremental loading.
+    ─ Works with 1,000+ services (paginated).
+
+  Step 2: Cargo Details
+    ─ Mode‑specific fields (Sea vs Air).
+    ─ Only fields required by selected cargo mode.
+    ─ For Sea, show operator's China address (pre‑fetched).
+    ─ For Air, show provider‑scoped delivery details.
+
+  Step 3: Review
+    ─ Complete summary.
+    ─ For Customer Sea: show shipping mark + link to "My China Addresses"
+      instead of duplicating full saved address.
+    ─ "Continue to review" does NOT create a booking – it's local validation.
+    ─ Final "Confirm booking" performs the mutation.
+    ─ Prevent duplicate confirmation while in flight.
+    ─ After success, show authoritative reference and View booking button.
+
+  Deep‑link handling:
+    ─ If a container_id, cargo_admin_id, or warehouse_id is provided,
+      resolve it and restore the appropriate selection.
+    ─ If stale/inaccessible, return to Step 1 with a clear message.
+
+─────────────────────────────────────────────────────────────────────────
+8.  DESIGN SYSTEM (Tokens & Rules)
+─────────────────────────────────────────────────────────────────────────
+
+8.1  Color Palette
+     brandNavy      #0F3D5E    headers, primary ink
+     brandNavyDark  #0B2A40    pressed surfaces
+     coral          #FF6B4A    primary CTA, active nav, emphasis
+     coralDark      #E85A3A    pressed CTA
+     canvas         #F7F8FA    app background
+     surface        #FFFFFF    sheets, inputs
+     ink            #0F172A    primary text
+     muted          #64748B    supporting text
+     border         #E2E8F0    dividers
+     success        #059669    paid, ready, confirmed
+     warning        #D97706    unpaid, pending, expiring
+     danger         #E11D48    expired, failed, destructive
+
+     Colour alone must never convey status – always pair with text/icon.
+
+8.2  Typography (Inter or system sans‑serif)
+     Display:     30‑32px / 36‑40px, 800 weight (only for welcome/confirmation)
+     Screen title: 24px / 32px, 800
+     Section title: 18‑20px / 26‑28px, 700
+     Body:         14‑16px / 20‑24px, 400
+     Label:        10‑12px, uppercase, 700, modest tracking
+     Monospace:   14px+ for PINs, tracking numbers, references
+
+8.3  Spacing (4px base)
+     xxs:4, xs:8, sm:12, md:16, lg:20, xl:24, xxl:32, xxxl:40, xxxxl:48
+     Standard page gutter: 20px (16px on compact devices)
+
+8.4  Controls
+     ─ Buttons: 52‑56px high, min tap area 48px
+     ─ Inputs: 48‑52px high, label above, validation below
+     ─ Destructive actions: require explicit confirmation
+     ─ Loading: preserve width, disable duplicate submission
+     ─ Disabled automation tools: explain entitlement and link to Manual Intake
+
+8.5  Accessibility
+     ─ WCAG 2.2 AA contrast
+     ─ 48px touch targets
+     ─ Semantic labels and focus order
+     ─ 200% text scaling support
+     ─ QR/PIN screens: provide text alternative; secrets announced only on request
+
+─────────────────────────────────────────────────────────────────────────
+9.  API INTEGRATION NOTES
+─────────────────────────────────────────────────────────────────────────
+
+9.1  Error Handling
+     Map each FastAPI status to a user‑actionable message:
+       401  → Session expired → redirect to login
+       403  → Permission denied → show upgrade/contact
+       409  → Conflict → show conflict message, no retry
+       410  → Expired → request new link
+       422  → Validation → show field‑specific errors
+       429  → Rate limited → show backoff message
+
+9.2  Idempotency Keys
+     ─ Send for all mutation requests (booking, intake, collection, etc.)
+     ─ Prevent duplicate submissions.
+     ─ Handle power/internet interruptions gracefully.
+
+9.3  Never Log
+     ─ OTP codes
+     ─ JWTs (access/refresh tokens)
+     ─ Collection PINs
+     ─ Warehouse access tokens
+     ─ Decrypted phone/email data
+     ─ Uploaded label images
+
+9.4  Context Headers
+     ─ X‑Sahajomy‑Company   (required for company context)
+     ─ X‑Sahajomy‑Branch    (optional)
+     ─ Clear these on workspace switch BEFORE making new request.
+
+─────────────────────────────────────────────────────────────────────────
+10. TESTING REQUIREMENTS
+─────────────────────────────────────────────────────────────────────────
+
+10.1 Widget Tests
+      ─ Loading, empty, error states
+      ─ Form validation
+      ─ Navigation flow
+      ─ Design system compliance
+
+10.2 Integration Tests (Android)
+      ─ Authentication (OTP + MFA)
+      ─ Workspace switching
+      ─ Booking completion
+      ─ Warehouse scan → confirm intake
+      ─ Collection request → QR generation
+      ─ Deep link navigation
+
+10.3 Contract Tests
+      ─ Match FastAPI OpenAPI contract
+      ─ Response shape validation
+      ─ Error status handling
+      ─ Error response parsing
+
+10.4 Device Tests
+      ─ Camera permission flows
+      ─ Keyboard insets
+      ─ Landscape mode (scanning)
+      ─ Android back press
+      ─ Accessibility (text scaling, TalkBack)
+
+─────────────────────────────────────────────────────────────────────────
+11. DELIVERY PHASES & CHECKLIST
+─────────────────────────────────────────────────────────────────────────
+
+Phase 1 – Foundation
+  [ ] App shell + theme
+  [ ] Secure storage
+  [ ] API client + interceptors
+  [ ] Refresh mechanism
+  [ ] OTP + MFA auth
+  [ ] Workspace switching
+  [ ] Basic routing
+
+Phase 2 – Customer
+  [ ] Dashboard
+  [ ] Container search + booking
+  [ ] Shipment orders
+  [ ] Tracking
+  [ ] Express Air Cargo
+  [ ] China addresses
+  [ ] Agizisha
+  [ ] Warehouse access + collection
+
+Phase 3 – Cargo Admin
+  [ ] Dashboard
+  [ ] Warehouses
+  [ ] Sea bookings
+  [ ] Documentation workspace (4 routes)
+  [ ] Manual intake
+  [ ] Financial analytics
+  [ ] Staff & branches
+  [ ] Billing & usage
+
+Phase 4 – Sourcing Agent
+  [ ] Dashboard
+  [ ] Batches
+  [ ] Agizisha orders
+  [ ] Storefront
+  [ ] Packing lists
+  [ ] Financials
+  [ ] Sea bookings
+  [ ] Express Air Cargo
+
+Phase 5 – Super Admin
+  [ ] Platform overview
+  [ ] Users
+  [ ] Companies
+  [ ] Bookings oversight
+  [ ] Subscriptions & costs
+  [ ] Approvals
+  [ ] Audit logs
+  [ ] Goods classification
+
+Phase 6 – Warehouse Automation
+  [ ] Customer QR access
+  [ ] Collection requests
+  [ ] Cargo Admin scan + confirm
+  [ ] Manual fallback
+  [ ] Confidence display
+  [ ] Booking linking
+  [ ] Verification + handover
+  [ ] Super Admin entitlement
+
+Phase 7 – Polish & Release
+  [ ] Notifications centre
+  [ ] WCAG 2.2 AA compliance
+  [ ] Offline caching (read‑only)
+  [ ] Analytics redaction
+  [ ] Android production build
+  [ ] iOS production build
+  [ ] Contract tests
+  [ ] Integration tests
+  [ ] Device testing
+
+─────────────────────────────────────────────────────────────────────────
+12. REFERENCE DOCUMENTS (read in order)
+─────────────────────────────────────────────────────────────────────────
+
+1. 00_CURRENT_RELEASE_CONTRACT.md       – complete platform contract
+2. CURRENT_PLATFORM_AUDIT.md            – parity review (2 Sept 2026)
+3. GENERATED_SCREEN_INVENTORY.md        – route‑to‑preview mapping
+4. README.md (Mobile Prototype)         – overview & setup
+5. README.md (Implementation Plan)      – architecture & delivery
+6. README.md (Design System)            – UI tokens & rules
+7. README.md (API Contract Notes)       – integration details
+8. README.md (Assets)                   – asset management guidelines
+
+─────────────────────────────────────────────────────────────────────────
+13. CODE QUALITY STANDARDS
+─────────────────────────────────────────────────────────────────────────
+
+13.1 Architecture
+     ─ Clean Architecture layers (Data, Domain, Presentation)
+     ─ Repository pattern for data access
+     ─ Use case pattern for business logic
+     ─ Immutable DTOs with json_serializable
+
+13.2 Code Style
+     ─ Follow Flutter style guide
+     ─ Run flutter analyze --fatal-infos
+     ─ Maintain ≥ 80% test coverage
+     ─ Document public APIs
+
+13.3 Performance
+     ─ Lazy loading for lists
+     ─ Image caching
+     ─ Debounced search inputs
+     ─ Pagination for large datasets
+     ─ Avoid expensive rebuilds
+
+13.4 Security
+     ─ flutter_secure_storage for tokens
+     ─ Encrypt sensitive preferences
+     ─ Never store PINs or access tokens
+     ─ Redact all logs (secrets, PII)
+
+─────────────────────────────────────────────────────────────────────────
+14. DAILY PROGRESS TRACKER (fill this out)
+─────────────────────────────────────────────────────────────────────────
+
+Date: _________
+Total Screens: 125 | Implemented: ___ | In Progress: ___ | Blocked: ___
+Today's Focus: _______________________________________________________
+Blockers: ____________________________________________________________
+Next Steps: __________________________________________________________
+
+─────────────────────────────────────────────────────────────────────────
+
+IMPLEMENTATION MAY BEGIN ONCE THIS PROMPT IS APPROVED
+AND ALL ENVIRONMENT PREREQUISITES ARE SATISFIED.
+
+─────────────────────────────────────────────────────────────────────────
+EOF

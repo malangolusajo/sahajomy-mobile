@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:sahajomy_mobile/features/repository_providers.dart';
 
 import '../../../core/ui/sahajomy_ui.dart';
 import '../data/workflow_api_repository.dart';
 
 /// A live, read-only operation page for API workflows without a selected entity.
-class LiveWorkflowPage extends StatefulWidget {
+class LiveWorkflowPage extends ConsumerStatefulWidget {
   const LiveWorkflowPage({
     required this.role,
     required this.title,
     required this.endpoint,
     this.description,
+    this.actionLabel,
+    this.actionRoute,
     super.key,
   });
 
@@ -17,20 +22,33 @@ class LiveWorkflowPage extends StatefulWidget {
   final String title;
   final String endpoint;
   final String? description;
+  final String? actionLabel;
+  final String? actionRoute;
 
   @override
-  State<LiveWorkflowPage> createState() => _LiveWorkflowPageState();
+  ConsumerState<LiveWorkflowPage> createState() => _LiveWorkflowPageState();
 }
 
-class _LiveWorkflowPageState extends State<LiveWorkflowPage> {
-  final _repository = WorkflowApiRepository();
-  late Future<Object> _result = _repository.load(widget.endpoint);
+class _LiveWorkflowPageState extends ConsumerState<LiveWorkflowPage> {
+  WorkflowApiRepository get _repository =>
+      ref.read(workflowApiRepositoryProvider);
+  late Future<Object> _result = Future.microtask(
+    () => _repository.load(widget.endpoint),
+  );
 
   void _reload() => setState(() => _result = _repository.load(widget.endpoint));
 
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: SahajomyScreenHeader(role: widget.role, title: widget.title),
+    floatingActionButton:
+        widget.actionLabel == null || widget.actionRoute == null
+        ? null
+        : FloatingActionButton.extended(
+            onPressed: () => context.push(widget.actionRoute!),
+            icon: const Icon(Icons.add),
+            label: Text(widget.actionLabel!),
+          ),
     body: FutureBuilder<Object>(
       future: _result,
       builder: (context, snapshot) {

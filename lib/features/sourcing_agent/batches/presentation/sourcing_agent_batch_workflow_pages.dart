@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sahajomy_mobile/features/repository_providers.dart';
 
 import '../../../../core/ui/sahajomy_ui.dart';
 import '../data/sourcing_agent_batches_repository.dart';
@@ -17,23 +19,24 @@ List<Map<String, dynamic>> _extractGoodsTypes(Map<String, dynamic>? response) {
   ].where((type) => type['id'] != null).toList();
 }
 
-class SourcingAgentCreateBatchPage extends StatefulWidget {
+class SourcingAgentCreateBatchPage extends ConsumerStatefulWidget {
   const SourcingAgentCreateBatchPage({super.key});
 
   @override
-  State<SourcingAgentCreateBatchPage> createState() =>
+  ConsumerState<SourcingAgentCreateBatchPage> createState() =>
       _SourcingAgentCreateBatchPageState();
 }
 
 class _SourcingAgentCreateBatchPageState
-    extends State<SourcingAgentCreateBatchPage> {
+    extends ConsumerState<SourcingAgentCreateBatchPage> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _originController = TextEditingController(text: 'Yiwu');
   final _destinationController = TextEditingController(text: 'Dar es Salaam');
   final _feeController = TextEditingController(text: '285000');
-  final _repository = SourcingAgentBatchesRepository();
+  SourcingAgentBatchesRepository get _repository =>
+      ref.read(sourcingAgentBatchesRepositoryProvider);
   String _shippingMethod = 'PER_CBM';
   String _currency = 'TZS';
   var _saving = false;
@@ -208,7 +211,7 @@ class _SourcingAgentCreateBatchPageState
   );
 }
 
-class SourcingAgentAddProductPage extends StatefulWidget {
+class SourcingAgentAddProductPage extends ConsumerStatefulWidget {
   const SourcingAgentAddProductPage({
     required this.batchId,
     super.key,
@@ -219,20 +222,22 @@ class SourcingAgentAddProductPage extends StatefulWidget {
   final String? batchTitle;
 
   @override
-  State<SourcingAgentAddProductPage> createState() =>
+  ConsumerState<SourcingAgentAddProductPage> createState() =>
       _SourcingAgentAddProductPageState();
 }
 
 class _SourcingAgentAddProductPageState
-    extends State<SourcingAgentAddProductPage> {
+    extends ConsumerState<SourcingAgentAddProductPage> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _imageUrlController = TextEditingController();
   final _priceController = TextEditingController();
   final _minOrderController = TextEditingController(text: '1');
-  final _repository = SourcingAgentBatchesRepository();
-  late Future<Map<String, dynamic>> _goodsCategories = _repository
-      .listGoodsCategories();
+  SourcingAgentBatchesRepository get _repository =>
+      ref.read(sourcingAgentBatchesRepositoryProvider);
+  late Future<Map<String, dynamic>> _goodsCategories = Future.microtask(
+    () => _repository.listGoodsCategories(),
+  );
   String? _goodsTypeId;
   var _saving = false;
 
@@ -390,7 +395,7 @@ class _SourcingAgentAddProductPageState
   );
 }
 
-class SourcingAgentGenerateOrdersPage extends StatefulWidget {
+class SourcingAgentGenerateOrdersPage extends ConsumerStatefulWidget {
   const SourcingAgentGenerateOrdersPage({
     required this.batchId,
     super.key,
@@ -401,14 +406,17 @@ class SourcingAgentGenerateOrdersPage extends StatefulWidget {
   final String? batchTitle;
 
   @override
-  State<SourcingAgentGenerateOrdersPage> createState() =>
+  ConsumerState<SourcingAgentGenerateOrdersPage> createState() =>
       _SourcingAgentGenerateOrdersPageState();
 }
 
 class _SourcingAgentGenerateOrdersPageState
-    extends State<SourcingAgentGenerateOrdersPage> {
-  final _repository = SourcingAgentBatchesRepository();
-  late Future<List<Map<String, dynamic>>> _data = _load();
+    extends ConsumerState<SourcingAgentGenerateOrdersPage> {
+  SourcingAgentBatchesRepository get _repository =>
+      ref.read(sourcingAgentBatchesRepositoryProvider);
+  late Future<List<Map<String, dynamic>>> _data = Future.microtask(
+    () => _load(),
+  );
 
   Future<List<Map<String, dynamic>>> _load() => Future.wait([
     _repository.getBatch(widget.batchId),
@@ -514,20 +522,23 @@ class _SourcingAgentGenerateOrdersPageState
   );
 }
 
-class SourcingAgentBatchFinancialsPage extends StatefulWidget {
+class SourcingAgentBatchFinancialsPage extends ConsumerStatefulWidget {
   const SourcingAgentBatchFinancialsPage({required this.batchId, super.key});
 
   final String batchId;
 
   @override
-  State<SourcingAgentBatchFinancialsPage> createState() =>
+  ConsumerState<SourcingAgentBatchFinancialsPage> createState() =>
       _SourcingAgentBatchFinancialsPageState();
 }
 
 class _SourcingAgentBatchFinancialsPageState
-    extends State<SourcingAgentBatchFinancialsPage> {
-  final _repository = SourcingAgentBatchesRepository();
-  late Future<List<Map<String, dynamic>>> _data = _load();
+    extends ConsumerState<SourcingAgentBatchFinancialsPage> {
+  SourcingAgentBatchesRepository get _repository =>
+      ref.read(sourcingAgentBatchesRepositoryProvider);
+  late Future<List<Map<String, dynamic>>> _data = Future.microtask(
+    () => _load(),
+  );
 
   Future<List<Map<String, dynamic>>> _load() => Future.wait([
     _repository.getBatch(widget.batchId),
@@ -650,7 +661,7 @@ class _SourcingAgentBatchFinancialsPageState
   );
 }
 
-class SourcingAgentPackingListCreatePage extends StatefulWidget {
+class SourcingAgentPackingListCreatePage extends ConsumerStatefulWidget {
   const SourcingAgentPackingListCreatePage({
     required this.batchId,
     super.key,
@@ -661,16 +672,19 @@ class SourcingAgentPackingListCreatePage extends StatefulWidget {
   final String? batchTitle;
 
   @override
-  State<SourcingAgentPackingListCreatePage> createState() =>
+  ConsumerState<SourcingAgentPackingListCreatePage> createState() =>
       _SourcingAgentPackingListCreatePageState();
 }
 
 class _SourcingAgentPackingListCreatePageState
-    extends State<SourcingAgentPackingListCreatePage> {
-  final _repository = SourcingAgentBatchesRepository();
+    extends ConsumerState<SourcingAgentPackingListCreatePage> {
+  SourcingAgentBatchesRepository get _repository =>
+      ref.read(sourcingAgentBatchesRepositoryProvider);
   final _cartonsController = TextEditingController(text: '12');
   final _weightController = TextEditingController(text: '180');
-  late Future<List<Map<String, dynamic>>> _data = _load();
+  late Future<List<Map<String, dynamic>>> _data = Future.microtask(
+    () => _load(),
+  );
   final Set<String> _selectedOrders = <String>{};
   var _generating = false;
 
@@ -827,22 +841,25 @@ class _SourcingAgentPackingListCreatePageState
   );
 }
 
-class SourcingAgentPackingListListPage extends StatefulWidget {
+class SourcingAgentPackingListListPage extends ConsumerStatefulWidget {
   const SourcingAgentPackingListListPage({super.key, this.initialBatches});
 
   final List<Map<String, dynamic>>? initialBatches;
 
   @override
-  State<SourcingAgentPackingListListPage> createState() =>
+  ConsumerState<SourcingAgentPackingListListPage> createState() =>
       _SourcingAgentPackingListListPageState();
 }
 
 class _SourcingAgentPackingListListPageState
-    extends State<SourcingAgentPackingListListPage> {
-  final _repository = SourcingAgentBatchesRepository();
-  late Future<Map<String, dynamic>> _batches = widget.initialBatches == null
-      ? _repository.listBatches()
-      : Future.value({'batches': widget.initialBatches});
+    extends ConsumerState<SourcingAgentPackingListListPage> {
+  SourcingAgentBatchesRepository get _repository =>
+      ref.read(sourcingAgentBatchesRepositoryProvider);
+  late Future<Map<String, dynamic>> _batches = Future.microtask(
+    () => widget.initialBatches == null
+        ? _repository.listBatches()
+        : Future.value({'batches': widget.initialBatches}),
+  );
 
   void _retry() => setState(() => _batches = _repository.listBatches());
 
@@ -927,7 +944,7 @@ class _SourcingAgentPackingListListPageState
   );
 }
 
-class SourcingAgentPackingListDetailPage extends StatefulWidget {
+class SourcingAgentPackingListDetailPage extends ConsumerStatefulWidget {
   const SourcingAgentPackingListDetailPage({
     required this.batchId,
     super.key,
@@ -938,14 +955,17 @@ class SourcingAgentPackingListDetailPage extends StatefulWidget {
   final String? batchTitle;
 
   @override
-  State<SourcingAgentPackingListDetailPage> createState() =>
+  ConsumerState<SourcingAgentPackingListDetailPage> createState() =>
       _SourcingAgentPackingListDetailPageState();
 }
 
 class _SourcingAgentPackingListDetailPageState
-    extends State<SourcingAgentPackingListDetailPage> {
-  final _repository = SourcingAgentBatchesRepository();
-  late Future<List<Map<String, dynamic>>> _data = _load();
+    extends ConsumerState<SourcingAgentPackingListDetailPage> {
+  SourcingAgentBatchesRepository get _repository =>
+      ref.read(sourcingAgentBatchesRepositoryProvider);
+  late Future<List<Map<String, dynamic>>> _data = Future.microtask(
+    () => _load(),
+  );
 
   Future<List<Map<String, dynamic>>> _load() => Future.wait([
     _repository.getBatch(widget.batchId),

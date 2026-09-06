@@ -35,6 +35,7 @@ import '../../super_admin/activity/presentation/super_admin_platform_activity_pa
 import '../../super_admin/dashboard/presentation/super_admin_dashboard_page.dart';
 import '../../super_admin/users/presentation/super_admin_user_list_page.dart';
 import '../../super_admin/warehouse_automation/presentation/super_admin_warehouse_automation_page.dart';
+import '../../workspaces/presentation/workspace_selection_page.dart';
 
 Widget dedicatedPreviewPageFor(
   NativeScreenSpec spec,
@@ -171,6 +172,38 @@ Widget dedicatedPreviewPageFor(
     const SuperAdminUserManagementPreviewPage(),
   'super-admin-warehouse-automation.html' =>
     const SuperAdminWarehouseAutomationPreviewPage(),
+  'agent-china-addresses.html' => const AgentChinaAddressesPreviewPage(),
+  'agent-sea-bookings.html' => const AgentSeaBookingsPreviewPage(),
+  'cargo-admin-billing-usage.html' => const CargoAdminBillingUsagePreviewPage(),
+  'cargo-admin-documentation-customers.html' =>
+    const CargoAdminDocumentationCustomersPreviewPage(),
+  'cargo-admin-financial-analytics.html' =>
+    const CargoAdminFinancialAnalyticsPreviewPage(),
+  'cargo-admin-pending-approval.html' =>
+    const CargoAdminPendingApprovalPreviewPage(),
+  'cargo-admin-sea-bookings.html' => const CargoAdminSeaBookingsPreviewPage(),
+  'cargo-admin-staff-branches.html' =>
+    const CargoAdminStaffBranchesPreviewPage(),
+  'customer-sea-booking-detail.html' =>
+    const CustomerSeaBookingDetailPreviewPage(),
+  'customer-sea-bookings.html' => const CustomerSeaBookingsPreviewPage(),
+  'public-air-cargo-africa.html' => const PublicAirCargoAfricaPreviewPage(),
+  'public-cargo-company-registration.html' =>
+    const PublicCargoCompanyRegistrationPreviewPage(),
+  'public-china-sourcing-africa.html' =>
+    const PublicChinaSourcingAfricaPreviewPage(),
+  'public-sea-freight-africa.html' => const PublicSeaFreightAfricaPreviewPage(),
+  'public-staff-invitation.html' => const PublicStaffInvitationPreviewPage(),
+  'shared-workspace-selection.html' =>
+    const SharedWorkspaceSelectionPreviewPage(),
+  'super-admin-bookings.html' => const SuperAdminBookingsPreviewPage(),
+  'super-admin-companies.html' => const SuperAdminCompaniesPreviewPage(),
+  'super-admin-company-detail.html' =>
+    const SuperAdminCompanyDetailPreviewPage(),
+  'super-admin-operator-detail.html' =>
+    const SuperAdminOperatorDetailPreviewPage(),
+  'super-admin-subscriptions.html' =>
+    const SuperAdminSubscriptionsPreviewPage(),
   _ => throw ArgumentError.value(
     spec.fileName,
     'spec.fileName',
@@ -1133,4 +1166,221 @@ class SuperAdminWarehouseAutomationPreviewPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       const SuperAdminWarehouseAutomationPage();
+}
+
+class AgentChinaAddressesPreviewPage extends StatelessWidget {
+  const AgentChinaAddressesPreviewPage({super.key});
+
+  @override
+  Widget build(BuildContext context) => LiveWorkflowPage(
+    role: nativeScreenSpecFor('agent-china-addresses.html').role,
+    title: nativeScreenSpecFor('agent-china-addresses.html').title,
+    endpoint: 'sourcing_agent/china-addresses',
+  );
+}
+
+class AgentSeaBookingsPreviewPage extends StatelessWidget {
+  const AgentSeaBookingsPreviewPage({super.key});
+
+  @override
+  Widget build(BuildContext context) => const LiveWorkflowPage(
+    role: 'Sourcing Agent',
+    title: 'My sea bookings',
+    endpoint: 'sourcing_agent/sea-bookings',
+    actionLabel: 'Book sea cargo',
+    actionRoute: '/agent/sea-bookings/new',
+  );
+}
+
+class CargoAdminBillingUsagePreviewPage extends StatelessWidget {
+  const CargoAdminBillingUsagePreviewPage({super.key});
+
+  @override
+  Widget build(BuildContext context) => LiveWorkflowPage(
+    role: nativeScreenSpecFor('cargo-admin-billing-usage.html').role,
+    title: nativeScreenSpecFor('cargo-admin-billing-usage.html').title,
+    endpoint: 'cargo_admin/billing/usage',
+  );
+}
+
+class CargoAdminDocumentationCustomersPreviewPage extends StatelessWidget {
+  const CargoAdminDocumentationCustomersPreviewPage({super.key});
+
+  @override
+  Widget build(BuildContext context) => const CargoAdminCustomerRecordsPage();
+}
+
+class CargoAdminFinancialAnalyticsPreviewPage extends StatelessWidget {
+  const CargoAdminFinancialAnalyticsPreviewPage({super.key});
+
+  @override
+  Widget build(BuildContext context) => LiveWorkflowPage(
+    role: nativeScreenSpecFor('cargo-admin-financial-analytics.html').role,
+    title: nativeScreenSpecFor('cargo-admin-financial-analytics.html').title,
+    endpoint: 'cargo_admin/financial/analytics',
+  );
+}
+
+class CargoAdminPendingApprovalPreviewPage extends StatelessWidget {
+  const CargoAdminPendingApprovalPreviewPage({super.key});
+
+  @override
+  Widget build(BuildContext context) => LiveWorkflowPage(
+    role: nativeScreenSpecFor('cargo-admin-pending-approval.html').role,
+    title: nativeScreenSpecFor('cargo-admin-pending-approval.html').title,
+    endpoint: 'cargo_admin/approval-status',
+  );
+}
+
+class CargoAdminSeaBookingsPreviewPage extends StatelessWidget {
+  const CargoAdminSeaBookingsPreviewPage({super.key});
+
+  @override
+  Widget build(BuildContext context) => LiveWorkflowPage(
+    role: nativeScreenSpecFor('cargo-admin-sea-bookings.html').role,
+    title: nativeScreenSpecFor('cargo-admin-sea-bookings.html').title,
+    endpoint: 'cargo_admin/sea-bookings',
+  );
+}
+
+class CargoAdminStaffBranchesPreviewPage extends StatelessWidget {
+  const CargoAdminStaffBranchesPreviewPage({super.key});
+
+  @override
+  Widget build(BuildContext context) => LiveWorkflowPage(
+    role: nativeScreenSpecFor('cargo-admin-staff-branches.html').role,
+    title: nativeScreenSpecFor('cargo-admin-staff-branches.html').title,
+    endpoint: 'workspaces',
+  );
+}
+
+class CustomerSeaBookingDetailPreviewPage extends StatelessWidget {
+  const CustomerSeaBookingDetailPreviewPage({super.key});
+
+  @override
+  Widget build(BuildContext context) => LiveWorkflowPage(
+    role: nativeScreenSpecFor('customer-sea-booking-detail.html').role,
+    title: nativeScreenSpecFor('customer-sea-booking-detail.html').title,
+    endpoint: 'customer/sea-bookings',
+  );
+}
+
+class CustomerSeaBookingsPreviewPage extends StatelessWidget {
+  const CustomerSeaBookingsPreviewPage({super.key});
+
+  @override
+  Widget build(BuildContext context) => const LiveWorkflowPage(
+    role: 'Customer',
+    title: 'My sea bookings',
+    endpoint: 'customer/sea-bookings',
+    actionLabel: 'Book sea cargo',
+    actionRoute: '/customer/sea-bookings/new',
+  );
+}
+
+class PublicAirCargoAfricaPreviewPage extends StatelessWidget {
+  const PublicAirCargoAfricaPreviewPage({super.key});
+
+  @override
+  Widget build(BuildContext context) => PreviewPageLayout(
+    spec: nativeScreenSpecFor('public-air-cargo-africa.html'),
+  );
+}
+
+class PublicCargoCompanyRegistrationPreviewPage extends StatelessWidget {
+  const PublicCargoCompanyRegistrationPreviewPage({super.key});
+
+  @override
+  Widget build(BuildContext context) => PreviewPageLayout(
+    spec: nativeScreenSpecFor('public-cargo-company-registration.html'),
+  );
+}
+
+class PublicChinaSourcingAfricaPreviewPage extends StatelessWidget {
+  const PublicChinaSourcingAfricaPreviewPage({super.key});
+
+  @override
+  Widget build(BuildContext context) => PreviewPageLayout(
+    spec: nativeScreenSpecFor('public-china-sourcing-africa.html'),
+  );
+}
+
+class PublicSeaFreightAfricaPreviewPage extends StatelessWidget {
+  const PublicSeaFreightAfricaPreviewPage({super.key});
+
+  @override
+  Widget build(BuildContext context) => PreviewPageLayout(
+    spec: nativeScreenSpecFor('public-sea-freight-africa.html'),
+  );
+}
+
+class PublicStaffInvitationPreviewPage extends StatelessWidget {
+  const PublicStaffInvitationPreviewPage({super.key});
+
+  @override
+  Widget build(BuildContext context) => PreviewPageLayout(
+    spec: nativeScreenSpecFor('public-staff-invitation.html'),
+  );
+}
+
+class SharedWorkspaceSelectionPreviewPage extends StatelessWidget {
+  const SharedWorkspaceSelectionPreviewPage({super.key});
+
+  @override
+  Widget build(BuildContext context) => const WorkspaceSelectionPage();
+}
+
+class SuperAdminBookingsPreviewPage extends StatelessWidget {
+  const SuperAdminBookingsPreviewPage({super.key});
+
+  @override
+  Widget build(BuildContext context) => LiveWorkflowPage(
+    role: nativeScreenSpecFor('super-admin-bookings.html').role,
+    title: nativeScreenSpecFor('super-admin-bookings.html').title,
+    endpoint: 'super_admin/bookings',
+  );
+}
+
+class SuperAdminCompaniesPreviewPage extends StatelessWidget {
+  const SuperAdminCompaniesPreviewPage({super.key});
+
+  @override
+  Widget build(BuildContext context) => LiveWorkflowPage(
+    role: nativeScreenSpecFor('super-admin-companies.html').role,
+    title: nativeScreenSpecFor('super-admin-companies.html').title,
+    endpoint: 'super_admin/companies',
+  );
+}
+
+class SuperAdminCompanyDetailPreviewPage extends StatelessWidget {
+  const SuperAdminCompanyDetailPreviewPage({super.key});
+
+  @override
+  Widget build(BuildContext context) => LiveWorkflowPage(
+    role: nativeScreenSpecFor('super-admin-company-detail.html').role,
+    title: nativeScreenSpecFor('super-admin-company-detail.html').title,
+    endpoint: 'super_admin/companies',
+  );
+}
+
+class SuperAdminOperatorDetailPreviewPage extends StatelessWidget {
+  const SuperAdminOperatorDetailPreviewPage({super.key});
+
+  @override
+  Widget build(BuildContext context) => LiveWorkflowPage(
+    role: nativeScreenSpecFor('super-admin-operator-detail.html').role,
+    title: nativeScreenSpecFor('super-admin-operator-detail.html').title,
+    endpoint: 'super_admin/operators',
+  );
+}
+
+class SuperAdminSubscriptionsPreviewPage extends StatelessWidget {
+  const SuperAdminSubscriptionsPreviewPage({super.key});
+
+  @override
+  Widget build(BuildContext context) => LiveWorkflowPage(
+    role: nativeScreenSpecFor('super-admin-subscriptions.html').role,
+    title: nativeScreenSpecFor('super-admin-subscriptions.html').title,
+    endpoint: 'super_admin/subscriptions',
+  );
 }

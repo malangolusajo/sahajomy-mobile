@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sahajomy_mobile/features/repository_providers.dart';
 
 import '../data/customer_reservations_repository.dart';
 import 'reservation_detail_page.dart';
 
-class ReservationListPage extends StatefulWidget {
+class ReservationListPage extends ConsumerStatefulWidget {
   const ReservationListPage({super.key});
   @override
-  State<ReservationListPage> createState() => _ReservationListPageState();
+  ConsumerState<ReservationListPage> createState() =>
+      _ReservationListPageState();
 }
 
-class _ReservationListPageState extends State<ReservationListPage> {
-  final _repository = CustomerReservationsRepository();
-  late Future<List<Map<String, dynamic>>> _reservations = _repository
-      .listReservations();
+class _ReservationListPageState extends ConsumerState<ReservationListPage> {
+  CustomerReservationsRepository get _repository =>
+      ref.read(customerReservationsRepositoryProvider);
+  late Future<List<Map<String, dynamic>>> _reservations = Future.microtask(
+    () => _repository.listReservations(),
+  );
   void _retry() =>
       setState(() => _reservations = _repository.listReservations());
 
@@ -60,8 +66,7 @@ class _ReservationListPageState extends State<ReservationListPage> {
               ),
               const SizedBox(height: 18),
               FilledButton(
-                onPressed: () =>
-                    Navigator.pushNamed(context, '/customer/containers'),
+                onPressed: () => context.push('/customer/containers'),
                 child: const Text('Find container space'),
               ),
             ],

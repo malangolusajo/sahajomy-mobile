@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/ui/sahajomy_ui.dart';
 
@@ -63,8 +64,7 @@ class BookingConfirmationPage extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: FilledButton(
-                  onPressed: () =>
-                      Navigator.pushNamed(context, '/customer/track-shipment'),
+                  onPressed: () => context.push('/customer/track-shipment'),
                   child: const Text('Track shipment'),
                 ),
               ),

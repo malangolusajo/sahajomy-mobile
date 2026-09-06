@@ -1,16 +1,10 @@
-import '../../../../core/auth/session_store.dart';
 import '../../../../core/network/api_client.dart';
-import '../../../../core/network/authenticated_api_client.dart';
 
 class CargoAdminContainersRepository {
-  CargoAdminContainersRepository({this.client, SessionStore? sessionStore})
-    : _store = sessionStore ?? SessionStore();
+  CargoAdminContainersRepository({required this.client});
 
-  final ApiClient? client;
-  final SessionStore _store;
+  final ApiClient client;
 
   Future<List<Map<String, dynamic>>> listContainers() =>
-      (client ?? authenticatedApiClient(_store)).getList(
-        'cargo_admin/containers',
-      );
+      client.getList('cargo_admin/containers');
 }

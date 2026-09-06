@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/ui/sahajomy_ui.dart';
 
@@ -67,13 +68,13 @@ class WelcomePage extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               FilledButton(
-                onPressed: () => Navigator.pushNamed(context, '/sign-in'),
+                onPressed: () => context.go('/sign-in'),
                 child: const Text('Get started'),
               ),
               const SizedBox(height: 6),
               Center(
                 child: TextButton(
-                  onPressed: () => Navigator.pushNamed(context, '/sign-in'),
+                  onPressed: () => context.go('/sign-in'),
                   child: const Text('I already have an account'),
                 ),
               ),
