@@ -1,3 +1,8 @@
+import 'package:flutter/widgets.dart';
+
 import 'app/app.dart';
 
-void main() => runSahajomyApp();
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runSahajomyApp();
+}

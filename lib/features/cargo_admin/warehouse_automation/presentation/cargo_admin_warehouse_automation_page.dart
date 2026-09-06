@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -38,6 +39,8 @@ class _CargoAdminWarehouseAutomationPageState
   String? _latestAccessUrl;
   Map<String, dynamic>? _matchResult;
   Map<String, dynamic>? _collectionResult;
+  String? _verifiedCollectionCode;
+  String? _verifiedCollectionPin;
   bool _busy = false;
   String? _busyWarehouseId;
   bool _labelImageSelected = false;
@@ -143,8 +146,25 @@ class _CargoAdminWarehouseAutomationPageState
   }
 
   Future<void> _chooseLabelImage() async {
-    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final image = await ImagePicker().pickImage(
+      source: ImageSource.gallery,
+      maxWidth: 4096,
+      maxHeight: 4096,
+      imageQuality: 90,
+    );
     if (!mounted || image == null) return;
+    final extension = image.path.split('.').last.toLowerCase();
+    final length = await image.length();
+    if (!mounted) return;
+    if (!const {'jpg', 'jpeg', 'png', 'webp'}.contains(extension) ||
+        length > 10 * 1024 * 1024) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Choose a JPG, PNG, or WebP image under 10 MB.'),
+        ),
+      );
+      return;
+    }
     setState(() => _labelImageSelected = true);
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -269,7 +289,13 @@ class _CargoAdminWarehouseAutomationPageState
         pin: pin.isEmpty ? null : pin,
       );
       if (!mounted) return;
-      setState(() => _collectionResult = result);
+      setState(() {
+        _collectionResult = result;
+        _verifiedCollectionCode = code.isEmpty ? null : code;
+        _verifiedCollectionPin = pin.isEmpty ? null : pin;
+      });
+      _codeController.clear();
+      _pinController.clear();
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -285,22 +311,28 @@ class _CargoAdminWarehouseAutomationPageState
   Future<void> _confirmCollection() async {
     final requestId =
         '${_collectionResult?['request_id'] ?? _collectionResult?['id'] ?? ''}';
-    final code = _codeController.text.trim();
-    final pin = _pinController.text.trim();
+    final code = _verifiedCollectionCode;
+    final pin = _verifiedCollectionPin;
     if (requestId.isEmpty) return;
 
     setState(() => _busy = true);
     try {
       await _repository.confirmCollection(
         requestId: requestId,
-        code: code.isEmpty ? null : code,
-        pin: pin.isEmpty ? null : pin,
+        code: code,
+        pin: pin,
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Collection handover confirmed.')),
       );
-      setState(() => _collectionResult = null);
+      setState(() {
+        _collectionResult = null;
+        _verifiedCollectionCode = null;
+        _verifiedCollectionPin = null;
+      });
+      _codeController.clear();
+      _pinController.clear();
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -578,12 +610,30 @@ class _CargoAdminWarehouseAutomationPageState
               TextFormField(
                 controller: _codeController,
                 decoration: const InputDecoration(labelText: 'Collection code'),
+                inputFormatters: [LengthLimitingTextInputFormatter(512)],
+                onChanged: (_) => setState(() {
+                  _collectionResult = null;
+                  _verifiedCollectionCode = null;
+                  _verifiedCollectionPin = null;
+                }),
               ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _pinController,
                 decoration: const InputDecoration(labelText: 'Collection PIN'),
                 keyboardType: TextInputType.number,
+                obscureText: true,
+                enableSuggestions: false,
+                autocorrect: false,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(10),
+                ],
+                onChanged: (_) => setState(() {
+                  _collectionResult = null;
+                  _verifiedCollectionCode = null;
+                  _verifiedCollectionPin = null;
+                }),
               ),
               const SizedBox(height: 12),
               Wrap(
@@ -652,7 +702,12 @@ class _BarcodeScannerPageState extends State<_BarcodeScannerPage> {
                 .map((barcode) => barcode.rawValue)
                 .whereType<String>()
                 .firstOrNull;
-            if (value == null || value.isEmpty) return;
+            if (value == null ||
+                value.isEmpty ||
+                value.length > 4096 ||
+                value.contains(RegExp(r'[\x00-\x08\x0B\x0C\x0E-\x1F]'))) {
+              return;
+            }
             _handled = true;
             Navigator.pop(context, value);
           },

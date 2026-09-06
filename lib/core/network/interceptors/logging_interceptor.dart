@@ -38,7 +38,7 @@ class LoggingInterceptor extends Interceptor {
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    _logger.d('REQUEST[${options.method}] ${_safeUri(options.uri)}');
+    _logger.d('REQUEST[${options.method}] ${redactUriForLogging(options.uri)}');
     _logger.d('Headers: ${_redactHeaders(options.headers)}');
     if (options.data is Map<String, dynamic>) {
       _logger.d(
@@ -56,7 +56,7 @@ class LoggingInterceptor extends Interceptor {
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
     _logger.d(
-      'RESPONSE[${response.statusCode}] ${_safeUri(response.requestOptions.uri)}',
+      'RESPONSE[${response.statusCode}] ${redactUriForLogging(response.requestOptions.uri)}',
     );
     handler.next(response);
   }
@@ -64,24 +64,32 @@ class LoggingInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
     _logger.e(
-      'ERROR[${err.response?.statusCode ?? 'NO_RESPONSE'}] ${_safeUri(err.requestOptions.uri)}',
+      'ERROR[${err.response?.statusCode ?? 'NO_RESPONSE'}] ${redactUriForLogging(err.requestOptions.uri)}',
     );
-    _logger.e('Message: ${err.message}');
+    _logger.e('Network request failed; sensitive exception details omitted.');
     handler.next(err);
   }
+}
 
-  String _safeUri(Uri uri) {
-    var path = uri.path;
-    for (final marker in const [
-      '/warehouse-access/',
-      '/receipt/verify/',
-      '/shared/',
-    ]) {
-      final index = path.indexOf(marker);
-      if (index >= 0) {
-        path = '${path.substring(0, index + marker.length)}<redacted>';
-      }
+/// Returns a query-free path with capability tokens and identifiers removed.
+/// This function is public so the redaction contract can be regression-tested.
+String redactUriForLogging(Uri uri) {
+  var path = uri.path;
+  for (final marker in const [
+    '/warehouse-access/',
+    '/receipt/verify/',
+    '/verify-receipt/',
+    '/shared/',
+    '/public/batch/',
+    '/label/air/',
+    '/label/sea/',
+    '/product/',
+  ]) {
+    final index = path.indexOf(marker);
+    if (index >= 0) {
+      path = '${path.substring(0, index + marker.length)}<redacted>';
+      break;
     }
-    return path;
   }
+  return path;
 }

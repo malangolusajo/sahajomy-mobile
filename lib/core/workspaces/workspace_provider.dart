@@ -41,13 +41,16 @@ class WorkspaceState {
 
 class WorkspaceProvider extends StateNotifier<WorkspaceState> {
   WorkspaceProvider(this._tokenStorage) : super(const WorkspaceState()) {
-    _loadFromStorage();
+    ready = _loadFromStorage();
   }
 
   final TokenStorage _tokenStorage;
+  late final Future<void> ready;
+  int _revision = 0;
 
   String? get currentCompanyId => state.companyId;
   String? get currentBranchId => state.branchId;
+  int get revision => _revision;
 
   Future<void> _loadFromStorage() async {
     final companyId = await _tokenStorage.getCompanyId();
@@ -81,10 +84,44 @@ class WorkspaceProvider extends StateNotifier<WorkspaceState> {
   }
 
   Future<void> clearWorkspace() async {
-    await _tokenStorage.clearWorkspace();
+    // Invalidate old-tenant responses before waiting on device storage.
+    _revision++;
     state = const WorkspaceState();
+    await _tokenStorage.clearWorkspace();
   }
 
   bool hasPermission(String permission) =>
       state.permissions?.contains(permission) ?? false;
+
+  /// Client-side defence in depth. The API remains the authority, but a
+  /// company-scoped route is not rendered when its returned capability list
+  /// does not permit that resource.
+  bool canOpenRoute(String location) {
+    if (!state.hasCompany ||
+        location == '/account/workspaces' ||
+        const {
+          '/customer',
+          '/cargo-admin',
+          '/sourcing-agent',
+          '/super-admin',
+        }.contains(location)) {
+      return true;
+    }
+    final permissions = state.permissions;
+    if (permissions == null) return false;
+    final normalized = permissions
+        .map((value) => value.trim().toLowerCase())
+        .where((value) => value.isNotEmpty)
+        .toSet();
+    if (normalized.contains('*') || normalized.contains('admin:*')) return true;
+    final segments = Uri.parse(location).pathSegments;
+    if (segments.length < 2) return true;
+    final resource = segments[1].replaceAll('-', '_');
+    final route = Uri.parse(location).path.toLowerCase();
+    return normalized.contains('route:$route') ||
+        normalized.contains('$resource:*') ||
+        normalized.contains('$resource.read') ||
+        normalized.contains('$resource.view') ||
+        normalized.contains('$resource.manage');
+  }
 }

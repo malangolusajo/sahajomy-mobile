@@ -60,6 +60,7 @@ class _SuperAdminMorePage extends StatelessWidget {
     title: 'Platform governance',
     description:
         'Manage companies, approvals, commercial settings, and oversight.',
+    showAccountActions: true,
     entries: [
       FeatureMenuEntry(
         title: 'Sourcing agents',

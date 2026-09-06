@@ -26,7 +26,12 @@ class _CustomerMorePageState extends ConsumerState<CustomerMorePage> {
     } catch (_) {
       // Clearing the local encrypted session still protects this device offline.
     } finally {
+      await ref.read(workspaceProvider.notifier).clearWorkspace();
       await _store.clear();
+      ref.read(pendingDestinationProvider.notifier).state = null;
+      ref.read(pendingPhoneNumberProvider.notifier).state = null;
+      ref.read(pendingMfaChallengeProvider.notifier).state = null;
+      ref.invalidate(apiClientProvider);
       if (mounted) {
         context.go('/sign-in');
       }

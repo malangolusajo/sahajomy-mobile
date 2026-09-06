@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:dio/dio.dart';
 import 'package:sahajomy_mobile/app/theme.dart';
 import 'package:sahajomy_mobile/app/app_route_aliases.dart';
 import 'package:sahajomy_mobile/core/network/api_client.dart';
@@ -83,17 +84,20 @@ class _FakeApiClient extends ApiClient {
   Future<T> get<T>(
     String path, {
     Map<String, dynamic>? queryParameters,
+    Options? options,
   }) async => <String, dynamic>{} as T;
 
   @override
   Future<List<Map<String, dynamic>>> getList(
     String path, {
     Map<String, dynamic>? queryParameters,
+    Options? options,
   }) async => const [];
 
   @override
   Future<Map<String, dynamic>> getObject(
     String path, {
     Map<String, dynamic>? queryParameters,
+    Options? options,
   }) async => const {};
 }

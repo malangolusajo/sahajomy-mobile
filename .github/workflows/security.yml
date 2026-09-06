@@ -1,0 +1,46 @@
+name: Security baseline
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  mobile-security:
+    runs-on: ubuntu-latest
+    steps:
+      # actions/checkout v4.2.2, pinned to an immutable upstream commit.
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Install pinned Flutter SDK
+        run: |
+          git clone --filter=blob:none https://github.com/flutter/flutter.git "$RUNNER_TEMP/flutter"
+          git -C "$RUNNER_TEMP/flutter" checkout --detach 6655482ec06e547f90abf8ae7590466f4415978d
+          echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
+      - name: Resolve locked dependencies
+        run: flutter pub get --enforce-lockfile
+      - name: Static analysis
+        run: flutter analyze --fatal-infos
+      - name: Security regression tests
+        run: flutter test
+      - name: Dependency vulnerability scan
+        shell: pwsh
+        run: ./tool/check_pub_vulnerabilities.ps1
+
+  ios-native-build:
+    runs-on: macos-15
+    steps:
+      # actions/checkout v4.2.2, pinned to an immutable upstream commit.
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Install pinned Flutter SDK
+        run: |
+          git clone --filter=blob:none https://github.com/flutter/flutter.git "$RUNNER_TEMP/flutter"
+          git -C "$RUNNER_TEMP/flutter" checkout --detach 6655482ec06e547f90abf8ae7590466f4415978d
+          echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
+      - name: Resolve locked dependencies
+        run: flutter pub get --enforce-lockfile
+      - name: Compile iOS native code without signing
+        run: flutter build ios --release --no-codesign

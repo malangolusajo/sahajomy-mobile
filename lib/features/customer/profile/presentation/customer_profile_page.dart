@@ -53,6 +53,15 @@ class _CustomerProfilePageState extends ConsumerState<CustomerProfilePage> {
         final profile = snapshot.data!;
         final name = profile['name'] as String? ?? 'Sahajomy customer';
         final imageUrl = profile['profile_image_url'] as String?;
+        final imageUri = imageUrl == null ? null : Uri.tryParse(imageUrl);
+        final safeImageUrl =
+            imageUri != null &&
+                imageUri.scheme == 'https' &&
+                imageUri.userInfo.isEmpty &&
+                (imageUri.host == 'sahajomy.co.tz' ||
+                    imageUri.host.endsWith('.sahajomy.co.tz'))
+            ? imageUrl
+            : null;
         final initials = name
             .split(' ')
             .where((part) => part.isNotEmpty)
@@ -73,9 +82,9 @@ class _CustomerProfilePageState extends ConsumerState<CustomerProfilePage> {
               children: [
                 CircleAvatar(
                   radius: 32,
-                  foregroundImage: imageUrl == null || imageUrl.isEmpty
+                  foregroundImage: safeImageUrl == null
                       ? null
-                      : NetworkImage(imageUrl),
+                      : NetworkImage(safeImageUrl),
                   child: Text(initials.isEmpty ? 'S' : initials),
                 ),
                 const SizedBox(width: 16),

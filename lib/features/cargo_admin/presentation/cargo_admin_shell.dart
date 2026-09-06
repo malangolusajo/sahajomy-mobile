@@ -68,6 +68,7 @@ class _CargoAdminMorePage extends StatelessWidget {
   Widget build(BuildContext context) => const FeatureMenuPage(
     title: 'Cargo operations',
     description: 'Manage company operations, people, billing, and documents.',
+    showAccountActions: true,
     entries: [
       FeatureMenuEntry(
         title: 'Dashboard',

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/auth/presentation/secure_account_actions.dart';
+
 class FeatureMenuEntry {
   const FeatureMenuEntry({
     required this.title,
@@ -20,12 +22,14 @@ class FeatureMenuPage extends StatelessWidget {
     required this.title,
     required this.description,
     required this.entries,
+    this.showAccountActions = false,
     super.key,
   });
 
   final String title;
   final String description;
   final List<FeatureMenuEntry> entries;
+  final bool showAccountActions;
 
   @override
   Widget build(BuildContext context) => ListView(
@@ -57,6 +61,12 @@ class FeatureMenuPage extends StatelessWidget {
             onTap: () => context.push(entry.route),
           ),
         ),
+      if (showAccountActions) ...[
+        const SizedBox(height: 18),
+        Text('Account', style: Theme.of(context).textTheme.titleLarge),
+        const SizedBox(height: 8),
+        const SecureAccountActions(),
+      ],
     ],
   );
 }

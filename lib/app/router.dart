@@ -4,7 +4,10 @@ import 'package:go_router/go_router.dart';
 
 import '../core/auth/session.dart';
 import '../core/providers.dart';
+import '../core/network/api_exception.dart';
+import '../core/security/app_link_guard.dart';
 import '../features/auth/data/auth_repository.dart';
+import '../features/auth/presentation/mfa_page.dart';
 import '../features/auth/presentation/otp_page.dart';
 import '../features/auth/presentation/sign_in_page.dart';
 import '../features/auth/presentation/welcome_page.dart';
@@ -30,8 +33,6 @@ final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: '/splash',
     redirect: (context, state) async {
-      final customDestination = _customSchemeDestination(state.uri);
-      if (customDestination != null) return customDestination;
       final location = state.matchedLocation;
       // The splash page owns the initial session/onboarding decision so the
       // branded transition is shown consistently instead of flashing a route.
@@ -42,45 +43,54 @@ final routerProvider = Provider<GoRouter>((ref) {
           location == '/sign-in' ||
           location == '/login' ||
           location == '/otp' ||
+          location == '/mfa' ||
           location == '/onboarding';
       final isProtectedRoute = _isProtectedLocation(location);
 
       if (session == null && isProtectedRoute) {
-        ref.read(pendingDestinationProvider.notifier).state = state.uri
-            .toString();
+        ref.read(pendingDestinationProvider.notifier).state =
+            sanitizePendingDestination(state.uri.toString());
         return '/sign-in';
       }
       if (session == null) return null;
 
-      if (isProtectedRoute) {
-        if (!_roleCanOpen(session.role, location)) {
-          return _routeForRole(session.role);
-        }
-
-        // Protected destinations always verify the authoritative session.
+      if (isProtectedRoute || isAuthRoute) {
+        // Never trust the persisted role. Every protected transition checks
+        // the server-authoritative identity and MFA state first.
         try {
-          await apiClient.get(
-            'auth/me',
-            queryParameters: {
-              if (workspaceNotifier.currentCompanyId != null)
-                'company_id': workspaceNotifier.currentCompanyId,
-            },
-          );
-        } catch (_) {
-          try {
-            final refreshed = await AuthRepository(apiClient)
-                .refreshSession(session);
-            await sessionStore.save(refreshed);
-          } catch (_) {
-            await sessionStore.clear();
-            ref.read(pendingDestinationProvider.notifier).state = state.uri
-                .toString();
-            return '/sign-in';
+          await workspaceNotifier.ready;
+          final verified = await AuthRepository(apiClient)
+              .verifyStoredSession(session);
+          await sessionStore.save(verified);
+          if (isProtectedRoute && !_roleCanOpen(verified.role, location)) {
+            return _routeForRole(verified.role);
           }
+          if (isProtectedRoute && !workspaceNotifier.canOpenRoute(location)) {
+            return _routeForRole(verified.role);
+          }
+          if (isAuthRoute) return _routeForRole(verified.role);
+        } on ApiException catch (error) {
+          if (!error.isUnauthorized && !error.isForbidden) {
+            ref.read(pendingDestinationProvider.notifier).state =
+                sanitizePendingDestination(state.uri.toString());
+            return '/splash';
+          }
+          await workspaceNotifier.clearWorkspace();
+          await sessionStore.clear();
+          ref.read(pendingDestinationProvider.notifier).state =
+              sanitizePendingDestination(state.uri.toString());
+          return '/sign-in';
+        } on FormatException {
+          await workspaceNotifier.clearWorkspace();
+          await sessionStore.clear();
+          return '/sign-in';
+        } catch (_) {
+          ref.read(pendingDestinationProvider.notifier).state =
+              sanitizePendingDestination(state.uri.toString());
+          return '/splash';
         }
       }
 
-      if (isAuthRoute) return _routeForRole(session.role);
       return null;
     },
     routes: [
@@ -97,13 +107,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/sign-in',
         builder: (context, state) => const SignInPage(),
       ),
-      GoRoute(
-        path: '/otp',
-        builder: (context, state) {
-          final phone = state.uri.queryParameters['phone'] ?? '';
-          return OtpPage(phoneNumber: phone);
-        },
-      ),
+      GoRoute(path: '/otp', builder: (context, state) => const OtpPage()),
+      GoRoute(path: '/mfa', builder: (context, state) => const MfaPage()),
       GoRoute(
         path: '/customer',
         builder: (context, state) => const CustomerShell(),
@@ -171,34 +176,6 @@ bool _isProtectedLocation(String location) =>
     location == '/super-admin' ||
     location.startsWith('/admin/') ||
     location == '/account/workspaces';
-
-String? _customSchemeDestination(Uri uri) {
-  if (uri.scheme != 'sahajomy' && uri.scheme != 'sajajomy') return null;
-  final segments = uri.pathSegments;
-  if (uri.host == 'customer' &&
-      segments.length >= 2 &&
-      segments[0] == 'warehouse-access') {
-    return '/customer/warehouse-access/${Uri.encodeComponent(segments[1])}';
-  }
-  if (uri.host == 'shared' && segments.length >= 3 && segments[0] == 'label') {
-    return '/label/${segments[1]}/${Uri.encodeComponent(segments[2])}';
-  }
-  if (uri.host == 'shared' &&
-      segments.length >= 2 &&
-      segments[0] == 'product') {
-    return '/product/${Uri.encodeComponent(segments[1])}';
-  }
-  if (uri.host == 'shared' && segments.length >= 2 && segments[0] == 'batch') {
-    return '/shared/${Uri.encodeComponent(segments[1])}';
-  }
-  if (uri.host == 'verify-receipt' && segments.isNotEmpty) {
-    return Uri(
-      path: '/verify-receipt',
-      queryParameters: {'code': segments.first},
-    ).toString();
-  }
-  return '/';
-}
 
 bool _roleCanOpen(UserRole role, String location) {
   if (location == '/account/workspaces') return true;

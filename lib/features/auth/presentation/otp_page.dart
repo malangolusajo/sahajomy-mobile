@@ -9,12 +9,13 @@ import '../../../app/theme.dart';
 import '../../../core/auth/session.dart';
 import '../../../core/network/api_exception.dart';
 import '../../../core/providers.dart';
+import '../../../core/security/app_link_guard.dart';
 import '../../../features/auth/data/auth_repository.dart';
 import '../../../core/ui/sahajomy_ui.dart';
+import '../domain/auth_input.dart';
 
 class OtpPage extends ConsumerStatefulWidget {
-  const OtpPage({super.key, required this.phoneNumber});
-  final String phoneNumber;
+  const OtpPage({super.key});
 
   @override
   ConsumerState<OtpPage> createState() => _OtpPageState();
@@ -62,9 +63,12 @@ class _OtpPageState extends ConsumerState<OtpPage> {
       _errorMessage = null;
     });
     try {
-      await ref
-          .read(authRepositoryProvider)
-          .sendOtp(phoneNumber: widget.phoneNumber);
+      final phoneNumber = ref.read(pendingPhoneNumberProvider);
+      if (phoneNumber == null) {
+        if (mounted) context.go('/sign-in');
+        return;
+      }
+      await ref.read(authRepositoryProvider).sendOtp(phoneNumber: phoneNumber);
       if (!mounted) return;
       _startResendTimer();
       setState(() => _isResending = false);
@@ -89,7 +93,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
   }
 
   Future<void> _verify() async {
-    if (_codeController.text.trim().length < 4) {
+    if (!isValidOtp(_codeController.text.trim())) {
       setState(
         () => _errorMessage = 'Enter the verification code we sent you.',
       );
@@ -100,17 +104,34 @@ class _OtpPageState extends ConsumerState<OtpPage> {
       _errorMessage = null;
     });
     try {
+      final phoneNumber = ref.read(pendingPhoneNumberProvider);
+      if (phoneNumber == null) {
+        if (mounted) context.go('/sign-in');
+        return;
+      }
       final authRepository = ref.read(authRepositoryProvider);
       final sessionStore = ref.read(sessionStoreProvider);
-      final session = await authRepository.verifyOtp(
-        phoneNumber: widget.phoneNumber,
+      final step = await authRepository.verifyOtp(
+        phoneNumber: phoneNumber,
         otpCode: _codeController.text.trim(),
       );
+      _codeController.clear();
+      if (step is MfaRequired) {
+        ref.read(pendingMfaChallengeProvider.notifier).state = step.challenge;
+        if (mounted) context.go('/mfa');
+        return;
+      }
+      final session = (step as Authenticated).session;
       await sessionStore.save(session);
       if (!mounted) return;
       final route = _routeFor(session.role);
-      final pendingDestination = ref.read(pendingDestinationProvider);
+      final pendingDestination = sanitizePendingDestination(
+        ref.read(pendingDestinationProvider),
+        role: session.role,
+      );
       ref.read(pendingDestinationProvider.notifier).state = null;
+      ref.read(pendingPhoneNumberProvider.notifier).state = null;
+      ref.read(pendingMfaChallengeProvider.notifier).state = null;
       ref.invalidate(workspaceProvider);
       ref.invalidate(apiClientProvider);
       if (mounted) {
@@ -167,7 +188,9 @@ class _OtpPageState extends ConsumerState<OtpPage> {
               text: 'We sent a six-digit code to ',
               children: [
                 TextSpan(
-                  text: widget.phoneNumber,
+                  text:
+                      ref.watch(pendingPhoneNumberProvider) ??
+                      'your mobile number',
                   style: const TextStyle(
                     color: appInk,
                     fontWeight: FontWeight.w700,
@@ -181,6 +204,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
             controller: _codeController,
             keyboardType: TextInputType.number,
             textInputAction: TextInputAction.done,
+            autofillHints: const [AutofillHints.oneTimeCode],
             inputFormatters: [
               FilteringTextInputFormatter.digitsOnly,
               LengthLimitingTextInputFormatter(6),

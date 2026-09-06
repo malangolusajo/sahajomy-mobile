@@ -63,6 +63,7 @@ class _SourcingAgentMorePage extends StatelessWidget {
   Widget build(BuildContext context) => const FeatureMenuPage(
     title: 'Sourcing operations',
     description: 'Manage your storefront, cargo, documents, and earnings.',
+    showAccountActions: true,
     entries: [
       FeatureMenuEntry(
         title: 'Storefront',

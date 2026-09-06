@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
     <application
         android:label="Sahajomy"
         android:name="${applicationName}"
@@ -37,14 +37,14 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="sahajomy.co.tz" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="sahajomy" />
-                <data android:scheme="sajajomy" />
+                <data android:scheme="https" />
+                <data android:host="sahajomy.co.tz" />
+                <data android:pathPrefix="/customer/warehouse-access/" />
+                <data android:pathPrefix="/label/air/" />
+                <data android:pathPrefix="/label/sea/" />
+                <data android:pathPrefix="/product/" />
+                <data android:pathPrefix="/shared/" />
+                <data android:pathPrefix="/verify-receipt" />
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.

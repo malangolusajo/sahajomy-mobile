@@ -6,8 +6,10 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/theme.dart';
 import '../../../core/auth/session.dart';
+import '../../../core/network/api_exception.dart';
 import '../../../core/providers.dart';
 import '../../../core/ui/sahajomy_ui.dart';
+import '../../auth/data/auth_repository.dart';
 
 class SplashPage extends ConsumerStatefulWidget {
   const SplashPage({super.key});
@@ -19,6 +21,8 @@ class SplashPage extends ConsumerStatefulWidget {
 class _SplashPageState extends ConsumerState<SplashPage>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
+  bool _checking = true;
+  String? _error;
 
   @override
   void initState() {
@@ -31,21 +35,55 @@ class _SplashPageState extends ConsumerState<SplashPage>
   }
 
   Future<void> _continueToApp() async {
-    final results = await Future.wait<Object?>([
-      ref.read(sessionStoreProvider).read(),
-      ref.read(tokenStorageProvider).getOnboardingCompleted(),
-      Future<void>.delayed(const Duration(milliseconds: 1250)),
-    ]);
-    if (!mounted) return;
-    final session = results[0] as Session?;
-    final onboardingCompleted = results[1] as bool;
-    context.go(
-      session != null
-          ? _homeFor(session.role)
-          : onboardingCompleted
-          ? '/sign-in'
-          : '/onboarding',
-    );
+    setState(() {
+      _checking = true;
+      _error = null;
+    });
+    final sessionStore = ref.read(sessionStoreProvider);
+    try {
+      final results = await Future.wait<Object?>([
+        sessionStore.read(),
+        ref.read(tokenStorageProvider).getOnboardingCompleted(),
+        Future<void>.delayed(const Duration(milliseconds: 1250)),
+      ]);
+      if (!mounted) return;
+      final session = results[0] as Session?;
+      final onboardingCompleted = results[1] as bool;
+      if (session == null) {
+        context.go(onboardingCompleted ? '/sign-in' : '/onboarding');
+        return;
+      }
+      await ref.read(workspaceProvider.notifier).ready;
+      final verified = await ref
+          .read(authRepositoryProvider)
+          .verifyStoredSession(session);
+      await sessionStore.save(verified);
+      if (mounted) context.go(_homeFor(verified.role));
+    } on ApiException catch (error) {
+      if (error.isUnauthorized || error.isForbidden) {
+        await ref.read(workspaceProvider.notifier).clearWorkspace();
+        await sessionStore.clear();
+        if (mounted) context.go('/sign-in');
+        return;
+      }
+      if (mounted) {
+        setState(() {
+          _checking = false;
+          _error = 'We could not securely verify your session.';
+        });
+      }
+    } on FormatException {
+      await ref.read(workspaceProvider.notifier).clearWorkspace();
+      await sessionStore.clear();
+      if (mounted) context.go('/sign-in');
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _checking = false;
+          _error = 'Check your connection, then try again.';
+        });
+      }
+    }
   }
 
   @override
@@ -113,16 +151,31 @@ class _SplashPageState extends ConsumerState<SplashPage>
                   const Spacer(flex: 5),
                   FadeTransition(
                     opacity: fade,
-                    child: const Padding(
-                      padding: EdgeInsets.only(bottom: 34),
-                      child: SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2.2,
-                          color: brandCoral,
-                        ),
-                      ),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(28, 0, 28, 34),
+                      child: _checking
+                          ? const SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2.2,
+                                color: brandCoral,
+                              ),
+                            )
+                          : Column(
+                              children: [
+                                Text(
+                                  _error ?? 'Session verification paused.',
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                                const SizedBox(height: 12),
+                                FilledButton(
+                                  onPressed: _continueToApp,
+                                  child: const Text('Try again securely'),
+                                ),
+                              ],
+                            ),
                     ),
                   ),
                 ],

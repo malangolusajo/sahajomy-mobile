@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/theme.dart';
 import '../../../core/ui/sahajomy_ui.dart';
 import '../../../core/network/api_exception.dart';
+import '../../../core/providers.dart';
 import '../../../features/auth/data/auth_repository.dart';
+import '../domain/auth_input.dart';
 
 class SignInPage extends ConsumerStatefulWidget {
   const SignInPage({super.key});
@@ -34,10 +37,11 @@ class _SignInPageState extends ConsumerState<SignInPage> {
     });
     try {
       final authRepository = ref.read(authRepositoryProvider);
-      await authRepository.sendOtp(phoneNumber: _phoneController.text.trim());
+      final phone = normalizePhoneNumber(_phoneController.text);
+      await authRepository.sendOtp(phoneNumber: phone);
       if (!mounted) return;
-      final phone = _phoneController.text.trim();
-      context.go('/otp?phone=$phone');
+      ref.read(pendingPhoneNumberProvider.notifier).state = phone;
+      context.go('/otp');
     } on ApiException catch (error) {
       if (mounted) setState(() => _errorMessage = error.message);
     } on FormatException catch (error) {
@@ -98,12 +102,16 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                     keyboardType: TextInputType.phone,
                     textInputAction: TextInputAction.done,
                     autofillHints: const [AutofillHints.telephoneNumber],
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[0-9+ ()-]')),
+                      LengthLimitingTextInputFormatter(24),
+                    ],
                     decoration: const InputDecoration(
                       hintText: '+255 7XX XXX XXX',
                       prefixIcon: Icon(Icons.phone_rounded),
                     ),
                     validator: (value) =>
-                        value == null || value.trim().length < 7
+                        value == null || !isValidPhoneNumber(value)
                         ? 'Enter a valid mobile number.'
                         : null,
                     onFieldSubmitted: (_) => _sendOtp(),

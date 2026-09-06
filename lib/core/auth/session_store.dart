@@ -13,11 +13,22 @@ class SessionStore {
     final roleName = await _tokenStorage.getUserRole();
 
     if (accessToken == null || refreshToken == null || roleName == null) {
+      if (accessToken != null || refreshToken != null || roleName != null) {
+        await clear();
+      }
+      return null;
+    }
+
+    if (!_validToken(accessToken) || !_validToken(refreshToken)) {
+      await clear();
       return null;
     }
 
     final roles = UserRole.values.where((role) => role.name == roleName);
-    if (roles.isEmpty) return null;
+    if (roles.isEmpty) {
+      await clear();
+      return null;
+    }
 
     return Session(
       accessToken: accessToken,
@@ -27,6 +38,10 @@ class SessionStore {
   }
 
   Future<void> save(Session session) async {
+    if (!_validToken(session.accessToken) ||
+        !_validToken(session.refreshToken)) {
+      throw const FormatException('Refusing to store an invalid session.');
+    }
     await _tokenStorage.saveTokens(
       accessToken: session.accessToken,
       refreshToken: session.refreshToken,
@@ -35,4 +50,9 @@ class SessionStore {
   }
 
   Future<void> clear() => _tokenStorage.clear();
+
+  bool _validToken(String value) =>
+      value.length >= 16 &&
+      value.length <= 16384 &&
+      !value.contains(RegExp(r'\s'));
 }

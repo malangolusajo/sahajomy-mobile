@@ -20,8 +20,6 @@ class TokenStorage {
 
   Future<String?> getUserId() => _storage.read(SecureStorage.userIdKey);
 
-  Future<String?> getMfaSecret() => _storage.read(SecureStorage.mfaSecretKey);
-
   Future<bool> getOnboardingCompleted() async =>
       await _storage.read(SecureStorage.onboardingCompletedKey) == 'true';
 
@@ -56,9 +54,6 @@ class TokenStorage {
     ]);
   }
 
-  Future<void> saveMfaSecret(String secret) =>
-      _storage.write(SecureStorage.mfaSecretKey, secret);
-
   Future<void> setOnboardingCompleted() =>
       _storage.write(SecureStorage.onboardingCompletedKey, 'true');
 
@@ -84,7 +79,6 @@ class TokenStorage {
       _storage.delete(SecureStorage.companyIdKey),
       _storage.delete(SecureStorage.branchIdKey),
       _storage.delete(SecureStorage.userIdKey),
-      _storage.delete(SecureStorage.mfaSecretKey),
     ]);
   }
 

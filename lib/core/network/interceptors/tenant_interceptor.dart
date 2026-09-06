@@ -18,6 +18,8 @@ class TenantInterceptor extends Interceptor {
       return;
     }
 
+    options.extra['tenantRevision'] = _workspaceProvider.revision;
+
     final companyId = _workspaceProvider.currentCompanyId;
     final branchId = _workspaceProvider.currentBranchId;
 
@@ -28,5 +30,23 @@ class TenantInterceptor extends Interceptor {
       options.headers['X-Sahajomy-Branch'] = branchId;
     }
     handler.next(options);
+  }
+
+  @override
+  void onResponse(Response response, ResponseInterceptorHandler handler) {
+    final requestRevision = response.requestOptions.extra['tenantRevision'];
+    if (requestRevision != null &&
+        requestRevision != _workspaceProvider.revision) {
+      handler.reject(
+        DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          type: DioExceptionType.cancel,
+          message: 'Tenant context changed before the response completed.',
+        ),
+      );
+      return;
+    }
+    handler.next(response);
   }
 }

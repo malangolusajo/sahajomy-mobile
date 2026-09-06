@@ -23,12 +23,15 @@ class ApiClient {
     required this.workspaceProvider,
     bool enableLogging = kDebugMode,
   }) : _dio = dio ?? _createDio() {
+    // Central response mapping must also apply to injected/testing Dio clients.
+    _dio.options.validateStatus = (status) => status != null;
     _setupInterceptors(enableLogging: enableLogging);
   }
 
   static Dio _createDio() => Dio(
     BaseOptions(
-      baseUrl: ApiConfig.baseUrl,
+      baseUrl:
+          '${ApiConfig.validatedBaseUri().toString().replaceFirst(RegExp(r'/$'), '')}/',
       connectTimeout: const Duration(seconds: 30),
       receiveTimeout: const Duration(seconds: 30),
       sendTimeout: const Duration(minutes: 5),
@@ -58,6 +61,25 @@ class ApiClient {
 
   Dio get dio => _dio;
 
+  /// Public authentication calls must not inherit an old account or tenant.
+  static Options publicOptions({bool neverReplay = true}) => Options(
+    extra: {
+      'skipAuth': true,
+      'skipTenant': true,
+      if (neverReplay) 'skipRefresh': true,
+    },
+  );
+
+  /// Validates a newly issued token before it is committed to secure storage.
+  static Options freshSessionOptions(String accessToken) => Options(
+    headers: {'Authorization': 'Bearer $accessToken'},
+    extra: {'skipAuth': true, 'skipTenant': true, 'skipRefresh': true},
+  );
+
+  /// Sensitive state changes are never automatically replayed after a 401.
+  static Options neverReplayOptions({bool skipTenant = false}) =>
+      Options(extra: {'skipRefresh': true, if (skipTenant) 'skipTenant': true});
+
   Future<void> refreshAccessTokenOnce() {
     final existing = _activeRefresh;
     if (existing != null) return existing;
@@ -86,35 +108,61 @@ class ApiClient {
         ),
       );
 
-      final accessToken = response.data['access_token'] as String?;
-      final newRefreshToken = response.data['refresh_token'] as String?;
+      final statusCode = response.statusCode ?? 0;
+      if (statusCode < 200 || statusCode >= 300) {
+        if (statusCode == 400 || statusCode == 401 || statusCode == 403) {
+          await tokenStorage.clear();
+        }
+        throw ApiException(
+          statusCode: statusCode,
+          message: _errorMessage(statusCode),
+        );
+      }
+      final body = response.data;
+      if (body is! Map) {
+        await tokenStorage.clear();
+        throw const FormatException('Invalid refresh response.');
+      }
+      final accessToken = body['access_token'] as String?;
+      final newRefreshToken = body['refresh_token'] as String?;
 
-      if (accessToken == null || accessToken.isEmpty) {
-        throw Exception('No access token in refresh response');
+      if (!_validToken(accessToken) ||
+          (newRefreshToken != null && !_validToken(newRefreshToken))) {
+        throw const FormatException('Invalid token in refresh response.');
       }
 
       await tokenStorage.saveTokens(
-        accessToken: accessToken,
+        accessToken: accessToken!,
         refreshToken: newRefreshToken ?? refreshToken,
       );
-    } catch (e) {
+    } on FormatException {
       await tokenStorage.clear();
       rethrow;
     }
   }
 
-  Future<T> get<T>(String path, {Map<String, dynamic>? queryParameters}) async {
-    final response = await _dio.get<T>(path, queryParameters: queryParameters);
+  Future<T> get<T>(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+  }) async {
+    final response = await _dio.get<T>(
+      _validatedPath(path),
+      queryParameters: queryParameters,
+      options: options,
+    );
     return _handleResponse(response);
   }
 
   Future<List<Map<String, dynamic>>> getList(
     String path, {
     Map<String, dynamic>? queryParameters,
+    Options? options,
   }) async {
     final response = await _dio.get<List<dynamic>>(
-      path,
+      _validatedPath(path),
       queryParameters: queryParameters,
+      options: options,
     );
     return _handleListResponse(response);
   }
@@ -122,10 +170,12 @@ class ApiClient {
   Future<Map<String, dynamic>> getObject(
     String path, {
     Map<String, dynamic>? queryParameters,
+    Options? options,
   }) async {
     final response = await _dio.get<Map<String, dynamic>>(
-      path,
+      _validatedPath(path),
       queryParameters: queryParameters,
+      options: options,
     );
     return _handleObjectResponse(response);
   }
@@ -134,12 +184,13 @@ class ApiClient {
     String path, {
     dynamic data,
     Map<String, dynamic>? queryParameters,
+    Options? options,
   }) async {
     final response = await _dio.post<T>(
-      path,
+      _validatedPath(path),
       data: data,
       queryParameters: queryParameters,
-      options: _mutationOptions(),
+      options: _mutationOptions(options),
     );
     return _handleResponse(response);
   }
@@ -148,12 +199,13 @@ class ApiClient {
     String path, {
     dynamic data,
     Map<String, dynamic>? queryParameters,
+    Options? options,
   }) async {
     final response = await _dio.put<T>(
-      path,
+      _validatedPath(path),
       data: data,
       queryParameters: queryParameters,
-      options: _mutationOptions(),
+      options: _mutationOptions(options),
     );
     return _handleResponse(response);
   }
@@ -162,12 +214,13 @@ class ApiClient {
     String path, {
     dynamic data,
     Map<String, dynamic>? queryParameters,
+    Options? options,
   }) async {
     final response = await _dio.patch<T>(
-      path,
+      _validatedPath(path),
       data: data,
       queryParameters: queryParameters,
-      options: _mutationOptions(),
+      options: _mutationOptions(options),
     );
     return _handleResponse(response);
   }
@@ -175,26 +228,36 @@ class ApiClient {
   Future<T> delete<T>(
     String path, {
     Map<String, dynamic>? queryParameters,
+    Options? options,
   }) async {
     final response = await _dio.delete<T>(
-      path,
+      _validatedPath(path),
       queryParameters: queryParameters,
-      options: _mutationOptions(),
+      options: _mutationOptions(options),
     );
     return _handleResponse(response);
   }
 
-  Future<T> postForm<T>(String path, {required FormData data}) async {
+  Future<T> postForm<T>(
+    String path, {
+    required FormData data,
+    Options? options,
+  }) async {
     final response = await _dio.post<T>(
-      path,
+      _validatedPath(path),
       data: data,
-      options: _mutationOptions(),
+      options: _mutationOptions(options),
     );
     return _handleResponse(response);
   }
 
-  Options _mutationOptions() =>
-      Options(headers: {'Idempotency-Key': _newIdempotencyKey()});
+  Options _mutationOptions(Options? options) {
+    final headers = <String, dynamic>{
+      ...?options?.headers,
+      'Idempotency-Key': _newIdempotencyKey(),
+    };
+    return (options ?? Options()).copyWith(headers: headers);
+  }
 
   String _newIdempotencyKey() {
     final randomPart = List.generate(
@@ -204,18 +267,37 @@ class ApiClient {
     return '${DateTime.now().microsecondsSinceEpoch}-$randomPart';
   }
 
+  String _validatedPath(String path) {
+    final uri = Uri.tryParse(path);
+    if (path.isEmpty ||
+        path.length > 2048 ||
+        uri == null ||
+        uri.hasScheme ||
+        uri.hasAuthority ||
+        uri.hasQuery ||
+        uri.hasFragment ||
+        path.startsWith('/') ||
+        path.contains('\\') ||
+        path.split('/').any((segment) => segment == '..') ||
+        path.contains(RegExp(r'[\x00-\x1F\x7F]'))) {
+      throw ArgumentError.value(path.length, 'path', 'Invalid API path.');
+    }
+    return path;
+  }
+
+  bool _validToken(String? value) =>
+      value != null &&
+      value.length >= 16 &&
+      value.length <= 16384 &&
+      !value.contains(RegExp(r'\s'));
+
   T _handleResponse<T>(Response<dynamic> response) {
     if (response.statusCode == null ||
         response.statusCode! < 200 ||
         response.statusCode! >= 300) {
-      final errorData = response.data is Map<String, dynamic>
-          ? response.data as Map<String, dynamic>
-          : <String, dynamic>{};
-      final message = _errorMessage(response.statusCode ?? 0, errorData);
       throw ApiException(
         statusCode: response.statusCode ?? 0,
-        message: message,
-        details: errorData['detail'],
+        message: _errorMessage(response.statusCode ?? 0),
       );
     }
     return response.data as T;
@@ -225,14 +307,9 @@ class ApiClient {
     if (response.statusCode == null ||
         response.statusCode! < 200 ||
         response.statusCode! >= 300) {
-      final errorData = response.data is Map<String, dynamic>
-          ? response.data as Map<String, dynamic>
-          : <String, dynamic>{};
-      final message = _errorMessage(response.statusCode ?? 0, errorData);
       throw ApiException(
         statusCode: response.statusCode ?? 0,
-        message: message,
-        details: errorData['detail'],
+        message: _errorMessage(response.statusCode ?? 0),
       );
     }
     final data = response.data as List<dynamic>?;
@@ -243,14 +320,9 @@ class ApiClient {
     if (response.statusCode == null ||
         response.statusCode! < 200 ||
         response.statusCode! >= 300) {
-      final errorData = response.data is Map<String, dynamic>
-          ? response.data as Map<String, dynamic>
-          : <String, dynamic>{};
-      final message = _errorMessage(response.statusCode ?? 0, errorData);
       throw ApiException(
         statusCode: response.statusCode ?? 0,
-        message: message,
-        details: errorData['detail'],
+        message: _errorMessage(response.statusCode ?? 0),
       );
     }
     return response.data as Map<String, dynamic>? ?? <String, dynamic>{};
@@ -258,11 +330,7 @@ class ApiClient {
 
   void close() => _dio.close();
 
-  String _errorMessage(int statusCode, Map<String, dynamic> data) {
-    final serverMessage = data['message'] ?? data['detail'];
-    if (serverMessage is String && serverMessage.trim().isNotEmpty) {
-      return serverMessage;
-    }
+  String _errorMessage(int statusCode) {
     return switch (statusCode) {
       401 => 'Your session has expired. Sign in again to continue.',
       403 => 'You do not have permission for this action.',
