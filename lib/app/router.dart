@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -12,6 +13,8 @@ import '../features/booking/data/guided_booking_repository.dart';
 import '../features/booking/presentation/guided_sea_booking_page.dart';
 import '../features/customer/dashboard/presentation/customer_shell.dart';
 import '../features/customer/warehouse_access/presentation/customer_warehouse_parcels_page.dart';
+import '../features/onboarding/presentation/onboarding_page.dart';
+import '../features/onboarding/presentation/splash_page.dart';
 import '../features/reference/presentation/dedicated_preview_pages.dart';
 import '../features/reference/presentation/native_reference_screen.dart';
 import '../features/reference/presentation/native_screen_specs.dart';
@@ -25,14 +28,21 @@ final routerProvider = Provider<GoRouter>((ref) {
   final workspaceNotifier = ref.watch(workspaceProvider.notifier);
 
   return GoRouter(
-    initialLocation: '/',
+    initialLocation: '/splash',
     redirect: (context, state) async {
       final customDestination = _customSchemeDestination(state.uri);
       if (customDestination != null) return customDestination;
-      final session = await sessionStore.read();
       final location = state.matchedLocation;
+      // The splash page owns the initial session/onboarding decision so the
+      // branded transition is shown consistently instead of flashing a route.
+      if (location == '/splash') return null;
+
+      final session = await sessionStore.read();
       final isAuthRoute =
-          location == '/sign-in' || location == '/login' || location == '/otp';
+          location == '/sign-in' ||
+          location == '/login' ||
+          location == '/otp' ||
+          location == '/onboarding';
       final isProtectedRoute = _isProtectedLocation(location);
 
       if (session == null && isProtectedRoute) {
@@ -74,6 +84,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
+      GoRoute(path: '/splash', builder: (context, state) => const SplashPage()),
+      GoRoute(
+        path: '/onboarding',
+        builder: (context, state) => const OnboardingPage(),
+      ),
       GoRoute(
         path: '/welcome',
         builder: (context, state) => const WelcomePage(),
@@ -105,10 +120,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/super-admin',
         builder: (context, state) => const SuperAdminShell(),
       ),
-      GoRoute(
-        path: '/screens',
-        builder: (context, state) => const NativeScreenCatalog(),
-      ),
+      if (kDebugMode)
+        GoRoute(
+          path: '/screens',
+          builder: (context, state) => const NativeScreenCatalog(),
+        ),
       GoRoute(
         path: '/customer/sea-bookings/new',
         builder: (context, state) => GuidedSeaBookingPage(
@@ -135,11 +151,12 @@ final routerProvider = Provider<GoRouter>((ref) {
             return dedicatedPreviewPageFor(nativeScreenSpecFor(entry.value));
           },
         ),
-      for (final spec in nativeScreenSpecs)
-        GoRoute(
-          path: spec.routeName,
-          builder: (context, state) => dedicatedPreviewPageFor(spec),
-        ),
+      if (kDebugMode)
+        for (final spec in nativeScreenSpecs)
+          GoRoute(
+            path: spec.routeName,
+            builder: (context, state) => dedicatedPreviewPageFor(spec),
+          ),
     ],
   );
 });

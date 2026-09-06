@@ -27,7 +27,7 @@ class _CustomerShellState extends ConsumerState<CustomerShell> {
         mainAxisSize: MainAxisSize.min,
         children: [
           const Text(
-            'CUSTOMER',
+            'MY SAHAJOMY',
             style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.w800,

@@ -11,6 +11,7 @@ class SecureStorage {
   static const branchIdKey = 'branch_id';
   static const userIdKey = 'user_id';
   static const mfaSecretKey = 'mfa_secret';
+  static const onboardingCompletedKey = 'onboarding_completed';
 
   final FlutterSecureStorage _storage;
 

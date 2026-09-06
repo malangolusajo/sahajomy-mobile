@@ -4,6 +4,8 @@
 *.pyc
 *.swp
 .DS_Store
+__MACOSX/
+._*
 .atom/
 .build/
 .buildlog/

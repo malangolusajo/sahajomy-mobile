@@ -4,34 +4,71 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../app/theme.dart';
 
 class SahajomyBrandMark extends StatelessWidget {
-  const SahajomyBrandMark({super.key, this.size = 64});
+  const SahajomyBrandMark({super.key, this.size = 64, this.showShadow = true});
 
   final double size;
+  final bool showShadow;
 
   @override
-  Widget build(BuildContext context) => Container(
-    width: size,
-    height: size,
-    padding: EdgeInsets.all(size * .12),
-    decoration: BoxDecoration(
-      color: brandNavy,
-      borderRadius: BorderRadius.circular(size * .36),
+  Widget build(BuildContext context) => Semantics(
+    image: true,
+    label: 'Sahajomy',
+    child: Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(size * .29),
+        boxShadow: showShadow
+            ? [
+                BoxShadow(
+                  color: brandNavy.withValues(alpha: .18),
+                  blurRadius: size * .32,
+                  offset: Offset(0, size * .12),
+                ),
+              ]
+            : null,
+      ),
+      child: SvgPicture.asset('assets/branding/sahajomy-logo.svg'),
     ),
-    child: SvgPicture.asset('assets/branding/sahajomy-logo.svg'),
+  );
+}
+
+class SahajomyWordmark extends StatelessWidget {
+  const SahajomyWordmark({super.key, this.light = false, this.markSize = 38});
+
+  final bool light;
+  final double markSize;
+
+  @override
+  Widget build(BuildContext context) => Row(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      SahajomyBrandMark(size: markSize, showShadow: false),
+      const SizedBox(width: 10),
+      Text(
+        'SAHAJOMY',
+        style: TextStyle(
+          color: light ? Colors.white : brandNavy,
+          fontSize: 16,
+          fontWeight: FontWeight.w900,
+          letterSpacing: 1.8,
+        ),
+      ),
+    ],
   );
 }
 
 class SahajomyScreenHeader extends StatelessWidget
     implements PreferredSizeWidget {
   const SahajomyScreenHeader({
-    required this.role,
     required this.title,
     super.key,
+    this.role,
     this.showBack = true,
     this.onNotificationTap,
   });
 
-  final String role;
+  final String? role;
   final String title;
   final bool showBack;
   final VoidCallback? onNotificationTap;
@@ -52,15 +89,18 @@ class SahajomyScreenHeader extends StatelessWidget
     title: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          role.toUpperCase(),
-          style: const TextStyle(
-            color: brandCoral,
-            fontSize: 10,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 1.4,
+        if (_professionalRoleLabel(role) case final roleLabel?) ...[
+          Text(
+            roleLabel,
+            style: const TextStyle(
+              color: brandCoral,
+              fontSize: 10,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 1.25,
+            ),
           ),
-        ),
+          const SizedBox(height: 1),
+        ],
         Text(
           title,
           style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800),
@@ -68,26 +108,28 @@ class SahajomyScreenHeader extends StatelessWidget
       ],
     ),
     centerTitle: true,
-    actions: [
-      IconButton(
-        tooltip: 'Notifications',
-        onPressed: onNotificationTap,
-        icon: const Badge(child: Icon(Icons.notifications_none_rounded)),
-      ),
-    ],
+    actions: onNotificationTap == null
+        ? null
+        : [
+            IconButton(
+              tooltip: 'Notifications',
+              onPressed: onNotificationTap,
+              icon: const Badge(child: Icon(Icons.notifications_none_rounded)),
+            ),
+          ],
   );
 }
 
 class SahajomyWorkspaceHeader extends StatelessWidget
     implements PreferredSizeWidget {
   const SahajomyWorkspaceHeader({
-    required this.role,
     required this.title,
     super.key,
+    this.role,
     this.onNotificationTap,
   });
 
-  final String role;
+  final String? role;
   final String title;
   final VoidCallback? onNotificationTap;
 
@@ -99,15 +141,18 @@ class SahajomyWorkspaceHeader extends StatelessWidget
     title: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          role.toUpperCase(),
-          style: const TextStyle(
-            color: brandCoral,
-            fontSize: 10,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 1.4,
+        if (_professionalRoleLabel(role) case final roleLabel?) ...[
+          Text(
+            roleLabel,
+            style: const TextStyle(
+              color: brandCoral,
+              fontSize: 10,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 1.25,
+            ),
           ),
-        ),
+          const SizedBox(height: 1),
+        ],
         Text(
           title,
           style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
@@ -115,15 +160,27 @@ class SahajomyWorkspaceHeader extends StatelessWidget
       ],
     ),
     centerTitle: true,
-    actions: [
-      IconButton(
-        tooltip: 'Notifications',
-        onPressed: onNotificationTap,
-        icon: const Badge(child: Icon(Icons.notifications_none_rounded)),
-      ),
-    ],
+    actions: onNotificationTap == null
+        ? null
+        : [
+            IconButton(
+              tooltip: 'Notifications',
+              onPressed: onNotificationTap,
+              icon: const Badge(child: Icon(Icons.notifications_none_rounded)),
+            ),
+          ],
   );
 }
+
+String? _professionalRoleLabel(String? role) => switch (role) {
+  null || '' => null,
+  'Customer' => 'MY SAHAJOMY',
+  'Public' || 'Shared' => 'SAHAJOMY',
+  'Cargo Admin' => 'CARGO OPERATIONS',
+  'Sourcing Agent' => 'SOURCING WORKSPACE',
+  'Super Admin' => 'PLATFORM ADMIN',
+  _ => role.toUpperCase(),
+};
 
 class SahajomyPreviewNavigation extends StatelessWidget {
   const SahajomyPreviewNavigation({

@@ -22,6 +22,9 @@ class TokenStorage {
 
   Future<String?> getMfaSecret() => _storage.read(SecureStorage.mfaSecretKey);
 
+  Future<bool> getOnboardingCompleted() async =>
+      await _storage.read(SecureStorage.onboardingCompletedKey) == 'true';
+
   Future<void> write(String key, String value) => _storage.write(key, value);
 
   Future<void> saveTokens({
@@ -56,6 +59,9 @@ class TokenStorage {
   Future<void> saveMfaSecret(String secret) =>
       _storage.write(SecureStorage.mfaSecretKey, secret);
 
+  Future<void> setOnboardingCompleted() =>
+      _storage.write(SecureStorage.onboardingCompletedKey, 'true');
+
   Future<void> saveWorkspace({
     required String companyId,
     String? branchId,
@@ -68,7 +74,19 @@ class TokenStorage {
     }
   }
 
-  Future<void> clear() => _storage.deleteAll();
+  /// Clears account and tenant state while preserving device preferences such
+  /// as the completed onboarding flag.
+  Future<void> clear() async {
+    await Future.wait([
+      _storage.delete(SecureStorage.accessTokenKey),
+      _storage.delete(SecureStorage.refreshTokenKey),
+      _storage.delete(SecureStorage.roleKey),
+      _storage.delete(SecureStorage.companyIdKey),
+      _storage.delete(SecureStorage.branchIdKey),
+      _storage.delete(SecureStorage.userIdKey),
+      _storage.delete(SecureStorage.mfaSecretKey),
+    ]);
+  }
 
   Future<void> clearWorkspace() async {
     await Future.wait([

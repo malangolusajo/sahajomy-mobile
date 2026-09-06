@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" fill="none">
+  <!-- Background gradient -->
+  <rect width="300" height="300" fill="url(#bgGradient)"/>
+  <defs>
+    <linearGradient id="bgGradient" x1="0" y1="0" x2="300" y2="300">
+      <stop offset="0%" stop-color="#F7F8FA"/>
+      <stop offset="100%" stop-color="#E8F4FD"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Phone frame -->
+  <g transform="translate(60, 30)">
+    <rect x="0" y="0" width="180" height="320" rx="28" fill="#0F172A"/>
+    <rect x="8" y="8" width="164" height="304" rx="22" fill="#FFFFFF"/>
+
+    <!-- App header -->
+    <rect x="20" y="20" width="124" height="48" rx="8" fill="#0F3D5E"/>
+    <circle cx="40" cy="44" r="16" fill="#FF6B4A"/>
+    <text x="40" y="48" text-anchor="middle" font-family="system-ui" font-size="12" font-weight="bold" fill="white">S</text>
+    <text x="130" y="48" text-anchor="end" font-family="system-ui" font-size="14" font-weight="600" fill="white">Dashboard</text>
+
+    <!-- Stats cards -->
+    <g fill="#F7F8FA">
+      <rect x="16" y="84" width="72" height="64" rx="12"/>
+      <rect x="96" y="84" width="72" height="64" rx="12"/>
+      <rect x="16" y="160" width="72" height="64" rx="12"/>
+      <rect x="96" y="160" width="72" height="64" rx="12"/>
+    </g>
+
+    <!-- Stat content -->
+    <text x="52" y="110" text-anchor="middle" font-family="system-ui" font-size="20" font-weight="800" fill="#0F3D5E">12</text>
+    <text x="52" y="132" text-anchor="middle" font-family="system-ui" font-size="11" fill="#64748B">Shipments</text>
+
+    <text x="132" y="110" text-anchor="middle" font-family="system-ui" font-size="20" font-weight="800" fill="#059669">8</text>
+    <text x="132" y="132" text-anchor="middle" font-family="system-ui" font-size="11" fill="#64748B">Containers</text>
+
+    <text x="52" y="186" text-anchor="middle" font-family="system-ui" font-size="20" font-weight="800" fill="#FF6B4A">3</text>
+    <text x="52" y="208" text-anchor="middle" font-family="system-ui" font-size="11" fill="#64748B">Pending</text>
+
+    <text x="132" y="186" text-anchor="middle" font-family="system-ui" font-size="20" font-weight="800" fill="#D97706">5</text>
+    <text x="132" y="208" text-anchor="middle" font-family="system-ui" font-size="11" fill="#64748B">Tracking</text>
+
+    <!-- Action buttons -->
+    <rect x="16" y="240" width="72" height="44" rx="10" fill="#0F3D5E"/>
+    <text x="52" y="268" text-anchor="middle" font-family="system-ui" font-size="12" font-weight="700" fill="white">Book</text>
+
+    <rect x="96" y="240" width="72" height="44" rx="10" fill="#FF6B4A"/>
+    <text x="132" y="268" text-anchor="middle" font-family="system-ui" font-size="12" font-weight="700" fill="white">Track</text>
+  </g>
+
+  <!-- Floating cards around phone -->
+  <!-- Tracking card -->
+  <g transform="translate(250, 60)" opacity="0.9">
+    <rect x="0" y="0" width="100" height="70" rx="12" fill="white" filter="drop-shadow(0 4px 12px rgba(15,61,94,0.15))"/>
+    <circle cx="20" cy="20" r="14" fill="#E8F5E9"/>
+    <text x="20" y="24" text-anchor="middle" font-family="system-ui" font-size="12" fill="#059669">📦</text>
+    <text x="50" y="22" text-anchor="middle" font-family="system-ui" font-size="10" font-weight="700" fill="#0F3D5E">SC-2024</text>
+    <text x="50" y="38" text-anchor="middle" font-family="system-ui" font-size="8" fill="#64748B">Dar es Salaam</text>
+    <text x="50" y="52" text-anchor="middle" font-family="system-ui" font-size="8" fill="#059669" font-weight="600">✓ Delivered</text>
+  </g>
+
+  <!-- Booking card -->
+  <g transform="translate(250, 150)" opacity="0.9">
+    <rect x="0" y="0" width="100" height="70" rx="12" fill="white" filter="drop-shadow(0 4px 12px rgba(15,61,94,0.15))"/>
+    <circle cx="20" cy="20" r="14" fill="#FFF3E0"/>
+    <text x="20" y="24" text-anchor="middle" font-family="system-ui" font-size="12" fill="#FF6B4A">✈️</text>
+    <text x="50" y="22" text-anchor="middle" font-family="system-ui" font-size="10" font-weight="700" fill="#0F3D5E">AC-2024</text>
+    <text x="50" y="38" text-anchor="middle" font-family="system-ui" font-size="8" fill="#64748B">Shanghai → DAR</text>
+    <text x="50" y="52" text-anchor="middle" font-family="system-ui" font-size="8" fill="#FF6B4A" font-weight="600">In Transit</text>
+  </g>
+
+  <!-- Analytics card -->
+  <g transform="translate(250, 240)" opacity="0.9">
+    <rect x="0" y="0" width="100" height="70" rx="12" fill="white" filter="drop-shadow(0 4px 12px rgba(15,61,94,0.15))"/>
+    <circle cx="20" cy="20" r="14" fill="#EFF6FF"/>
+    <text x="20" y="24" text-anchor="middle" font-family="system-ui" font-size="12" fill="#2563EB">📊</text>
+    <text x="50" y="22" text-anchor="middle" font-family="system-ui" font-size="10" font-weight="700" fill="#0F3D5E">$42,300</text>
+    <text x="50" y="38" text-anchor="middle" font-family="system-ui" font-size="8" fill="#64748B">This Month</text>
+    <text x="50" y="52" text-anchor="middle" font-family="system-ui" font-size="8" fill="#059669" font-weight="600">+18% Growth</text>
+  </g>
+
+  <!-- Sparkle effects -->
+  <g fill="#FF6B4A" opacity="0.7">
+    <circle cx="35" cy="80" r="3"/>
+    <circle cx="280" cy="280" r="4"/>
+    <circle cx="40" cy="250" r="2"/>
+    <circle cx="260" cy="40" r="3"/>
+  </g>
+</svg>

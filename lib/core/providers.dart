@@ -29,3 +29,7 @@ final apiClientProvider = Provider<ApiClient>((ref) {
     workspaceProvider: workspaceNotifier,
   );
 });
+
+final onboardingCompletedProvider = FutureProvider<bool>((ref) {
+  return ref.watch(tokenStorageProvider).getOnboardingCompleted();
+});
