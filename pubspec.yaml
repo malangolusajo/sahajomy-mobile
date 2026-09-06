@@ -55,9 +55,6 @@ flutter:
   assets:
     - assets/branding/sahajomy-logo.svg
     - assets/branding/sahajomy-app-icon.png
-    - assets/onboarding/illustration_1.svg
-    - assets/onboarding/illustration_2.svg
-    - assets/onboarding/illustration_3.svg
 
 flutter_native_splash:
   color: "#062B44"

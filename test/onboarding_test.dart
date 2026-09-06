@@ -20,15 +20,37 @@ void main() {
       ),
     );
 
-    expect(find.text('Move cargo with confidence'), findsOneWidget);
-    expect(find.text('SAHAJOMY'), findsOneWidget);
+    expect(
+      find.text('Find it in China. We’ll help you bring it home.'),
+      findsOneWidget,
+    );
+    expect(find.text('Agizisha marketplace'), findsOneWidget);
+    expect(find.text('Sourcing support'), findsWidgets);
+    expect(find.text('SAHAJOMY'), findsNothing);
     expect(find.text('PUBLIC'), findsNothing);
     expect(find.text('CUSTOMER'), findsNothing);
     expect(tester.takeException(), isNull);
 
     await tester.drag(find.byType(PageView), const Offset(-350, 0));
     await tester.pumpAndSettle();
-    expect(find.text('Know where every shipment stands'), findsOneWidget);
+    expect(
+      find.text('Small parcel or full container—it’s your call.'),
+      findsOneWidget,
+    );
+    expect(find.text('Sea freight'), findsWidgets);
+    expect(find.text('Express Air Cargo'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+
+    await tester.drag(find.byType(PageView), const Offset(-350, 0));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('No more wondering where your shipment is.'),
+      findsOneWidget,
+    );
+    expect(find.text('Warehouse parcels'), findsOneWidget);
+    expect(find.text('Documents & packing lists'), findsOneWidget);
+    expect(find.text('Status alerts'), findsOneWidget);
+    expect(find.text('SAHAJOMY'), findsNothing);
     expect(tester.takeException(), isNull);
   });
 
