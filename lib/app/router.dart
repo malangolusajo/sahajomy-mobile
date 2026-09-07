@@ -20,6 +20,14 @@ import '../features/auth/presentation/welcome_page.dart';
 import '../features/cargo_admin/presentation/cargo_admin_shell.dart';
 import '../features/booking/data/guided_booking_repository.dart';
 import '../features/booking/presentation/guided_sea_booking_page.dart';
+import '../features/booking/presentation/booking_hub_page.dart';
+import '../features/booking/presentation/sea_cargo_services_page.dart';
+import '../features/booking/presentation/sea_cargo_details_page.dart';
+import '../features/booking/presentation/sea_review_booking_page.dart';
+import '../features/booking/presentation/air_cargo_services_page.dart';
+import '../features/booking/presentation/air_cargo_details_page.dart';
+import '../features/booking/presentation/air_review_booking_page.dart';
+import '../features/booking/presentation/my_bookings_page.dart';
 import '../features/customer/dashboard/presentation/customer_shell.dart';
 import '../features/customer/warehouse_access/presentation/customer_warehouse_parcels_page.dart';
 import '../features/onboarding/presentation/onboarding_page.dart';
@@ -163,6 +171,75 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/customer',
         builder: (context, state) => const CustomerShell(),
+      ),
+      GoRoute(
+        path: '/customer/booking-hub',
+        builder: (context, state) => const BookingHubPage(),
+      ),
+      GoRoute(
+        path: '/customer/booking/sea-services',
+        builder: (context, state) => const SeaCargoServicesPage(),
+      ),
+      GoRoute(
+        path: '/customer/booking/sea-details',
+        builder: (context, state) => SeaCargoDetailsPage(
+          containerId: state.uri.queryParameters['container_id'] ?? '',
+          routeName: state.uri.queryParameters['route'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: '/customer/booking/sea-review',
+        builder: (context, state) {
+          final p = state.uri.queryParameters;
+          return SeaReviewBookingPage(
+            containerId: p['container_id'] ?? '',
+            routeName: p['route'] ?? '',
+            volume: p['volume'] ?? '',
+            goodsType: p['goods_type'] ?? '',
+            description: p['description'] ?? '',
+            quantity: p['quantity'] ?? '',
+            cartons: p['cartons'],
+          );
+        },
+      ),
+      GoRoute(
+        path: '/customer/booking/air-services',
+        builder: (context, state) => const AirCargoServicesPage(),
+      ),
+      GoRoute(
+        path: '/customer/booking/air-details',
+        builder: (context, state) {
+          final p = state.uri.queryParameters;
+          return AirCargoDetailsPage(
+            warehouseId: p['warehouse_id'] ?? '',
+            cargoAdminId: p['cargo_admin_id'] ?? '',
+            companyName: p['company_name'] ?? '',
+            warehouseName: p['warehouse_name'] ?? '',
+          );
+        },
+      ),
+      GoRoute(
+        path: '/customer/booking/air-review',
+        builder: (context, state) {
+          final p = state.uri.queryParameters;
+          return AirReviewBookingPage(
+            warehouseId: p['warehouse_id'] ?? '',
+            cargoAdminId: p['cargo_admin_id'] ?? '',
+            companyName: p['company_name'] ?? '',
+            warehouseName: p['warehouse_name'] ?? '',
+            cargoTypeId: p['cargo_type_id'] ?? '',
+            weight: p['weight'] ?? '',
+            destination: p['destination'] ?? '',
+            country: p['country'] ?? '',
+            cartons: p['cartons'] ?? '1',
+            shipmentDate: p['shipment_date'] ?? '',
+            description: p['description'],
+          );
+        },
+      ),
+      GoRoute(
+        path: '/customer/my-bookings',
+        builder: (context, state) => const MyBookingsPage(),
       ),
       GoRoute(
         path: '/cargo-admin',
