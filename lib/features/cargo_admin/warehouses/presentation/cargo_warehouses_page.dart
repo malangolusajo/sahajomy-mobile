@@ -246,3 +246,160 @@ class _CargoAddWarehousePageState extends ConsumerState<CargoAddWarehousePage> {
     ),
   );
 }
+
+class CargoChinaAddressPage extends ConsumerStatefulWidget {
+  const CargoChinaAddressPage({required this.warehouseId, super.key});
+  final String warehouseId;
+
+  @override
+  ConsumerState<CargoChinaAddressPage> createState() => _CargoChinaAddressPageState();
+}
+
+class _CargoChinaAddressPageState extends ConsumerState<CargoChinaAddressPage> {
+  final _formKey = GlobalKey<FormState>();
+  late Future<Map<String, dynamic>> _warehouse;
+  bool _loaded = false;
+  bool _busy = false;
+
+  final _nameZh = TextEditingController();
+  final _receiver = TextEditingController();
+  final _mobile = TextEditingController();
+  final _province = TextEditingController();
+  final _city = TextEditingController();
+  final _district = TextEditingController();
+  final _street = TextEditingController();
+  final _detailed = TextEditingController();
+  final _original = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _warehouse = ref.read(cargoOperationsRepositoryProvider).getWarehouse(widget.warehouseId);
+    _warehouse.then((w) {
+      if (!mounted) return;
+      _nameZh.text = w['name_zh'] ?? '';
+      _receiver.text = w['china_receiver_name'] ?? '';
+      _mobile.text = w['china_mobile'] ?? '';
+      _province.text = w['china_province'] ?? '';
+      _city.text = w['china_city'] ?? '';
+      _district.text = w['china_district'] ?? '';
+      _street.text = w['china_street'] ?? '';
+      _detailed.text = w['china_detailed_address'] ?? '';
+      _original.text = w['china_original_address'] ?? '';
+      setState(() => _loaded = true);
+    });
+  }
+
+  Future<void> _save() async {
+    if (!_formKey.currentState!.validate()) return;
+    setState(() => _busy = true);
+    try {
+      await ref.read(cargoOperationsRepositoryProvider).updateWarehouse(widget.warehouseId, {
+        'name_zh': _nameZh.text.trim(),
+        'china_receiver_name': _receiver.text.trim(),
+        'china_mobile': _mobile.text.trim(),
+        'china_province': _province.text.trim(),
+        'china_city': _city.text.trim(),
+        'china_district': _district.text.trim(),
+        'china_street': _street.text.trim(),
+        'china_detailed_address': _detailed.text.trim(),
+        'china_original_address': _original.text.trim(),
+      });
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('China address saved')));
+        context.pop();
+      }
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => CustomerScaffold(
+    eyebrow: 'WAREHOUSE',
+    title: 'China address structure',
+    notificationRoute: '/cargo/notifications',
+    body: FutureBuilder<Map<String, dynamic>>(
+      future: _warehouse,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return const CustomerEmptyState(icon: Icons.error_outline, message: 'Could not load warehouse.');
+        }
+        final w = snapshot.data ?? {};
+        final status = (w['china_address_status'] ?? 'not_configured').toString();
+        return Form(
+          key: _formKey,
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
+            children: [
+              CustomerHeroCard(
+                eyebrow: w['name'] ?? 'Warehouse',
+                title: 'China forwarding address',
+                subtitle: 'Receiver name, mobile, and structured address for marketplace dropship.',
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                decoration: BoxDecoration(
+                  color: (status == 'ready' ? appSuccess : brandCoral).withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: status == 'ready' ? appSuccess : brandCoral),
+                ),
+                child: Row(children: [
+                  Icon(status == 'ready' ? Icons.check_circle : Icons.info_outline, color: status == 'ready' ? appSuccess : brandCoral),
+                  const SizedBox(width: 10),
+                  Text('Status: ${status.replaceAll('_', ' ')}', style: TextStyle(color: status == 'ready' ? appSuccess : brandCoral, fontWeight: FontWeight.w700)),
+                ]),
+              ),
+              const SizedBox(height: 20),
+              _field('Warehouse name (Chinese)', _nameZh),
+              const SizedBox(height: 14),
+              _field('Receiver name', _receiver),
+              const SizedBox(height: 14),
+              _field('Mobile phone', _mobile, keyboardType: TextInputType.phone),
+              const SizedBox(height: 14),
+              Row(children: [
+                Expanded(child: _field('Province', _province)),
+                const SizedBox(width: 12),
+                Expanded(child: _field('City', _city)),
+              ]),
+              const SizedBox(height: 14),
+              _field('District / County', _district),
+              const SizedBox(height: 14),
+              _field('Street', _street),
+              const SizedBox(height: 14),
+              TextFormField(
+                controller: _detailed,
+                decoration: const InputDecoration(labelText: 'Detailed address'),
+                maxLines: 3,
+              ),
+              const SizedBox(height: 14),
+              TextFormField(
+                controller: _original,
+                decoration: const InputDecoration(labelText: 'Original address (raw text)'),
+                maxLines: 2,
+              ),
+              const SizedBox(height: 24),
+              FilledButton.icon(
+                onPressed: _busy ? null : _save,
+                icon: const Icon(Icons.save),
+                label: Text(_busy ? 'Saving...' : 'Save address'),
+              ),
+            ],
+          ),
+        );
+      },
+    ),
+  );
+
+  Widget _field(String label, TextEditingController controller, {TextInputType? keyboardType}) => TextFormField(
+    controller: controller,
+    keyboardType: keyboardType,
+    decoration: InputDecoration(labelText: label),
+  );
+}

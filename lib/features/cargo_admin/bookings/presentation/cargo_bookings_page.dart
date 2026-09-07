@@ -53,19 +53,26 @@ class _CargoBookingsPageState extends ConsumerState<CargoBookingsPage> {
             },
           ),
           const SizedBox(height: 16),
-          FutureBuilder<Map<String, dynamic>>(
-            future: _dashboard,
+          FutureBuilder<List<Map<String, dynamic>>>(
+            future: _reservations,
             builder: (context, snapshot) {
-              final data = snapshot.data ?? {};
+              if (snapshot.connectionState != ConnectionState.done) {
+                return Row(
+                  children: [
+                    const Expanded(child: _MetricSkeleton()),
+                    const SizedBox(width: 12),
+                    const Expanded(child: _MetricSkeleton()),
+                  ],
+                );
+              }
+              final list = snapshot.data ?? [];
+              final awaiting = list.where((r) => (r['goods_status'] ?? '') == 'ready').length;
+              final readyToLoad = list.where((r) => (r['goods_status'] ?? '') == 'released').length;
               return Row(
                 children: [
-                  Expanded(
-                    child: _metric('Awaiting intake', '${data['awaiting_intake'] ?? data['pending_count'] ?? 0}'),
-                  ),
+                  Expanded(child: _metric('Awaiting intake', '$awaiting')),
                   const SizedBox(width: 12),
-                  Expanded(
-                    child: _metric('Ready to load', '${data['ready_to_load'] ?? data['received_count'] ?? 0}'),
-                  ),
+                  Expanded(child: _metric('Ready to load', '$readyToLoad')),
                 ],
               );
             },
@@ -174,4 +181,26 @@ class _CargoBookingsPageState extends ConsumerState<CargoBookingsPage> {
       ),
     );
   }
+}
+
+class _MetricSkeleton extends StatelessWidget {
+  const _MetricSkeleton();
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(color: appBorder),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(height: 12, width: 70, decoration: BoxDecoration(color: appBorder, borderRadius: BorderRadius.circular(6))),
+        const SizedBox(height: 8),
+        Container(height: 22, width: 32, decoration: BoxDecoration(color: appBorder, borderRadius: BorderRadius.circular(6))),
+      ],
+    ),
+  );
 }
