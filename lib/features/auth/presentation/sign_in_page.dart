@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../app/theme.dart';
-import '../../../core/ui/sahajomy_ui.dart';
+import '../../../core/ui/core_flow_ui.dart';
+import '../domain/otp_delivery.dart';
 import '../../../core/network/api_exception.dart';
 import '../../../core/providers.dart';
 import '../../../features/auth/data/auth_repository.dart';
@@ -21,12 +21,15 @@ class SignInPage extends ConsumerStatefulWidget {
 class _SignInPageState extends ConsumerState<SignInPage> {
   final _formKey = GlobalKey<FormState>();
   final _phoneController = TextEditingController();
+  final _emailController = TextEditingController();
+  bool _needsEmail = false;
   var _isSubmitting = false;
   String? _errorMessage;
 
   @override
   void dispose() {
     _phoneController.dispose();
+    _emailController.dispose();
     super.dispose();
   }
 
@@ -39,13 +42,35 @@ class _SignInPageState extends ConsumerState<SignInPage> {
     try {
       final authRepository = ref.read(authRepositoryProvider);
       final phone = normalizePhoneNumber(_phoneController.text);
-      await authRepository.sendOtp(phoneNumber: phone);
+      final delivery = await authRepository.sendOtp(
+        phoneNumber: phone,
+        email: _needsEmail ? _emailController.text.trim().toLowerCase() : null,
+      );
       if (!mounted) return;
+      ref.read(pendingOtpDeliveryProvider.notifier).state = delivery;
       ref.read(pendingPhoneNumberProvider.notifier).state = phone;
-      ref.read(pendingEmailProvider.notifier).state = null;
+      ref.read(pendingEmailProvider.notifier).state = _needsEmail
+          ? _emailController.text.trim().toLowerCase()
+          : null;
       context.go('/otp');
     } on ApiException catch (error) {
-      if (mounted) setState(() => _errorMessage = error.message);
+      if (!mounted) return;
+      if (error.message ==
+          'Name and email are required for new user registration.') {
+        ref.read(pendingPhoneNumberProvider.notifier).state =
+            normalizePhoneNumber(_phoneController.text);
+        context.push('/register');
+      } else if (error.message.toLowerCase().contains('account suspended')) {
+        context.push('/account-suspended');
+      } else if (error.message ==
+          'Email is required for this user. Please provide your email to continue.') {
+        setState(() {
+          _needsEmail = true;
+          _errorMessage = error.message;
+        });
+      } else {
+        setState(() => _errorMessage = error.message);
+      }
     } on FormatException catch (error) {
       if (mounted) setState(() => _errorMessage = error.message);
     } catch (_) {
@@ -60,124 +85,84 @@ class _SignInPageState extends ConsumerState<SignInPage> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: const SahajomyScreenHeader(title: 'Secure sign in'),
-    body: SafeArea(
-      top: false,
-      child: Form(
+  Widget build(BuildContext context) => CoreFlowPage(
+    title: 'Welcome',
+    onBack: () => context.go('/welcome'),
+    children: [
+      const CoreHero(
+        eyebrow: 'SAHAJOMY',
+        title: 'Welcome to Sahajomy',
+        description: 'Use your phone number to continue. Returning customers and platform teams use the same secure entry.',
+      ),
+      const SizedBox(height: 16),
+      Form(
         key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
+        child: Column(
           children: [
-            const Align(alignment: Alignment.centerLeft, child: SahajomyBrandMark(size: 58)),
-            const SizedBox(height: 28),
-            Text(
-              'Your shipping account',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              'Enter the mobile number linked to your account. We\'ll email a one-time verification code to your registered email address.',
-            ),
-            const SizedBox(height: 30),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(18),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Mobile number',
-                      style: TextStyle(
-                        color: appInk,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    TextFormField(
-                      controller: _phoneController,
-                      keyboardType: TextInputType.phone,
-                      textInputAction: TextInputAction.done,
-                      autofillHints: const [AutofillHints.telephoneNumber],
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp(r'[0-9+ ()-]')),
-                        LengthLimitingTextInputFormatter(24),
-                      ],
-                      decoration: const InputDecoration(
-                        hintText: '+255 7XX XXX XXX',
-                        prefixIcon: Icon(Icons.phone_rounded),
-                      ),
-                      validator: (value) =>
-                          value == null || !isValidPhoneNumber(value)
-                              ? 'Enter a valid mobile number.'
-                              : null,
-                      onFieldSubmitted: (_) => _sendOtp(),
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(
-                          Icons.lock_outline_rounded,
-                          size: 17,
-                          color: brandTeal,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            'Verification codes are sent to your registered email.',
-                            style: TextStyle(fontSize: 12, height: 1.4, color: appMuted),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+            CoreField(
+              label: 'Phone / WhatsApp number',
+              child: TextFormField(
+                enabled: !_isSubmitting,
+                controller: _phoneController,
+                keyboardType: TextInputType.phone,
+                textInputAction: TextInputAction.done,
+                autofillHints: const [AutofillHints.telephoneNumber],
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[0-9+ ()-]')),
+                  LengthLimitingTextInputFormatter(25),
+                ],
+                decoration: const InputDecoration(hintText: '+255 7•• ••• •••'),
+                validator: (value) =>
+                    value == null || !isValidPhoneNumber(value)
+                    ? 'Enter a valid mobile number.'
+                    : null,
+                onFieldSubmitted: (_) => _sendOtp(),
               ),
             ),
-            if (_errorMessage != null) ...[
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(13),
-                decoration: BoxDecoration(
-                  color: appErrorLight,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  _errorMessage!,
-                  style: const TextStyle(
-                    color: appError,
-                    fontWeight: FontWeight.w600,
+            if (_needsEmail)
+              CoreField(
+                label: 'Email address',
+                child: TextFormField(
+                  controller: _emailController,
+                  enabled: !_isSubmitting,
+                  keyboardType: TextInputType.emailAddress,
+                  autofillHints: const [AutofillHints.email],
+                  decoration: const InputDecoration(
+                    hintText: 'name@example.com',
                   ),
+                  validator: (value) =>
+                      RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$')
+                          .hasMatch(value?.trim() ?? '')
+                      ? null
+                      : 'Enter a valid email address.',
+                  onFieldSubmitted: (_) => _sendOtp(),
                 ),
               ),
-            ],
-            const SizedBox(height: 22),
-            FilledButton(
-              onPressed: _isSubmitting ? null : _sendOtp,
-              child: _isSubmitting
-                  ? const SizedBox.square(
-                      dimension: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    )
-                  : const Text('Email me a verification code'),
-            ),
-            const SizedBox(height: 14),
-            Center(
-              child: TextButton(
-                onPressed: () => context.push('/register'),
-                child: const Text('New to Sahajomy? Create an account'),
-              ),
-            ),
-            const SizedBox(height: 8),
-            const SahajomyLegalLinks(),
           ],
         ),
       ),
-    ),
+      if (_errorMessage != null) CoreError(_errorMessage!),
+      FilledButton(
+        onPressed: _isSubmitting ? null : _sendOtp,
+        child: Text(_isSubmitting ? 'Sending code…' : 'Continue'),
+      ),
+      const SizedBox(height: 16),
+      Container(
+        padding: const EdgeInsets.all(12),
+        decoration: const BoxDecoration(
+          color: Color(0xFFFFFAEA),
+          border: Border(left: BorderSide(color: Color(0xFFEAB91E), width: 4)),
+        ),
+        child: const Text(
+          'New here? We will ask for your name and email before sending the verification code.',
+          style: TextStyle(fontSize: 11, color: Color(0xFF6B520D)),
+        ),
+      ),
+      TextButton(
+        onPressed: _isSubmitting ? null : () => context.push('/register'),
+        child: const Text('Create an account'),
+      ),
+      const SahajomyLegalLinks(),
+    ],
   );
 }

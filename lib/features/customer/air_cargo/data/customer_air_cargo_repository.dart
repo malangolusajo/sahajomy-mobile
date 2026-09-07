@@ -18,8 +18,20 @@ class CustomerAirCargoRepository {
     return {...results[0], 'services': results[1]['services'] ?? const []};
   }
 
-  Future<Map<String, dynamic>> prepareAddress({required String city, required String country, required String cargoAdminId, required String warehouseId}) => client.post<Map<String, dynamic>>(
-    'forwarding/prepare-address', data: {'cargo_mode': 'air', 'destination_city': city, 'destination_country': country, 'cargo_admin_id': cargoAdminId, 'warehouse_id': warehouseId},
+  Future<Map<String, dynamic>> prepareAddress({
+    required String city,
+    required String country,
+    required String cargoAdminId,
+    required String warehouseId,
+  }) => client.post<Map<String, dynamic>>(
+    'forwarding/prepare-address',
+    data: {
+      'cargo_mode': 'air',
+      'destination_city': city,
+      'destination_country': country,
+      'cargo_admin_id': cargoAdminId,
+      'warehouse_id': warehouseId,
+    },
   );
 
   Future<Map<String, dynamic>> createBooking({
@@ -46,7 +58,7 @@ class CustomerAirCargoRepository {
       'cargo_admin_id': cargoAdminId,
       'warehouse_id': warehouseId,
       'customer_china_address_id': chinaAddressId,
-      if (rateId != null) 'air_cargo_rate_id': rateId,
+      'air_cargo_rate_id': ?rateId,
       'carton_count': cartonCount.toString(),
       'item_photos': '[]',
       'certification_acknowledged': certificationAcknowledged.toString(),

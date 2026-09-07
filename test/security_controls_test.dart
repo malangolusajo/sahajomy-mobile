@@ -77,7 +77,8 @@ void main() {
     test('normalizes E.164 phone numbers without putting them in a route', () {
       expect(normalizePhoneNumber('+255 712-345-678'), '+255712345678');
       expect(isValidPhoneNumber('+255 712-345-678'), isTrue);
-      expect(isValidPhoneNumber('0712345678'), isFalse);
+      expect(isValidPhoneNumber('0712345678'), isTrue);
+      expect(isValidPhoneNumber('123'), isFalse);
     });
 
     test('requires an exact six-digit OTP', () {

@@ -6,6 +6,6 @@ String normalizePhoneNumber(String value) {
 }
 
 bool isValidPhoneNumber(String value) =>
-    RegExp(r'^\+[1-9][0-9]{7,14}$').hasMatch(normalizePhoneNumber(value));
+    RegExp(r'^\+?[0-9]{7,15}$').hasMatch(normalizePhoneNumber(value));
 
 bool isValidOtp(String value) => RegExp(r'^[0-9]{6}$').hasMatch(value);

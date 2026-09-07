@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/auth/session.dart';
 import '../../../core/auth/mfa_challenge.dart';
 import '../../../core/network/api_client.dart';
+import '../../../core/network/api_exception.dart';
 import '../../../core/providers.dart';
+import '../domain/otp_delivery.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   final apiClient = ref.watch(apiClientProvider);
@@ -31,12 +33,12 @@ class AuthRepository {
 
   final ApiClient _apiClient;
 
-  Future<void> sendOtp({
+  Future<OtpDelivery> sendOtp({
     required String phoneNumber,
     String? name,
     String? email,
   }) async {
-    await _apiClient.post(
+    final response = await _apiClient.post<Map<String, dynamic>>(
       'auth/send-otp',
       data: {
         'phone_number': phoneNumber,
@@ -45,6 +47,7 @@ class AuthRepository {
       },
       options: ApiClient.publicOptions(),
     );
+    return OtpDelivery.fromJson(response);
   }
 
   Future<AuthenticationStep> verifyOtp({
@@ -170,15 +173,16 @@ class AuthRepository {
       options: ApiClient.freshSessionOptions(accessToken!),
     );
     final roleName = profile['role'] as String?;
+    _checkAccountStatus(profile);
     if (roleName == null) {
       throw const FormatException('The server did not return a user role.');
     }
     final role = userRoleFromApi(roleName);
     final profileMfaVerified =
         profile['mfa_verified'] == true || profile['mfa_authenticated'] == true;
-    if (role != UserRole.customer && !mfaConfirmed && !profileMfaVerified) {
+    if (_requiresMfa(profile) && !mfaConfirmed && !profileMfaVerified) {
       throw const FormatException(
-        'Privileged accounts require server-confirmed multi-factor authentication.',
+        'Complete the additional authentication required by your account.',
       );
     }
     return Session(
@@ -189,16 +193,17 @@ class AuthRepository {
   }
 
   Session _sessionFromProfile(Session session, Map<String, dynamic> profile) {
+    _checkAccountStatus(profile);
     final roleName = profile['role'] as String?;
     if (roleName == null) {
       throw const FormatException('The server did not return a user role.');
     }
     final role = userRoleFromApi(roleName);
-    if (role != UserRole.customer &&
+    if (_requiresMfa(profile) &&
         profile['mfa_verified'] != true &&
         profile['mfa_authenticated'] != true) {
       throw const FormatException(
-        'This privileged session is not protected by multi-factor authentication.',
+        'This account requires additional authentication. Sign in again.',
       );
     }
     return session.copyWith(role: role);
@@ -214,6 +219,20 @@ class AuthRepository {
     }
     return null;
   }
+
+  static void _checkAccountStatus(Map<String, dynamic> profile) {
+    if (profile['status'] == 'suspended') {
+      throw const ApiException(
+        statusCode: 403,
+        message: 'Account suspended. Contact support.',
+      );
+    }
+  }
+
+  // Role is not an authentication factor. The existing FastAPI OTP contract
+  // issues sessions for all four roles; only the server can require MFA.
+  static bool _requiresMfa(Map<String, dynamic> profile) =>
+      profile['mfa_required'] == true || profile['requires_mfa'] == true;
 
   static bool _validToken(String? value) =>
       value != null &&

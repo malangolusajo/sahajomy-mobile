@@ -5,13 +5,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../app/theme.dart';
+import '../../../core/ui/core_flow_ui.dart';
+import '../domain/otp_delivery.dart';
 import '../../../core/auth/session.dart';
 import '../../../core/network/api_exception.dart';
 import '../../../core/providers.dart';
 import '../../../core/security/app_link_guard.dart';
 import '../../../features/auth/data/auth_repository.dart';
-import '../../../core/ui/sahajomy_ui.dart';
 import '../domain/auth_input.dart';
 
 class OtpPage extends ConsumerStatefulWidget {
@@ -27,6 +27,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
   var _isResending = false;
   var _resendSeconds = 45;
   Timer? _resendTimer;
+  bool _expired = false;
   String? _errorMessage;
 
   @override
@@ -40,9 +41,19 @@ class _OtpPageState extends ConsumerState<OtpPage> {
     _resendSeconds = 45;
     _resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (!mounted) return;
-      if (_resendSeconds <= 1) {
+      final expiry = ref.read(pendingOtpDeliveryProvider)?.expiresAt;
+      if (!_expired &&
+          !_isSubmitting &&
+          !_isResending &&
+          expiry != null &&
+          !DateTime.now().isBefore(expiry)) {
+        _expired = true;
         timer.cancel();
-        setState(() => _resendSeconds = 0);
+        context.go('/code-expired');
+        return;
+      }
+      if (_resendSeconds <= 1) {
+        if (_resendSeconds != 0) setState(() => _resendSeconds = 0);
       } else {
         setState(() => _resendSeconds--);
       }
@@ -57,7 +68,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
   }
 
   Future<void> _resend() async {
-    if (_resendSeconds > 0 || _isResending) return;
+    if (_resendSeconds > 0 || _isResending || _isSubmitting) return;
     setState(() {
       _isResending = true;
       _errorMessage = null;
@@ -68,13 +79,14 @@ class _OtpPageState extends ConsumerState<OtpPage> {
         if (mounted) context.go('/sign-in');
         return;
       }
-      await ref
+      final delivery = await ref
           .read(authRepositoryProvider)
           .sendOtp(
             phoneNumber: phoneNumber,
             email: ref.read(pendingEmailProvider),
           );
       if (!mounted) return;
+      ref.read(pendingOtpDeliveryProvider.notifier).state = delivery;
       _startResendTimer();
       setState(() => _isResending = false);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -100,6 +112,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
   }
 
   Future<void> _verify() async {
+    if (_isSubmitting || _isResending) return;
     if (!isValidOtp(_codeController.text.trim())) {
       setState(
         () => _errorMessage = 'Enter the six-digit code from your email.',
@@ -129,6 +142,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
         return;
       }
       final session = (step as Authenticated).session;
+      await ref.read(workspaceProvider.notifier).clearWorkspace();
       await sessionStore.save(session);
       if (!mounted) return;
       final route = _routeFor(session.role);
@@ -140,13 +154,21 @@ class _OtpPageState extends ConsumerState<OtpPage> {
       ref.read(pendingPhoneNumberProvider.notifier).state = null;
       ref.read(pendingEmailProvider.notifier).state = null;
       ref.read(pendingMfaChallengeProvider.notifier).state = null;
-      ref.invalidate(workspaceProvider);
-      ref.invalidate(apiClientProvider);
+      ref.read(pendingOtpDeliveryProvider.notifier).state = null;
       if (mounted) {
-        context.go(pendingDestination ?? route);
+        ref.read(pendingDestinationProvider.notifier).state =
+            pendingDestination ?? route;
+        context.go('/stay-updated');
       }
     } on ApiException catch (error) {
-      if (mounted) setState(() => _errorMessage = error.message);
+      if (!mounted) return;
+      if (error.isGone) {
+        context.go('/code-expired');
+      } else if (error.message.toLowerCase().contains('account suspended')) {
+        context.go('/account-suspended');
+      } else {
+        setState(() => _errorMessage = error.message);
+      }
     } on FormatException catch (error) {
       if (mounted) setState(() => _errorMessage = error.message);
     } catch (_) {
@@ -168,114 +190,69 @@ class _OtpPageState extends ConsumerState<OtpPage> {
   };
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: const SahajomyScreenHeader(title: 'Check your email'),
-    body: SafeArea(
-      top: false,
-      child: ListView(
-        padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
-        children: [
-          Container(
-            width: 58,
-            height: 58,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: const Color(0xFFFFE9E3),
-              borderRadius: BorderRadius.circular(18),
-            ),
-            child: const Icon(
-              Icons.email_outlined,
-              color: brandCoral,
-              size: 28,
-            ),
-          ),
-          const SizedBox(height: 26),
-          Text(
-            'Enter the code from your email',
-            style: Theme.of(context).textTheme.headlineMedium,
-          ),
-          const SizedBox(height: 10),
-          Text(_deliveryMessage(ref)),
-          const SizedBox(height: 30),
-          TextField(
-            controller: _codeController,
-            keyboardType: TextInputType.number,
-            textInputAction: TextInputAction.done,
-            autofillHints: const [AutofillHints.oneTimeCode],
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-              LengthLimitingTextInputFormatter(6),
-            ],
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 26,
-              fontWeight: FontWeight.w900,
-              letterSpacing: 10,
-            ),
-            decoration: const InputDecoration(
-              hintText: '000000',
-              hintStyle: TextStyle(letterSpacing: 10),
-              counterText: '',
-            ),
-            maxLength: 6,
-            onSubmitted: (_) => _verify(),
-          ),
-          const SizedBox(height: 10),
-          Center(
-            child: TextButton(
-              onPressed: _resendSeconds == 0 && !_isResending ? _resend : null,
-              child: Text(
-                _isResending
-                    ? 'Sending a new code…'
-                    : _resendSeconds > 0
-                    ? 'Resend available in 0:${_resendSeconds.toString().padLeft(2, '0')}'
-                    : 'Resend code by email',
-              ),
-            ),
-          ),
-          if (_errorMessage != null) ...[
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(13),
-              decoration: BoxDecoration(
-                color: const Color(0xFFFFF1F0),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                _errorMessage!,
-                style: const TextStyle(
-                  color: Color(0xFFB42318),
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
-          const SizedBox(height: 28),
-          FilledButton(
-            onPressed: _isSubmitting ? null : _verify,
-            child: _isSubmitting
-                ? const SizedBox.square(
-                    dimension: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.white,
-                    ),
-                  )
-                : const Text('Verify and continue'),
-          ),
-        ],
+  Widget build(BuildContext context) => CoreFlowPage(
+    title: 'Verify your code',
+    onBack: () => context.go('/sign-in'),
+    children: [
+      CoreHero(
+        eyebrow: 'SECURE SIGN IN',
+        title: 'Verify your code',
+        description: ref.watch(pendingOtpDeliveryProvider)?.maskedEmail != null
+            ? 'Enter the code sent to ${ref.watch(pendingOtpDeliveryProvider)!.maskedEmail}.'
+            : 'Enter the code sent to your registered email.',
       ),
-    ),
+      const SizedBox(height: 24),
+      TextField(
+        enabled: !_isSubmitting && !_isResending,
+        controller: _codeController,
+        keyboardType: TextInputType.number,
+        textInputAction: TextInputAction.done,
+        autofillHints: const [AutofillHints.oneTimeCode],
+        inputFormatters: [
+          FilteringTextInputFormatter.digitsOnly,
+          LengthLimitingTextInputFormatter(6),
+        ],
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          fontSize: 28,
+          fontWeight: FontWeight.w800,
+          letterSpacing: 15,
+          color: coreNavy,
+        ),
+        decoration: const InputDecoration(
+          semanticCounterText: 'Six digit verification code',
+          hintText: '• • • • • •',
+          filled: false,
+          border: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: coreNavy),
+          ),
+        ),
+        onSubmitted: (_) => _verify(),
+      ),
+      const SizedBox(height: 12),
+      Center(
+        child: TextButton(
+          onPressed: _resendSeconds == 0 && !_isResending && !_isSubmitting
+              ? _resend
+              : null,
+          child: Text(
+            _isResending
+                ? 'Sending a new code…'
+                : _resendSeconds > 0
+                ? 'Resend in 00:${_resendSeconds.toString().padLeft(2, '0')}'
+                : 'Resend code',
+            style: const TextStyle(fontSize: 11, color: coreMuted),
+          ),
+        ),
+      ),
+      if (_errorMessage != null) CoreError(_errorMessage!),
+      const SizedBox(height: 12),
+      FilledButton(
+        onPressed: _isSubmitting || _isResending ? null : _verify,
+        child: Text(_isSubmitting ? 'Verifying…' : 'Verify & continue'),
+      ),
+    ],
   );
-
-  String _deliveryMessage(WidgetRef ref) {
-    final email = ref.watch(pendingEmailProvider);
-    if (email != null && email.isNotEmpty) {
-      return 'We sent a six-digit code to $email.';
-    }
-    final phone = ref.watch(pendingPhoneNumberProvider);
-    return phone == null
-        ? 'We sent a six-digit code to your registered email.'
-        : 'We sent a six-digit code to the email address linked to $phone.';
-  }
 }

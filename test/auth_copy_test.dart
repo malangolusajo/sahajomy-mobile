@@ -25,17 +25,18 @@ void main() {
       ),
     );
 
-    expect(find.text('Email me a verification code'), findsOneWidget);
-    expect(find.textContaining('registered email address'), findsOneWidget);
-    expect(find.text('New to Sahajomy? Create an account'), findsOneWidget);
+    expect(find.text('Continue'), findsOneWidget);
+    expect(find.textContaining('phone number to continue'), findsOneWidget);
+    expect(find.text('Create an account'), findsOneWidget);
     expect(find.textContaining('mobile verification'), findsNothing);
 
-    await tester.tap(find.text('New to Sahajomy? Create an account'));
+    await tester.ensureVisible(find.text('Create an account'));
+    await tester.tap(find.text('Create an account'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Create your Sahajomy account'), findsOneWidget);
+    expect(find.text('Create your account'), findsNWidgets(2));
     expect(find.text('Email address'), findsOneWidget);
-    expect(find.text('Email my verification code'), findsOneWidget);
+    expect(find.text('Send verification code'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -50,13 +51,13 @@ void main() {
       ),
     );
 
-    expect(find.text('Check your email'), findsOneWidget);
-    expect(find.text('Enter the code from your email'), findsOneWidget);
+    expect(find.text('Verify your code'), findsNWidgets(2));
     expect(
-      find.text('We sent a six-digit code to amina@example.com.'),
+      find.text('Enter the code sent to your registered email.'),
       findsOneWidget,
     );
     expect(find.text('Resend code by email'), findsNothing);
     expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox());
   });
 }

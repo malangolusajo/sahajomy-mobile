@@ -10,6 +10,10 @@ import '../core/security/app_link_guard.dart';
 import '../features/auth/data/auth_repository.dart';
 import '../features/auth/presentation/mfa_page.dart';
 import '../features/auth/presentation/otp_page.dart';
+import '../features/auth/presentation/auth_status_page.dart';
+import '../features/auth/presentation/stay_updated_page.dart';
+import '../features/workspaces/presentation/branch_selection_page.dart';
+import '../features/workspaces/presentation/checking_workspace_page.dart';
 import '../features/auth/presentation/registration_page.dart';
 import '../features/auth/presentation/sign_in_page.dart';
 import '../features/auth/presentation/welcome_page.dart';
@@ -44,6 +48,16 @@ final routerProvider = Provider<GoRouter>((ref) {
       // The splash page owns the initial session/onboarding decision so the
       // branded transition is shown consistently instead of flashing a route.
       if (location == '/splash') return null;
+      // These pages own their async verification and recovery UI. Never hide
+      // their offline/permission states behind an eager route redirect.
+      if (const {
+        '/checking-workspace',
+        '/account/workspaces',
+        '/account/branches',
+        '/stay-updated',
+      }.contains(location)) {
+        return await sessionStore.read() == null ? '/sign-in' : null;
+      }
 
       final session = await sessionStore.read();
       final isAuthRoute =
@@ -102,10 +116,15 @@ final routerProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
-      GoRoute(path: '/splash', builder: (context, state) => Theme(data: sahajomyTheme, child: const SplashPage())),
+      GoRoute(
+        path: '/splash',
+        builder: (context, state) =>
+            Theme(data: sahajomyTheme, child: const SplashPage()),
+      ),
       GoRoute(
         path: '/onboarding',
-        builder: (context, state) => Theme(data: sahajomyTheme, child: const OnboardingPage()),
+        builder: (context, state) =>
+            Theme(data: sahajomyTheme, child: const OnboardingPage()),
       ),
       GoRoute(
         path: '/welcome',
@@ -120,6 +139,26 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const RegistrationPage(),
       ),
       GoRoute(path: '/otp', builder: (context, state) => const OtpPage()),
+      GoRoute(
+        path: '/code-expired',
+        builder: (context, state) => const AuthStatusPage(),
+      ),
+      GoRoute(
+        path: '/account-suspended',
+        builder: (context, state) => const AuthStatusPage(suspended: true),
+      ),
+      GoRoute(
+        path: '/stay-updated',
+        builder: (context, state) => const StayUpdatedPage(),
+      ),
+      GoRoute(
+        path: '/account/branches',
+        builder: (context, state) => const BranchSelectionPage(),
+      ),
+      GoRoute(
+        path: '/checking-workspace',
+        builder: (context, state) => const CheckingWorkspacePage(),
+      ),
       GoRoute(path: '/mfa', builder: (context, state) => const MfaPage()),
       GoRoute(
         path: '/customer',
@@ -156,29 +195,63 @@ final routerProvider = Provider<GoRouter>((ref) {
           initialContainerId: state.uri.queryParameters['container_id'],
         ),
       ),
-      GoRoute(path: '/customer/shipments', builder: (_, _) => Scaffold(appBar: AppBar(title: const Text('My shipments')), body: const ShipmentListPage())),
+      GoRoute(
+        path: '/customer/shipments',
+        builder: (_, _) => Scaffold(
+          appBar: AppBar(title: const Text('My shipments')),
+          body: const ShipmentListPage(),
+        ),
+      ),
       for (final entry in appRouteAliases.entries)
         GoRoute(
           path: entry.key,
           builder: (context, state) {
-            if (entry.value == 'customer-sea-bookings.html' || entry.value == 'customer-reservations.html') {
-              return Scaffold(appBar: AppBar(title: const Text('Sea freight bookings')), body: const BookingListPage());
+            if (entry.value == 'customer-sea-bookings.html' ||
+                entry.value == 'customer-reservations.html') {
+              return Scaffold(
+                appBar: AppBar(title: const Text('Sea freight bookings')),
+                body: const BookingListPage(),
+              );
             }
             final bookingId = state.pathParameters['seaBookingId'];
-            if (entry.value == 'customer-sea-booking-detail.html' && bookingId != null) {
+            if (entry.value == 'customer-sea-booking-detail.html' &&
+                bookingId != null) {
               return BookingDetailPage(bookingId: bookingId);
             }
             final detail = switch (entry.key) {
-              '/customer/shipment-orders/:shipmentOrderId' => ('Shipment details', 'customer/shipment-orders/${Uri.encodeComponent(state.pathParameters['shipmentOrderId']!)}'),
-              '/admin/companies/:companyId' => ('Cargo company', 'super_admin/companies/${Uri.encodeComponent(state.pathParameters['companyId']!)}'),
-              '/agizisha/product/:id' => ('Product details', 'public/agizisha/products/${Uri.encodeComponent(state.pathParameters['id']!)}'),
-              '/product/:productId' => ('Product details', 'public/agizisha/products/${Uri.encodeComponent(state.pathParameters['productId']!)}'),
-              '/agizisha/agents/:handle' => ('Sourcing agent', 'public/agizisha/agents/${Uri.encodeComponent(state.pathParameters['handle']!)}'),
-              '/shared/:token' => ('Shared sourcing batch', 'public/batch/${Uri.encodeComponent(state.pathParameters['token']!)}'),
-              '/agent/packing-lists/:packingListId' => ('Packing list', 'sourcing_agent/packing-lists/${Uri.encodeComponent(state.pathParameters['packingListId']!)}'),
+              '/customer/shipment-orders/:shipmentOrderId' => (
+                'Shipment details',
+                'customer/shipment-orders/${Uri.encodeComponent(state.pathParameters['shipmentOrderId']!)}',
+              ),
+              '/admin/companies/:companyId' => (
+                'Cargo company',
+                'super_admin/companies/${Uri.encodeComponent(state.pathParameters['companyId']!)}',
+              ),
+              '/agizisha/product/:id' => (
+                'Product details',
+                'public/agizisha/products/${Uri.encodeComponent(state.pathParameters['id']!)}',
+              ),
+              '/product/:productId' => (
+                'Product details',
+                'public/agizisha/products/${Uri.encodeComponent(state.pathParameters['productId']!)}',
+              ),
+              '/agizisha/agents/:handle' => (
+                'Sourcing agent',
+                'public/agizisha/agents/${Uri.encodeComponent(state.pathParameters['handle']!)}',
+              ),
+              '/shared/:token' => (
+                'Shared sourcing batch',
+                'public/batch/${Uri.encodeComponent(state.pathParameters['token']!)}',
+              ),
+              '/agent/packing-lists/:packingListId' => (
+                'Packing list',
+                'sourcing_agent/packing-lists/${Uri.encodeComponent(state.pathParameters['packingListId']!)}',
+              ),
               _ => null,
             };
-            if (detail != null) return RecordDetailPage(title: detail.$1, endpoint: detail.$2);
+            if (detail != null) {
+              return RecordDetailPage(title: detail.$1, endpoint: detail.$2);
+            }
             if (entry.value == 'customer-warehouse-parcels.html') {
               return CustomerWarehouseParcelsPage(
                 opaqueToken: state.pathParameters['token'] ?? '',

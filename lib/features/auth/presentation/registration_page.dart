@@ -5,7 +5,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/network/api_exception.dart';
 import '../../../core/providers.dart';
-import '../../../core/ui/sahajomy_ui.dart';
+import '../../../core/ui/core_flow_ui.dart';
+import '../domain/otp_delivery.dart';
 import '../data/auth_repository.dart';
 import '../domain/auth_input.dart';
 import '../../public_services/presentation/official_information_page.dart';
@@ -24,6 +25,14 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
   final _phoneController = TextEditingController();
   var _isSubmitting = false;
   String? _errorMessage;
+  String? _emailError;
+  String? _phoneError;
+
+  @override
+  void initState() {
+    super.initState();
+    _phoneController.text = ref.read(pendingPhoneNumberProvider) ?? '';
+  }
 
   @override
   void dispose() {
@@ -42,7 +51,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
     try {
       final phone = normalizePhoneNumber(_phoneController.text);
       final email = _emailController.text.trim().toLowerCase();
-      await ref
+      final delivery = await ref
           .read(authRepositoryProvider)
           .sendOtp(
             phoneNumber: phone,
@@ -50,11 +59,21 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
             email: email,
           );
       if (!mounted) return;
+      ref.read(pendingOtpDeliveryProvider.notifier).state = delivery;
       ref.read(pendingPhoneNumberProvider.notifier).state = phone;
       ref.read(pendingEmailProvider.notifier).state = email;
       context.go('/otp');
     } on ApiException catch (error) {
-      if (mounted) setState(() => _errorMessage = error.message);
+      if (mounted)
+        setState(() {
+          if (error.message.toLowerCase().contains('email')) {
+            _emailError = error.message;
+          } else if (error.message.toLowerCase().contains('phone')) {
+            _phoneError = error.message;
+          } else {
+            _errorMessage = error.message;
+          }
+        });
     } on FormatException catch (error) {
       if (mounted) setState(() => _errorMessage = error.message);
     } catch (_) {
@@ -69,120 +88,90 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: const SahajomyScreenHeader(title: 'Create account'),
-    body: SafeArea(
-      top: false,
-      child: Form(
+  Widget build(BuildContext context) => CoreFlowPage(
+    title: 'Create your account',
+    children: [
+      const CoreHero(
+        eyebrow: 'SAHAJOMY',
+        title: 'Create your account',
+        description: 'A few details are needed before we send your one-time verification code.',
+      ),
+      const SizedBox(height: 16),
+      Form(
         key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
+        child: Column(
           children: [
-            const Align(alignment: Alignment.centerLeft, child: SahajomyBrandMark(size: 56)),
-            const SizedBox(height: 24),
-            Text(
-              'Create your Sahajomy account',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              'Create one account for sourcing orders, cargo bookings and warehouse collections. We’ll email a code to verify your email address.',
-            ),
-            const SizedBox(height: 28),
-            TextFormField(
-              controller: _nameController,
-              textCapitalization: TextCapitalization.words,
-              textInputAction: TextInputAction.next,
-              autofillHints: const [AutofillHints.name],
-              inputFormatters: [LengthLimitingTextInputFormatter(120)],
-              decoration: const InputDecoration(
-                labelText: 'Full name',
-                prefixIcon: Icon(Icons.person_outline_rounded),
+            CoreField(
+              label: 'Full name',
+              child: TextFormField(
+                enabled: !_isSubmitting,
+                controller: _nameController,
+                textCapitalization: TextCapitalization.words,
+                autofillHints: const [AutofillHints.name],
+                textInputAction: TextInputAction.next,
+                decoration: const InputDecoration(hintText: 'Your full name'),
+                validator: (v) => v == null || v.trim().isEmpty
+                    ? 'Enter your full name.'
+                    : null,
               ),
-              validator: (value) => value == null || value.trim().length < 2
-                  ? 'Enter your full name.'
-                  : null,
             ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _emailController,
-              keyboardType: TextInputType.emailAddress,
-              textInputAction: TextInputAction.next,
-              autofillHints: const [AutofillHints.email],
-              autocorrect: false,
-              inputFormatters: [LengthLimitingTextInputFormatter(254)],
-              decoration: const InputDecoration(
-                labelText: 'Email address',
-                prefixIcon: Icon(Icons.email_outlined),
-              ),
-              validator: (value) {
-                final email = value?.trim() ?? '';
-                return RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(email)
+            CoreField(
+              label: 'Email address',
+              child: TextFormField(
+                enabled: !_isSubmitting,
+                controller: _emailController,
+                forceErrorText: _emailError,
+                onChanged: (_) {
+                  if (_emailError != null) setState(() => _emailError = null);
+                },
+                keyboardType: TextInputType.emailAddress,
+                autofillHints: const [AutofillHints.email],
+                textInputAction: TextInputAction.next,
+                autocorrect: false,
+                decoration: const InputDecoration(hintText: 'name@example.com'),
+                validator: (v) =>
+                    RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$')
+                        .hasMatch(v?.trim() ?? '')
                     ? null
-                    : 'Enter a valid email address.';
-              },
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _phoneController,
-              keyboardType: TextInputType.phone,
-              textInputAction: TextInputAction.done,
-              autofillHints: const [AutofillHints.telephoneNumber],
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'[0-9+ ()-]')),
-                LengthLimitingTextInputFormatter(24),
-              ],
-              decoration: const InputDecoration(
-                labelText: 'Mobile number',
-                hintText: '+255 7XX XXX XXX',
-                prefixIcon: Icon(Icons.phone_outlined),
+                    : 'Enter a valid email address.',
               ),
-              validator: (value) => value == null || !isValidPhoneNumber(value)
-                  ? 'Enter a valid mobile number.'
-                  : null,
-              onFieldSubmitted: (_) => _continue(),
             ),
-            if (_errorMessage != null) ...[
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(13),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFFF1F0),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  _errorMessage!,
-                  style: const TextStyle(
-                    color: Color(0xFFB42318),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-            const SizedBox(height: 24),
-            FilledButton(
-              onPressed: _isSubmitting ? null : _continue,
-              child: _isSubmitting
-                  ? const SizedBox.square(
-                      dimension: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    )
-                  : const Text('Email my verification code'),
-            ),
-            const SizedBox(height: 14),
-            const SahajomyLegalLinks(),
-            Center(
-              child: TextButton(
-                onPressed: () => context.go('/sign-in'),
-                child: const Text('Already have an account? Sign in'),
+            CoreField(
+              label: 'Phone / WhatsApp',
+              child: TextFormField(
+                enabled: !_isSubmitting,
+                controller: _phoneController,
+                forceErrorText: _phoneError,
+                onChanged: (_) {
+                  if (_phoneError != null) setState(() => _phoneError = null);
+                },
+                keyboardType: TextInputType.phone,
+                autofillHints: const [AutofillHints.telephoneNumber],
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[0-9+ ()-]')),
+                  LengthLimitingTextInputFormatter(25),
+                ],
+                decoration: const InputDecoration(hintText: '+255 712 345 678'),
+                validator: (v) => v == null || !isValidPhoneNumber(v)
+                    ? 'Enter a valid mobile number.'
+                    : null,
+                onFieldSubmitted: (_) => _continue(),
               ),
             ),
           ],
         ),
       ),
-    ),
+      if (_errorMessage != null) CoreError(_errorMessage!),
+      FilledButton(
+        onPressed: _isSubmitting ? null : _continue,
+        child: Text(_isSubmitting ? 'Sending code…' : 'Send verification code'),
+      ),
+      const SizedBox(height: 14),
+      const SahajomyLegalLinks(),
+      TextButton(
+        onPressed: _isSubmitting ? null : () => context.go('/sign-in'),
+        child: const Text('Already have an account? Sign in'),
+      ),
+    ],
   );
 }

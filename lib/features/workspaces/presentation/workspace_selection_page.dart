@@ -3,12 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/providers.dart';
-import '../../../core/ui/sahajomy_ui.dart';
-import '../../repository_providers.dart';
+import '../../../core/ui/core_flow_ui.dart';
+import '../data/workspace_repository.dart';
 
 class WorkspaceSelectionPage extends ConsumerStatefulWidget {
   const WorkspaceSelectionPage({super.key});
-
   @override
   ConsumerState<WorkspaceSelectionPage> createState() =>
       _WorkspaceSelectionPageState();
@@ -16,131 +15,129 @@ class WorkspaceSelectionPage extends ConsumerStatefulWidget {
 
 class _WorkspaceSelectionPageState
     extends ConsumerState<WorkspaceSelectionPage> {
-  late Future<List<Map<String, dynamic>>> _workspaces = Future.microtask(_load);
-  String? _switchingId;
-
-  Future<List<Map<String, dynamic>>> _load() async {
-    final response = await ref
-        .read(workflowApiRepositoryProvider)
-        .load('workspaces');
-    if (response is List) {
-      return response.whereType<Map<String, dynamic>>().toList(growable: false);
-    }
-    if (response is Map<String, dynamic>) {
-      final records =
-          response['workspaces'] ?? response['items'] ?? response['data'];
-      if (records is List) {
-        return records.whereType<Map<String, dynamic>>().toList(
-          growable: false,
-        );
-      }
-    }
-    return const [];
+  late Future<List<Workspace>> _future;
+  Workspace? _selected;
+  bool _busy = false;
+  String? _error;
+  @override
+  void initState() {
+    super.initState();
+    _future = _load();
   }
 
-  void _retry() => setState(() => _workspaces = Future.microtask(_load));
-
-  Future<void> _select(Map<String, dynamic> workspace) async {
-    final companyId = workspace['company_id']?.toString();
-    final selectionId = companyId ?? 'personal';
-    setState(() => _switchingId = selectionId);
-    final notifier = ref.read(workspaceProvider.notifier);
+  Future<List<Workspace>> _load() =>
+      ref.read(workspaceRepositoryProvider).list();
+  Future<void> _refresh() async {
+    setState(() {
+      _selected = null;
+      _future = _load();
+    });
     try {
-      if (companyId == null || companyId.isEmpty) {
+      await _future;
+    } catch (_) {
+      /* Render the FutureBuilder error. */
+    }
+  }
+
+  Future<void> _continue() async {
+    if (_busy || _selected == null) return;
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    try {
+      final selected = _selected!;
+      final notifier = ref.read(workspaceProvider.notifier);
+      if (selected.isPersonal) {
         await notifier.clearWorkspace();
       } else {
         await notifier.setWorkspace(
-          companyId: companyId,
-          companyName:
-              workspace['company_name']?.toString() ??
-              workspace['name']?.toString() ??
-              'Company workspace',
-          branchId: workspace['branch_id']?.toString(),
-          branchName: workspace['branch_name']?.toString(),
-          role: workspace['company_role']?.toString(),
-          permissions: (workspace['permissions'] as List?)
-              ?.map((permission) => permission.toString())
-              .toList(growable: false),
+          companyId: selected.companyId!,
+          companyName: selected.name,
+          branchId: selected.branchId,
+          branchName: selected.branchName,
+          role: selected.role,
+          permissions: selected.permissions,
         );
       }
-      ref.invalidate(apiClientProvider);
-      if (mounted) context.pop();
+      if (!mounted) return;
+      context.go(
+        !selected.isPersonal &&
+                selected.permissions.contains('company.branch.manage')
+            ? '/account/branches'
+            : '/checking-workspace',
+      );
+    } catch (error) {
+      if (mounted) setState(() => _error = coreFlowError(error));
     } finally {
-      if (mounted) setState(() => _switchingId = null);
+      if (mounted) setState(() => _busy = false);
     }
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: const SahajomyScreenHeader(
-      role: 'Shared',
-      title: 'Switch workspace',
-    ),
-    body: FutureBuilder<List<Map<String, dynamic>>>(
-      future: _workspaces,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (snapshot.hasError) {
-          return SahajomyMessageState(
-            icon: Icons.cloud_off_outlined,
-            message: 'Workspaces are unavailable. Check your connection and try again.',
-            actionLabel: 'Try again',
-            onAction: _retry,
-          );
-        }
-        final workspaces = snapshot.data ?? const [];
-        if (workspaces.isEmpty) {
-          return const SahajomyMessageState(
-            icon: Icons.business_outlined,
-            message: 'No company workspaces are available. Your personal workspace remains active.',
-          );
-        }
-        return ListView(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
-          children: [
-            Text(
-              'Choose your workspace',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            const SizedBox(height: 6),
-            const Text(
-              'Your account role stays the same. Company role, branch, and permissions follow the selected workspace.',
-            ),
-            const SizedBox(height: 20),
-            for (final workspace in workspaces)
-              Card(
-                margin: const EdgeInsets.only(bottom: 10),
-                child: ListTile(
-                  minTileHeight: 72,
-                  leading: const Icon(Icons.business_outlined),
-                  title: Text(
-                    workspace['company_name']?.toString() ??
-                        workspace['name']?.toString() ??
-                        'Personal workspace',
-                    style: const TextStyle(fontWeight: FontWeight.w800),
-                  ),
-                  subtitle: Text(
-                    [workspace['company_role'], workspace['branch_name']]
-                        .whereType<String>()
-                        .where((value) => value.isNotEmpty)
-                        .join(' · '),
-                  ),
-                  trailing:
-                      _switchingId ==
-                          (workspace['company_id']?.toString() ?? 'personal')
-                      ? const SizedBox.square(
-                          dimension: 22,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(Icons.chevron_right_rounded),
-                  onTap: _switchingId == null ? () => _select(workspace) : null,
+  Widget build(BuildContext context) => CoreFlowPage(
+    title: 'Switch workspace',
+    onBack: () => context.go('/checking-workspace'),
+    onRefresh: _busy ? null : _refresh,
+    children: [
+      const CoreHero(
+        eyebrow: 'WORKSPACE',
+        title: 'Choose how you want\nto use Sahajomy',
+        description: 'Switching workspaces clears old tenant data before the next context loads.',
+      ),
+      const SizedBox(height: 16),
+      FutureBuilder<List<Workspace>>(
+        future: _future,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Padding(
+              padding: EdgeInsets.all(32),
+              child: Center(child: CircularProgressIndicator()),
+            );
+          }
+          if (snapshot.hasError) {
+            return Column(
+              children: [
+                CoreError(coreFlowError(snapshot.error)),
+                TextButton(onPressed: _refresh, child: const Text('Try again')),
+              ],
+            );
+          }
+          final items = snapshot.data ?? const [];
+          if (items.isEmpty) {
+            return const Text(
+              'No workspaces are available for this account. Pull down to check again.',
+            );
+          }
+          return CoreGroup(
+            children: [
+              for (final item in items)
+                CoreChoice(
+                  title: item.name,
+                  subtitle: item.isPersonal
+                      ? 'Your account workspace'
+                      : [
+                          item.role,
+                          item.branchName,
+                        ].whereType<String>().join(' · '),
+                  icon: item.isPersonal
+                      ? Icons.person_outline
+                      : Icons.business_outlined,
+                  selected: _selected?.id == item.id,
+                  active:
+                      item.companyId == ref.watch(workspaceProvider).companyId,
+                  onTap: _busy ? null : () => setState(() => _selected = item),
                 ),
-              ),
-          ],
-        );
-      },
-    ),
+            ],
+          );
+        },
+      ),
+      if (_error != null) CoreError(_error!),
+      const SizedBox(height: 12),
+      FilledButton(
+        onPressed: _busy || _selected == null ? null : _continue,
+        child: Text(_busy ? 'Switching…' : 'Continue'),
+      ),
+    ],
   );
 }

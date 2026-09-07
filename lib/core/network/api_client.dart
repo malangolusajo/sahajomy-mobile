@@ -146,7 +146,7 @@ class ApiClient {
     Map<String, dynamic>? queryParameters,
     Options? options,
   }) async {
-    final response = await _dio.get<T>(
+    final response = await _dio.get<dynamic>(
       _validatedPath(path),
       queryParameters: queryParameters,
       options: options,
@@ -159,7 +159,7 @@ class ApiClient {
     Map<String, dynamic>? queryParameters,
     Options? options,
   }) async {
-    final response = await _dio.get<List<dynamic>>(
+    final response = await _dio.get<dynamic>(
       _validatedPath(path),
       queryParameters: queryParameters,
       options: options,
@@ -172,7 +172,7 @@ class ApiClient {
     Map<String, dynamic>? queryParameters,
     Options? options,
   }) async {
-    final response = await _dio.get<Map<String, dynamic>>(
+    final response = await _dio.get<dynamic>(
       _validatedPath(path),
       queryParameters: queryParameters,
       options: options,
@@ -186,7 +186,7 @@ class ApiClient {
     Map<String, dynamic>? queryParameters,
     Options? options,
   }) async {
-    final response = await _dio.post<T>(
+    final response = await _dio.post<dynamic>(
       _validatedPath(path),
       data: data,
       queryParameters: queryParameters,
@@ -201,7 +201,7 @@ class ApiClient {
     Map<String, dynamic>? queryParameters,
     Options? options,
   }) async {
-    final response = await _dio.put<T>(
+    final response = await _dio.put<dynamic>(
       _validatedPath(path),
       data: data,
       queryParameters: queryParameters,
@@ -216,7 +216,7 @@ class ApiClient {
     Map<String, dynamic>? queryParameters,
     Options? options,
   }) async {
-    final response = await _dio.patch<T>(
+    final response = await _dio.patch<dynamic>(
       _validatedPath(path),
       data: data,
       queryParameters: queryParameters,
@@ -230,7 +230,7 @@ class ApiClient {
     Map<String, dynamic>? queryParameters,
     Options? options,
   }) async {
-    final response = await _dio.delete<T>(
+    final response = await _dio.delete<dynamic>(
       _validatedPath(path),
       queryParameters: queryParameters,
       options: _mutationOptions(options),
@@ -243,7 +243,7 @@ class ApiClient {
     required FormData data,
     Options? options,
   }) async {
-    final response = await _dio.post<T>(
+    final response = await _dio.post<dynamic>(
       _validatedPath(path),
       data: data,
       options: _mutationOptions(options),
@@ -295,10 +295,7 @@ class ApiClient {
     if (response.statusCode == null ||
         response.statusCode! < 200 ||
         response.statusCode! >= 300) {
-      throw ApiException(
-        statusCode: response.statusCode ?? 0,
-        message: _errorMessage(response.statusCode ?? 0),
-      );
+      throw _responseException(response);
     }
     return response.data as T;
   }
@@ -307,10 +304,7 @@ class ApiClient {
     if (response.statusCode == null ||
         response.statusCode! < 200 ||
         response.statusCode! >= 300) {
-      throw ApiException(
-        statusCode: response.statusCode ?? 0,
-        message: _errorMessage(response.statusCode ?? 0),
-      );
+      throw _responseException(response);
     }
     final data = response.data as List<dynamic>?;
     return data?.cast<Map<String, dynamic>>() ?? <Map<String, dynamic>>[];
@@ -320,12 +314,36 @@ class ApiClient {
     if (response.statusCode == null ||
         response.statusCode! < 200 ||
         response.statusCode! >= 300) {
-      throw ApiException(
-        statusCode: response.statusCode ?? 0,
-        message: _errorMessage(response.statusCode ?? 0),
-      );
+      throw _responseException(response);
     }
     return response.data as Map<String, dynamic>? ?? <String, dynamic>{};
+  }
+
+  ApiException _responseException(Response<dynamic> response) {
+    final status = response.statusCode ?? 0;
+    final body = response.data;
+    final detail = body is Map ? body['detail'] : null;
+    // Only audited public auth messages are surfaced verbatim. Raw response
+    // bodies can contain private form inputs or internal server diagnostics.
+    const authMessages = {
+      'Name and email are required for new user registration.',
+      'Email is required for this user. Please provide your email to continue.',
+      'Account suspended. Contact support.',
+      'The code you entered is incorrect. Please try again.',
+      'This OTP has expired. Please request a new code.',
+      'Unable to process registration details. Please use the sign-in flow for existing accounts.',
+      'Unable to use this email for registration. Please sign in or use a different email.',
+      'Invalid email format or disposable email address. Please provide a valid email address.',
+      'Invalid email format.',
+      'Invalid phone number format. Please provide a valid phone number with country code.',
+      'Too many OTP requests. Please wait before trying again.',
+    };
+    return ApiException(
+      statusCode: status,
+      message: status < 500 && detail is String && authMessages.contains(detail)
+          ? detail
+          : _errorMessage(status),
+    );
   }
 
   void close() => _dio.close();

@@ -36,27 +36,28 @@ void main() {
     expect(adapter.verifyAuthorization, isNull);
   });
 
-  test(
-    'privileged OTP session fails closed without server-confirmed MFA',
-    () async {
-      FlutterSecureStorage.setMockInitialValues({});
-      final storage = TokenStorage();
-      final adapter = _AuthAdapter(role: 'super_admin', mfaVerified: false);
-      final api = ApiClient(
-        dio: Dio(BaseOptions(baseUrl: 'https://example.test/api/v1/'))
-          ..httpClientAdapter = adapter,
-        tokenStorage: storage,
-        workspaceProvider: WorkspaceProvider(storage),
-        enableLogging: false,
-      );
+  test('server-required MFA fails closed without confirmation', () async {
+    FlutterSecureStorage.setMockInitialValues({});
+    final storage = TokenStorage();
+    final adapter = _AuthAdapter(
+      role: 'super_admin',
+      mfaVerified: false,
+      mfaRequired: true,
+    );
+    final api = ApiClient(
+      dio: Dio(BaseOptions(baseUrl: 'https://example.test/api/v1/'))
+        ..httpClientAdapter = adapter,
+      tokenStorage: storage,
+      workspaceProvider: WorkspaceProvider(storage),
+      enableLogging: false,
+    );
 
-      await expectLater(
-        AuthRepository(api)
-            .verifyOtp(phoneNumber: '+255712345678', otpCode: '123456'),
-        throwsA(isA<FormatException>()),
-      );
-    },
-  );
+    await expectLater(
+      AuthRepository(api)
+          .verifyOtp(phoneNumber: '+255712345678', otpCode: '123456'),
+      throwsA(isA<FormatException>()),
+    );
+  });
 
   test(
     'MFA challenge remains a challenge and does not create a session',
@@ -79,13 +80,53 @@ void main() {
       expect(adapter.profileCalls, 0);
     },
   );
+
+  for (final role in [
+    'customer',
+    'cargo_admin',
+    'sourcing_agent',
+    'super_admin',
+  ]) {
+    test(
+      'OTP accepts server-verified $role under the existing backend contract',
+      () async {
+        FlutterSecureStorage.setMockInitialValues({});
+        final storage = TokenStorage();
+        final api = ApiClient(
+          dio: Dio(BaseOptions(baseUrl: 'https://example.test/api/v1/'))
+            ..httpClientAdapter = _AuthAdapter(role: role, mfaVerified: false),
+          tokenStorage: storage,
+          workspaceProvider: WorkspaceProvider(storage),
+          enableLogging: false,
+        );
+        addTearDown(api.close);
+        final step = await AuthRepository(api)
+            .verifyOtp(phoneNumber: '+255712345678', otpCode: '123456');
+        expect(step, isA<Authenticated>());
+        expect(
+          (step as Authenticated).session.role.name,
+          {
+            'customer': 'customer',
+            'cargo_admin': 'cargoAdmin',
+            'sourcing_agent': 'sourcingAgent',
+            'super_admin': 'superAdmin',
+          }[role],
+        );
+      },
+    );
+  }
 }
 
 class _AuthAdapter implements HttpClientAdapter {
-  _AuthAdapter({required this.role, required this.mfaVerified});
+  _AuthAdapter({
+    required this.role,
+    required this.mfaVerified,
+    this.mfaRequired = false,
+  });
 
   final String role;
   final bool mfaVerified;
+  final bool mfaRequired;
   String? verifyAuthorization;
   String? profileAuthorization;
 
@@ -104,7 +145,11 @@ class _AuthAdapter implements HttpClientAdapter {
     }
     if (options.path.endsWith('auth/me')) {
       profileAuthorization = options.headers['Authorization'] as String?;
-      return _response({'role': role, 'mfa_verified': mfaVerified});
+      return _response({
+        'role': role,
+        'mfa_verified': mfaVerified,
+        'mfa_required': mfaRequired,
+      });
     }
     return _response({}, statusCode: 404);
   }

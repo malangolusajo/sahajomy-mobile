@@ -86,6 +86,7 @@ class WorkspaceProvider extends StateNotifier<WorkspaceState> {
   Future<void> clearWorkspace() async {
     // Invalidate old-tenant responses before waiting on device storage.
     _revision++;
+    await ready;
     state = const WorkspaceState();
     await _tokenStorage.clearWorkspace();
   }
@@ -116,7 +117,16 @@ class WorkspaceProvider extends StateNotifier<WorkspaceState> {
     if (normalized.contains('*') || normalized.contains('admin:*')) return true;
     final segments = Uri.parse(location).pathSegments;
     if (segments.length < 2) return true;
-    final resource = segments[1].replaceAll('-', '_');
+    final segment = segments[1].replaceAll('-', '_');
+    if (const {'profile', 'notifications', 'account'}.contains(segment))
+      return true;
+    final resource = switch (segment) {
+      'bookings' || 'sea_bookings' || 'reservations' => 'booking',
+      'shipments' || 'shipment_orders' => 'shipment',
+      'payments' => 'payment',
+      'parcels' || 'warehouse_access' => 'parcel',
+      _ => segment,
+    };
     final route = Uri.parse(location).path.toLowerCase();
     return normalized.contains('route:$route') ||
         normalized.contains('$resource:*') ||

@@ -70,6 +70,7 @@ class _MfaPageState extends ConsumerState<MfaPage> {
   }
 
   Future<void> _verify() async {
+    if (_submitting) return;
     final challenge = _challenge;
     if (challenge == null || !isValidOtp(_codeController.text.trim())) {
       setState(() => _error = 'Enter the six-digit authenticator code.');
@@ -92,9 +93,10 @@ class _MfaPageState extends ConsumerState<MfaPage> {
       ref.read(pendingDestinationProvider.notifier).state = null;
       ref.read(pendingPhoneNumberProvider.notifier).state = null;
       ref.read(pendingMfaChallengeProvider.notifier).state = null;
-      ref.invalidate(workspaceProvider);
-      ref.invalidate(apiClientProvider);
-      if (mounted) context.go(destination ?? _routeFor(session.role));
+      await ref.read(workspaceProvider.notifier).clearWorkspace();
+      ref.read(pendingDestinationProvider.notifier).state =
+          destination ?? _routeFor(session.role);
+      if (mounted) context.go('/stay-updated');
     } on ApiException catch (error) {
       if (mounted) setState(() => _error = error.message);
     } on FormatException catch (error) {

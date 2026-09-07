@@ -57,13 +57,13 @@ flutter:
     - assets/branding/sahajomy-app-icon.png
 
 flutter_native_splash:
-  color: "#062B44"
+  color: "#060707"
   image: assets/branding/sahajomy-app-icon.png
   android_gravity: center
   ios_content_mode: center
   android_12:
-    color: "#062B44"
+    color: "#060707"
     image: assets/branding/sahajomy-app-icon.png
-    icon_background_color: "#062B44"
+    icon_background_color: "#060707"
   ios: true
   web: false
