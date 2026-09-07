@@ -3,7 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../app/theme.dart';
 import '../../../core/ui/core_flow_ui.dart';
+import '../../../core/ui/sahajomy_ui.dart';
 import '../domain/otp_delivery.dart';
 import '../../../core/network/api_exception.dart';
 import '../../../core/providers.dart';
@@ -86,13 +88,45 @@ class _SignInPageState extends ConsumerState<SignInPage> {
 
   @override
   Widget build(BuildContext context) => CoreFlowPage(
-    title: 'Welcome',
+    title: 'Sign in',
     canGoBack: false,
     children: [
-      const CoreHero(
-        eyebrow: 'SAHAJOMY',
-        title: 'Welcome to Sahajomy',
-        description: 'Use your phone number to continue. Returning customers and platform teams use the same secure entry.',
+      Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [brandNavyDark, brandNavy],
+          ),
+          borderRadius: BorderRadius.circular(26),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SahajomyBrandMark(size: 44, showShadow: false),
+            const SizedBox(height: 20),
+            const Text(
+              'Ship, source, and track\ngoods from China to Africa',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                height: 1.2,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Get a China warehouse address, source products, book sea or air cargo, and track shipments from China to Africa with Sahajomy.',
+              style: TextStyle(
+                color: Color(0xFFD1DEE6),
+                fontSize: 14,
+                height: 1.55,
+              ),
+            ),
+          ],
+        ),
       ),
       const SizedBox(height: 16),
       Form(
@@ -163,6 +197,12 @@ class _SignInPageState extends ConsumerState<SignInPage> {
         child: const Text('Create an account'),
       ),
       const SahajomyLegalLinks(),
+      const SizedBox(height: 8),
+      Text(
+        '\u00a9 ${DateTime.now().year} Sahajomy. All rights reserved.',
+        textAlign: TextAlign.center,
+        style: const TextStyle(fontSize: 11, color: appMuted),
+      ),
     ],
   );
 }
