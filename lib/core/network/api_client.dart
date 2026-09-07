@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -249,6 +250,64 @@ class ApiClient {
       options: _mutationOptions(options),
     );
     return _handleResponse(response);
+  }
+
+  /// Downloads a binary document (PDF, Excel, image, etc.) and returns the raw
+  /// bytes. The auth/tenant interceptors still apply so the request is
+  /// authenticated without embedding the token in the URL.
+  ///
+  /// [onProgress] receives (received, total) bytes; total may be -1 when the
+  /// server does not send a content-length header.
+  Future<Uint8List> downloadBytes(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    void Function(int received, int total)? onProgress,
+  }) async {
+    final response = await _dio.get<List<int>>(
+      _validatedPath(path),
+      queryParameters: queryParameters,
+      options: (options ?? Options()).copyWith(
+        responseType: ResponseType.bytes,
+      ),
+      onReceiveProgress: onProgress,
+    );
+    if (response.statusCode == null ||
+        response.statusCode! < 200 ||
+        response.statusCode! >= 300) {
+      throw _responseException(response);
+    }
+    final data = response.data;
+    if (data == null) return Uint8List(0);
+    if (data is Uint8List) return data;
+    if (data is List<int>) return Uint8List.fromList(data);
+    throw const FormatException('Expected binary response for document.');
+  }
+
+  /// Downloads bytes from an absolute public URL (e.g. a Cloudinary document
+  /// URL returned by the backend). No auth header is attached.
+  Future<Uint8List> downloadPublicBytes(
+    String url, {
+    void Function(int received, int total)? onProgress,
+  }) async {
+    final response = await _dio.get<List<int>>(
+      url,
+      options: Options(responseType: ResponseType.bytes),
+      onReceiveProgress: onProgress,
+    );
+    if (response.statusCode == null ||
+        response.statusCode! < 200 ||
+        response.statusCode! >= 300) {
+      throw ApiException(
+        statusCode: response.statusCode ?? 0,
+        message: 'Unable to download the document.',
+      );
+    }
+    final data = response.data;
+    if (data == null) return Uint8List(0);
+    if (data is Uint8List) return data;
+    if (data is List<int>) return Uint8List.fromList(data);
+    throw const FormatException('Expected binary response for document.');
   }
 
   Options _mutationOptions(Options? options) {

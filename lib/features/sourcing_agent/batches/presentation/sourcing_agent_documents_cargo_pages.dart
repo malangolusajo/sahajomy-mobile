@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/theme.dart';
+import '../../../../core/ui/sahajomy_ui.dart';
+import '../../../../core/utils/document_handler.dart';
 import '../../../customer/presentation/customer_components.dart';
 import '../../../repository_providers.dart';
 import '../../batches/data/sourcing_agent_batches_repository.dart';
@@ -104,7 +106,7 @@ class _AgentInvoicesPageState extends ConsumerState<AgentInvoicesPage> {
         return ListView.builder(
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
           itemCount: items.length,
-          itemBuilder: (context, i) => _docCard(items[i], isInvoice: true),
+          itemBuilder: (context, i) => _docCard(context, items[i], isInvoice: true),
         );
       },
     ),
@@ -149,37 +151,256 @@ class _AgentReceiptsPageState extends ConsumerState<AgentReceiptsPage> {
         return ListView.builder(
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
           itemCount: items.length,
-          itemBuilder: (context, i) => _docCard(items[i], isInvoice: false),
+          itemBuilder: (context, i) => _docCard(context, items[i], isInvoice: false),
         );
       },
     ),
   );
 }
 
-Widget _docCard(Map<String, dynamic> d, {required bool isInvoice}) {
+Widget _docCard(BuildContext context, Map<String, dynamic> d, {required bool isInvoice}) {
   final num = d[isInvoice ? 'invoice_number' : 'receipt_number'] ?? '—';
   final amount = d['total_amount'] ?? 0;
   final currency = d['currency'] ?? 'TZS';
   final customer = d['customer_name'] ?? 'Guest';
   final batch = d['batch_title'];
-  return Container(
-    margin: const EdgeInsets.only(bottom: 12),
+  return InkWell(
+    borderRadius: BorderRadius.circular(14),
+    onTap: () => Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AgentDocumentDetailPage(document: d, isInvoice: isInvoice),
+      ),
+    ),
+    child: Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: appBorder)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(children: [
+            Icon(isInvoice ? Icons.description_outlined : Icons.receipt_long_outlined, color: isInvoice ? appError : appSuccess),
+            const SizedBox(width: 10),
+            Expanded(child: Text(num, style: const TextStyle(fontWeight: FontWeight.w800))),
+            CustomerStatusPill(label: isInvoice ? (d['document_status'] ?? 'draft') : 'paid'),
+          ]),
+          const SizedBox(height: 8),
+          Text('$customer', style: const TextStyle(color: appMuted, fontSize: 13)),
+          if (batch != null) Text('Batch: $batch', style: const TextStyle(color: appMuted, fontSize: 12)),
+          const SizedBox(height: 8),
+          Text('$amount $currency', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: brandCoral)),
+        ],
+      ),
+    ),
+  );
+}
+
+/// Detail page for an invoice or receipt with view/download/share of the
+/// backend-generated document.
+class AgentDocumentDetailPage extends ConsumerStatefulWidget {
+  const AgentDocumentDetailPage({
+    required this.document,
+    required this.isInvoice,
+    super.key,
+  });
+
+  final Map<String, dynamic> document;
+  final bool isInvoice;
+
+  @override
+  ConsumerState<AgentDocumentDetailPage> createState() =>
+      _AgentDocumentDetailPageState();
+}
+
+class _AgentDocumentDetailPageState
+    extends ConsumerState<AgentDocumentDetailPage> {
+  SourcingAgentBatchesRepository get _repository =>
+      ref.read(sourcingAgentBatchesRepositoryProvider);
+
+  bool _busy = false;
+  String? _pdfUrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _pdfUrl = widget.document['pdf_url'] as String?;
+  }
+
+  String get _docNumber =>
+      widget.document[widget.isInvoice ? 'invoice_number' : 'receipt_number']
+          as String? ??
+      (widget.isInvoice ? 'Invoice' : 'Receipt');
+
+  String get _fileName =>
+      '${_docNumber.replaceAll(RegExp(r'[^A-Za-z0-9_-]'), '_')}.pdf';
+
+  Future<void> _ensurePdf() async {
+    if (_pdfUrl != null && _pdfUrl!.isNotEmpty) return;
+    final orderId = widget.document['order_id'] as String?;
+    if (orderId == null) {
+      throw 'Document PDF is not available.';
+    }
+    setState(() => _busy = true);
+    try {
+      final result = widget.isInvoice
+          ? await _repository.generateInvoice(orderId)
+          : await _repository.generateReceipt(orderId);
+      if (!mounted) return;
+      setState(() => _pdfUrl = result['pdf_url'] as String?);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _viewPdf() async {
+    try {
+      await _ensurePdf();
+      final url = _pdfUrl;
+      if (url == null || url.isEmpty) {
+        throw 'No PDF available.';
+      }
+      setState(() => _busy = true);
+      final bytes = await _repository.downloadPublicDocument(url);
+      await DocumentHandler.saveAndOpen(bytes: bytes, fileName: _fileName);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Unable to open the document.')),
+      );
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _sharePdf() async {
+    try {
+      await _ensurePdf();
+      final url = _pdfUrl;
+      if (url == null || url.isEmpty) {
+        throw 'No PDF available.';
+      }
+      setState(() => _busy = true);
+      final bytes = await _repository.downloadPublicDocument(url);
+      await DocumentHandler.saveAndShare(
+        bytes: bytes,
+        fileName: _fileName,
+        subject: _docNumber,
+        text: '${widget.isInvoice ? 'Invoice' : 'Receipt'}: $_docNumber',
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Unable to share the document.')),
+      );
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final d = widget.document;
+    final amount = d['total_amount'] ?? 0;
+    final currency = d['currency'] ?? 'TZS';
+    final customer = d['customer_name'] ?? 'Guest';
+    final status = d['document_status'] as String? ?? (widget.isInvoice ? 'draft' : 'paid');
+    final generatedAt = d['generated_at'] as String?;
+    final dueDate = d['due_date'] as String?;
+
+    return Scaffold(
+      appBar: SahajomyScreenHeader(
+        role: 'Sourcing Agent',
+        title: widget.isInvoice ? 'Invoice' : 'Receipt',
+        actions: [
+          IconButton(
+            tooltip: 'Share',
+            onPressed: _busy ? null : _sharePdf,
+            icon: const Icon(Icons.share_outlined),
+          ),
+        ],
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          Text(
+            _docNumber,
+            style: Theme.of(context).textTheme.headlineMedium,
+          ),
+          const SizedBox(height: 6),
+          CustomerStatusPill(label: status),
+          const SizedBox(height: 20),
+          _detailCard(
+            entries: {
+              'Customer': '$customer',
+              'Amount': '$amount $currency',
+              if (generatedAt != null) 'Generated': generatedAt,
+              if (dueDate != null) 'Due date': dueDate,
+              if (d['batch_title'] != null) 'Batch': '${d['batch_title']}',
+            },
+          ),
+          const SizedBox(height: 20),
+          if (_pdfUrl == null || _pdfUrl!.isEmpty)
+            FilledButton.icon(
+              onPressed: _busy ? null : _viewPdf,
+              icon: const Icon(Icons.picture_as_pdf_outlined),
+              label: Text(_busy ? 'Generating…' : 'Generate & view PDF'),
+            )
+          else ...[
+            FilledButton.icon(
+              onPressed: _busy ? null : _viewPdf,
+              icon: const Icon(Icons.visibility_outlined),
+              label: const Text('View PDF'),
+            ),
+            const SizedBox(height: 8),
+            OutlinedButton.icon(
+              onPressed: _busy ? null : _sharePdf,
+              icon: const Icon(Icons.share_outlined),
+              label: const Text('Share PDF'),
+            ),
+          ],
+          const SizedBox(height: 24),
+        ],
+      ),
+    );
+  }
+
+  Widget _detailCard({required Map<String, String> entries}) => Container(
     padding: const EdgeInsets.all(16),
-    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14), border: Border.all(color: appBorder)),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(14),
+      border: Border.all(color: appBorder),
+    ),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(children: [
-          Icon(isInvoice ? Icons.description_outlined : Icons.receipt_long_outlined, color: isInvoice ? appError : appSuccess),
-          const SizedBox(width: 10),
-          Expanded(child: Text(num, style: const TextStyle(fontWeight: FontWeight.w800))),
-          CustomerStatusPill(label: isInvoice ? (d['document_status'] ?? 'draft') : 'paid'),
-        ]),
-        const SizedBox(height: 8),
-        Text('$customer', style: const TextStyle(color: appMuted, fontSize: 13)),
-        if (batch != null) Text('Batch: $batch', style: const TextStyle(color: appMuted, fontSize: 12)),
-        const SizedBox(height: 8),
-        Text('$amount $currency', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: brandCoral)),
+        for (final entry in entries.entries) ...[
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                flex: 2,
+                child: Text(
+                  entry.key,
+                  style: const TextStyle(color: appMuted, fontSize: 13),
+                ),
+              ),
+              Expanded(
+                flex: 3,
+                child: Text(
+                  entry.value,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                  textAlign: TextAlign.right,
+                ),
+              ),
+            ],
+          ),
+          if (entry.key != entries.keys.last) const SizedBox(height: 10),
+        ],
       ],
     ),
   );

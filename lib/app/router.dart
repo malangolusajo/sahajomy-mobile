@@ -84,6 +84,7 @@ import '../features/sourcing_agent/presentation/sourcing_agent_shell.dart';
 import '../features/sourcing_agent/products/presentation/sourcing_agent_product_management_page.dart';
 import '../features/sourcing_agent/products/presentation/sourcing_agent_product_ops_pages.dart';
 import '../features/sourcing_agent/batches/presentation/sourcing_agent_documents_cargo_pages.dart';
+import '../features/sourcing_agent/batches/presentation/sourcing_agent_batch_workflow_pages.dart';
 import '../features/sourcing_agent/batches/presentation/sourcing_agent_air_cargo_pages.dart';
 import '../features/sourcing_agent/batches/presentation/sourcing_agent_financials_pages.dart';
 import '../features/super_admin/presentation/super_admin_shell.dart';
@@ -369,6 +370,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/agent/batches/:batchId/publish', builder: (context, state) => AgentPublishPage(batchId: state.pathParameters['batchId'] ?? '')),
       GoRoute(path: '/agent/goods-types/:id/attributes', builder: (context, state) => AgentDynamicAttributesPage(goodsTypeId: state.pathParameters['id'] ?? '', goodsTypeName: state.uri.queryParameters['name'] ?? 'Goods type')),
       GoRoute(path: '/agent/products/variants', builder: (context, state) => AgentProductVariantsPage(product: state.extra as Map<String, dynamic>? ?? {})),
+      GoRoute(
+        path: '/agent/packing-lists/:packingListId',
+        builder: (context, state) => SourcingAgentPackingListDetailPage(
+          packingListId: state.pathParameters['packingListId'] ?? '',
+          batchTitle: state.uri.queryParameters['title'],
+        ),
+      ),
       GoRoute(
         path: '/super-admin',
         builder: (context, state) => const SuperAdminShell(),

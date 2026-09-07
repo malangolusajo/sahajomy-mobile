@@ -51,12 +51,14 @@ class SahajomyScreenHeader extends StatelessWidget
     this.role,
     this.showBack = true,
     this.onNotificationTap,
+    this.actions,
   });
 
   final String? role;
   final String title;
   final bool showBack;
   final VoidCallback? onNotificationTap;
+  final List<Widget>? actions;
 
   @override
   Size get preferredSize => const Size.fromHeight(64);
@@ -93,15 +95,16 @@ class SahajomyScreenHeader extends StatelessWidget
       ],
     ),
     centerTitle: false,
-    actions: onNotificationTap == null
-        ? null
-        : [
-            IconButton(
-              tooltip: 'Notifications',
-              onPressed: onNotificationTap,
-              icon: const Icon(Icons.notifications_none_rounded),
-            ),
-          ],
+    actions: actions ??
+        (onNotificationTap == null
+            ? null
+            : [
+                IconButton(
+                  tooltip: 'Notifications',
+                  onPressed: onNotificationTap,
+                  icon: const Icon(Icons.notifications_none_rounded),
+                ),
+              ]),
   );
 }
 

@@ -4,6 +4,7 @@ import 'package:sahajomy_mobile/features/repository_providers.dart';
 
 import '../../../../app/theme.dart';
 import '../../../../core/ui/sahajomy_ui.dart';
+import '../../../../core/utils/document_handler.dart';
 import '../data/sourcing_agent_batches_repository.dart';
 
 List<Map<String, dynamic>> _extractGoodsTypes(Map<String, dynamic>? response) {
@@ -922,9 +923,9 @@ class _SourcingAgentPackingListCreatePageState
 }
 
 class SourcingAgentPackingListListPage extends ConsumerStatefulWidget {
-  const SourcingAgentPackingListListPage({super.key, this.initialBatches});
+  const SourcingAgentPackingListListPage({super.key, this.initialPackingLists});
 
-  final List<Map<String, dynamic>>? initialBatches;
+  final List<Map<String, dynamic>>? initialPackingLists;
 
   @override
   ConsumerState<SourcingAgentPackingListListPage> createState() =>
@@ -935,13 +936,14 @@ class _SourcingAgentPackingListListPageState
     extends ConsumerState<SourcingAgentPackingListListPage> {
   SourcingAgentBatchesRepository get _repository =>
       ref.read(sourcingAgentBatchesRepositoryProvider);
-  late Future<Map<String, dynamic>> _batches = Future.microtask(
-    () => widget.initialBatches == null
-        ? _repository.listBatches()
-        : Future.value({'batches': widget.initialBatches}),
+  late Future<Map<String, dynamic>> _packingLists = Future.microtask(
+    () => widget.initialPackingLists == null
+        ? _repository.listPackingLists()
+        : Future.value({'packing_lists': widget.initialPackingLists}),
   );
 
-  void _retry() => setState(() => _batches = _repository.listBatches());
+  void _retry() =>
+      setState(() => _packingLists = _repository.listPackingLists());
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -950,7 +952,7 @@ class _SourcingAgentPackingListListPageState
       title: 'Packing lists',
     ),
     body: FutureBuilder<Map<String, dynamic>>(
-      future: _batches,
+      future: _packingLists,
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
           return const Center(child: CircularProgressIndicator());
@@ -964,10 +966,10 @@ class _SourcingAgentPackingListListPageState
           );
         }
 
-        final batches = (snapshot.data!['batches'] as List? ?? const [])
-            .cast<Map<String, dynamic>>()
-            .where((batch) => _asInt(batch['total_orders']) > 0)
-            .toList();
+        final lists = (snapshot.data!['packing_lists'] as List? ??
+                snapshot.data!['data'] as List? ??
+                const [])
+            .cast<Map<String, dynamic>>();
 
         return ListView(
           padding: const EdgeInsets.all(20),
@@ -978,38 +980,41 @@ class _SourcingAgentPackingListListPageState
             ),
             const SizedBox(height: 6),
             const Text(
-              'Review generated sourcing documents and open the latest ready-to-ship batch.',
+              'Review generated sourcing documents and open a packing list to manage items or export.',
             ),
             const SizedBox(height: 20),
-            if (batches.isEmpty)
+            if (lists.isEmpty)
               const SahajomySectionCard(
                 title: 'No packing lists yet',
                 children: [
                   Text(
-                    'Packing lists will be available after orders are confirmed inside a batch.',
+                    'Create a packing list from a batch to get started.',
                   ),
                 ],
               ),
-            for (final batch in batches) ...[
+            for (final pl in lists) ...[
               Card(
                 child: ListTile(
                   leading: const CircleAvatar(
                     child: Icon(Icons.description_outlined),
                   ),
                   title: Text(
-                    batch['title'] as String? ?? 'Packing list',
+                    pl['name'] as String? ??
+                        pl['packing_list_number'] as String? ??
+                        'Packing list',
                     style: const TextStyle(fontWeight: FontWeight.w800),
                   ),
                   subtitle: Text(
-                    '${_asInt(batch['total_orders'])} orders • ${_asInt(batch['total_products'])} products',
+                    pl['packing_list_number'] as String? ??
+                        '${pl['items_count'] ?? pl['item_count'] ?? 0} items',
                   ),
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (_) => SourcingAgentPackingListDetailPage(
-                        batchId: '${batch['id']}',
-                        batchTitle: batch['title'] as String?,
+                        packingListId: '${pl['id']}',
+                        batchTitle: pl['batch_title'] as String?,
                       ),
                     ),
                   ),
@@ -1026,12 +1031,14 @@ class _SourcingAgentPackingListListPageState
 
 class SourcingAgentPackingListDetailPage extends ConsumerStatefulWidget {
   const SourcingAgentPackingListDetailPage({
-    required this.batchId,
+    required this.packingListId,
     super.key,
+    this.batchId,
     this.batchTitle,
   });
 
-  final String batchId;
+  final String packingListId;
+  final String? batchId;
   final String? batchTitle;
 
   @override
@@ -1043,117 +1050,580 @@ class _SourcingAgentPackingListDetailPageState
     extends ConsumerState<SourcingAgentPackingListDetailPage> {
   SourcingAgentBatchesRepository get _repository =>
       ref.read(sourcingAgentBatchesRepositoryProvider);
-  late Future<List<Map<String, dynamic>>> _data = Future.microtask(
-    () => _load(),
-  );
 
-  Future<List<Map<String, dynamic>>> _load() => Future.wait([
-    _repository.getBatch(widget.batchId),
-    _repository.listOrders(widget.batchId),
-  ]);
-
-  void _retry() => setState(() => _data = _load());
+  Map<String, dynamic>? _packingList;
+  bool _loading = true;
+  String? _error;
+  bool _exporting = false;
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: const SahajomyScreenHeader(
-      role: 'Sourcing Agent',
-      title: 'Packing list details',
-    ),
-    body: FutureBuilder<List<Map<String, dynamic>>>(
-      future: _data,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (snapshot.hasError) {
-          return SahajomyMessageState(
-            icon: Icons.wifi_off_rounded,
-            message: 'Packing-list details are unavailable right now.',
-            actionLabel: 'Try again',
-            onAction: _retry,
-          );
-        }
+  void initState() {
+    super.initState();
+    _load();
+  }
 
-        final batch = snapshot.data![0];
-        final orders = (snapshot.data![1]['orders'] as List? ?? const [])
-            .cast<Map<String, dynamic>>();
-        final cartons = orders.fold<int>(
-          0,
-          (sum, order) => sum + _asInt(order['carton_count']),
-        );
-        final totalWeight = orders.fold<double>(
-          0,
-          (sum, order) => sum + _readAmount(order['weight_kg']),
-        );
+  Future<void> _load() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final data = await _repository.getPackingList(widget.packingListId);
+      if (!mounted) return;
+      setState(() {
+        _packingList = data;
+        _loading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = 'Unable to load the packing list. Pull down to retry.';
+        _loading = false;
+      });
+    }
+  }
 
-        return ListView(
-          padding: const EdgeInsets.all(20),
-          children: [
+  Future<void> _exportPdf() async {
+    final pl = _packingList;
+    if (pl == null) return;
+    final name = (pl['packing_list_number'] as String?) ??
+        (pl['name'] as String?) ??
+        'packing-list';
+    setState(() => _exporting = true);
+    try {
+      final bytes = await _repository.exportPackingListPdf(widget.packingListId);
+      await DocumentHandler.saveAndOpen(
+        bytes: bytes,
+        fileName: '$name.pdf',
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Unable to download the PDF.')),
+      );
+    } finally {
+      if (mounted) setState(() => _exporting = false);
+    }
+  }
+
+  Future<void> _exportExcel() async {
+    final pl = _packingList;
+    if (pl == null) return;
+    final name = (pl['packing_list_number'] as String?) ??
+        (pl['name'] as String?) ??
+        'packing-list';
+    setState(() => _exporting = true);
+    try {
+      final bytes = await _repository.exportPackingListExcel(widget.packingListId);
+      await DocumentHandler.saveAndOpen(
+        bytes: bytes,
+        fileName: '$name.xlsx',
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Unable to download the spreadsheet.')),
+      );
+    } finally {
+      if (mounted) setState(() => _exporting = false);
+    }
+  }
+
+  Future<void> _share() async {
+    final pl = _packingList;
+    if (pl == null) return;
+    final name = (pl['packing_list_number'] as String?) ??
+        (pl['name'] as String?) ??
+        'packing-list';
+    setState(() => _exporting = true);
+    try {
+      final bytes = await _repository.exportPackingListPdf(widget.packingListId);
+      await DocumentHandler.saveAndShare(
+        bytes: bytes,
+        fileName: '$name.pdf',
+        subject: name,
+        text: 'Packing list: $name',
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Unable to share the packing list.')),
+      );
+    } finally {
+      if (mounted) setState(() => _exporting = false);
+    }
+  }
+
+  Future<void> _addItem() async {
+    final result = await showModalBottomSheet<Map<String, dynamic>>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => const _PackingListItemSheet(),
+    );
+    if (result == null) return;
+    try {
+      await _repository.addPackingListItem(
+        packingListId: widget.packingListId,
+        itemName: result['item_name'] as String,
+        pricePerPiece: result['price_per_piece'] as double,
+        cartons: result['cartons'] as int,
+        itemsPerCarton: result['items_per_carton'] as int,
+        cbmPerCarton: result['cbm_per_carton'] as double,
+        kilogramPerCarton: result['kilogram_per_carton'] as double,
+        itemCode: result['item_code'] as String?,
+        itemPicture: result['item_picture'] as String?,
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Item added.')),
+      );
+      await _load();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Unable to add the item.')),
+      );
+    }
+  }
+
+  Future<void> _editItem(Map<String, dynamic> item) async {
+    final itemId = '${item['id']}';
+    final result = await showModalBottomSheet<Map<String, dynamic>>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => _PackingListItemSheet(initial: item),
+    );
+    if (result == null) return;
+    try {
+      await _repository.updatePackingListItem(
+        itemId: itemId,
+        itemName: result['item_name'] as String?,
+        pricePerPiece: result['price_per_piece'] as double?,
+        cartons: result['cartons'] as int?,
+        itemsPerCarton: result['items_per_carton'] as int?,
+        cbmPerCarton: result['cbm_per_carton'] as double?,
+        kilogramPerCarton: result['kilogram_per_carton'] as double?,
+        itemCode: result['item_code'] as String?,
+        itemPicture: result['item_picture'] as String?,
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Item updated.')),
+      );
+      await _load();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Unable to update the item.')),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Scaffold(
+      appBar: SahajomyScreenHeader(
+        role: 'Sourcing Agent',
+        title: 'Packing list',
+        actions: [
+          IconButton(
+            tooltip: 'Share',
+            onPressed: _exporting ? null : _share,
+            icon: const Icon(Icons.share_outlined),
+          ),
+        ],
+      ),
+      body: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : _error != null
+          ? RefreshIndicator(
+              onRefresh: _load,
+              child: ListView(
+                children: [
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.3),
+                  Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Text(_error!, textAlign: TextAlign.center),
+                  ),
+                ],
+              ),
+            )
+          : _buildBody(theme),
+    );
+  }
+
+  Widget _buildBody(ThemeData theme) {
+    final pl = _packingList!;
+    final items = (pl['items'] as List? ?? const [])
+        .cast<Map<String, dynamic>>();
+    final number = pl['packing_list_number'] as String?;
+    final name = pl['name'] as String?;
+    final qrUrl = pl['qr_code_url'] as String?;
+    final agentName = pl['agent_name'] as String?;
+    final agentPhone = pl['agent_phone_or_whatsapp'] as String?;
+    final agentInstagram = pl['agent_instagram'] as String?;
+    final agentTiktok = pl['agent_tiktok'] as String?;
+
+    return RefreshIndicator(
+      onRefresh: _load,
+      child: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          Text(
+            name ?? number ?? 'Packing list',
+            style: theme.textTheme.headlineMedium,
+          ),
+          if (number != null) ...[
+            const SizedBox(height: 4),
             Text(
-              widget.batchTitle ?? batch['title'] as String? ?? 'Packing list',
-              style: Theme.of(context).textTheme.headlineMedium,
+              number,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.primary,
+                fontWeight: FontWeight.w600,
+              ),
             ),
-            const SizedBox(height: 6),
-            const Text(
-              'Review totals, customer references, and export readiness for the batch shipment.',
-            ),
-            const SizedBox(height: 20),
+          ],
+          if (widget.batchTitle != null) ...[
+            const SizedBox(height: 4),
+            Text('Batch: ${widget.batchTitle}'),
+          ],
+          const SizedBox(height: 20),
+          if (qrUrl != null && qrUrl.isNotEmpty)
             SahajomySectionCard(
-              title: 'Document summary',
+              title: 'QR code',
               children: [
-                SahajomyKeyValueList(
-                  entries: {
-                    'shipping_method': batch['shipping_method'],
-                    'orders': orders.length,
-                    'cartons': cartons,
-                    'weight_kg': totalWeight.toStringAsFixed(1),
-                    'currency': batch['currency'],
-                  },
+                Center(
+                  child: Image.network(
+                    qrUrl,
+                    width: 160,
+                    height: 160,
+                    errorBuilder: (_, __, ___) => const SizedBox(
+                      width: 160,
+                      height: 160,
+                      child: Icon(Icons.qr_code_2, size: 96),
+                    ),
+                  ),
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+          if (agentName != null || agentPhone != null) ...[
+            const SizedBox(height: 12),
             SahajomySectionCard(
-              title: 'Item rows',
+              title: 'Agent details',
               children: [
-                if (orders.isEmpty)
-                  const Text(
-                    'No order rows are available for this document yet.',
-                  ),
-                for (final order in orders)
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(order['order_reference'] as String? ?? 'Order'),
-                    subtitle: Text(
-                      order['customer_name'] as String? ?? 'Customer',
-                    ),
-                    trailing: Text(
-                      '${_asInt(order['carton_count'])} cartons',
-                      style: const TextStyle(fontWeight: FontWeight.w700),
-                    ),
-                  ),
+                SahajomyKeyValueList(entries: {
+                  if (agentName != null) 'Name': agentName,
+                  if (agentPhone != null) 'Phone / WhatsApp': agentPhone,
+                  if (agentInstagram != null) 'Instagram': agentInstagram,
+                  if (agentTiktok != null) 'TikTok': agentTiktok,
+                }),
               ],
             ),
-            const SizedBox(height: 20),
-            OutlinedButton.icon(
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      'Export actions can be connected when document endpoints are available.',
-                    ),
-                  ),
-                );
-              },
-              icon: const Icon(Icons.download_outlined),
-              label: const Text('Export packing list'),
-            ),
           ],
-        );
-      },
-    ),
-  );
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _exporting ? null : _exportPdf,
+                  icon: const Icon(Icons.picture_as_pdf_outlined),
+                  label: const Text('PDF'),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _exporting ? null : _exportExcel,
+                  icon: const Icon(Icons.table_chart_outlined),
+                  label: const Text('Excel'),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          SahajomySectionCard(
+            title: 'Items (${items.length})',
+            children: [
+              if (items.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  child: Text('No items yet. Tap "Add item" to start.'),
+                ),
+              for (final item in items) _buildItemTile(item, theme),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  onPressed: _exporting ? null : _addItem,
+                  icon: const Icon(Icons.add),
+                  label: const Text('Add item'),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildItemTile(Map<String, dynamic> item, ThemeData theme) {
+    final picture = item['item_picture'] as String?;
+    final name = item['item_name'] as String? ?? 'Item';
+    final code = item['item_code'] as String?;
+    final price = _readAmount(item['price_per_piece']);
+    final cartons = _asInt(item['cartons']);
+    final perCarton = _asInt(item['items_per_carton']);
+    final cbm = _readAmount(item['cbm_per_carton']);
+    final kg = _readAmount(item['kilogram_per_carton']);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (picture != null && picture.isNotEmpty)
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                picture,
+                width: 56,
+                height: 56,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(
+                  width: 56,
+                  height: 56,
+                  color: theme.colorScheme.surfaceContainerHighest,
+                  child: const Icon(Icons.image_not_supported_outlined),
+                ),
+              ),
+            )
+          else
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(Icons.inventory_2_outlined),
+            ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(name, style: const TextStyle(fontWeight: FontWeight.w600)),
+                if (code != null && code.isNotEmpty)
+                  Text('Code: $code', style: theme.textTheme.bodySmall),
+                const SizedBox(height: 4),
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 4,
+                  children: [
+                    Text('$cartons cartons'),
+                    Text('$perCarton pcs/carton'),
+                    Text('${cbm.toStringAsFixed(4)} CBM'),
+                    Text('${kg.toStringAsFixed(1)} kg'),
+                  ],
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '${price.toStringAsFixed(2)} / piece',
+                  style: TextStyle(
+                    color: theme.colorScheme.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            tooltip: 'Edit item',
+            onPressed: () => _editItem(item),
+            icon: const Icon(Icons.edit_outlined, size: 20),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Form sheet for adding/editing a packing list item.
+class _PackingListItemSheet extends StatefulWidget {
+  const _PackingListItemSheet({this.initial});
+
+  final Map<String, dynamic>? initial;
+
+  @override
+  State<_PackingListItemSheet> createState() => _PackingListItemSheetState();
+}
+
+class _PackingListItemSheetState extends State<_PackingListItemSheet> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _name;
+  late final TextEditingController _code;
+  late final TextEditingController _price;
+  late final TextEditingController _cartons;
+  late final TextEditingController _perCarton;
+  late final TextEditingController _cbm;
+  late final TextEditingController _kg;
+  late final TextEditingController _picture;
+
+  @override
+  void initState() {
+    super.initState();
+    final i = widget.initial;
+    _name = TextEditingController(text: i?['item_name'] as String? ?? '');
+    _code = TextEditingController(text: i?['item_code'] as String? ?? '');
+    _price = TextEditingController(
+      text: i == null ? '' : '${i['price_per_piece'] ?? ''}',
+    );
+    _cartons = TextEditingController(
+      text: i == null ? '' : '${i['cartons'] ?? ''}',
+    );
+    _perCarton = TextEditingController(
+      text: i == null ? '' : '${i['items_per_carton'] ?? ''}',
+    );
+    _cbm = TextEditingController(
+      text: i == null ? '' : '${i['cbm_per_carton'] ?? ''}',
+    );
+    _kg = TextEditingController(
+      text: i == null ? '' : '${i['kilogram_per_carton'] ?? ''}',
+    );
+    _picture = TextEditingController(text: i?['item_picture'] as String? ?? '');
+  }
+
+  @override
+  void dispose() {
+    _name.dispose();
+    _code.dispose();
+    _price.dispose();
+    _cartons.dispose();
+    _perCarton.dispose();
+    _cbm.dispose();
+    _kg.dispose();
+    _picture.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    if (!_formKey.currentState!.validate()) return;
+    Navigator.pop(context, {
+      'item_name': _name.text.trim(),
+      'item_code': _code.text.trim().isEmpty ? null : _code.text.trim(),
+      'item_picture': _picture.text.trim().isEmpty ? null : _picture.text.trim(),
+      'price_per_piece': double.tryParse(_price.text.trim()) ?? 0,
+      'cartons': int.tryParse(_cartons.text.trim()) ?? 0,
+      'items_per_carton': int.tryParse(_perCarton.text.trim()) ?? 0,
+      'cbm_per_carton': double.tryParse(_cbm.text.trim()) ?? 0,
+      'kilogram_per_carton': double.tryParse(_kg.text.trim()) ?? 0,
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final padding = EdgeInsets.only(
+      left: 20,
+      right: 20,
+      top: 12,
+      bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+    );
+    return SingleChildScrollView(
+      padding: padding,
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              widget.initial == null ? 'Add item' : 'Edit item',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _name,
+              decoration: const InputDecoration(labelText: 'Item name *'),
+              validator: (v) =>
+                  (v == null || v.trim().isEmpty) ? 'Required' : null,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _code,
+              decoration: const InputDecoration(labelText: 'Item code'),
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _picture,
+              decoration: const InputDecoration(labelText: 'Picture URL'),
+              keyboardType: TextInputType.url,
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: _price,
+                    decoration: const InputDecoration(labelText: 'Price / piece *'),
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    validator: (v) => double.tryParse(v ?? '') == null
+                        ? 'Enter a number'
+                        : null,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextFormField(
+                    controller: _cartons,
+                    decoration: const InputDecoration(labelText: 'Cartons *'),
+                    keyboardType: TextInputType.number,
+                    validator: (v) =>
+                        int.tryParse(v ?? '') == null ? 'Enter a number' : null,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: _perCarton,
+                    decoration: const InputDecoration(labelText: 'Items / carton *'),
+                    keyboardType: TextInputType.number,
+                    validator: (v) =>
+                        int.tryParse(v ?? '') == null ? 'Enter a number' : null,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: TextFormField(
+                    controller: _cbm,
+                    decoration: const InputDecoration(labelText: 'CBM / carton *'),
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    validator: (v) => double.tryParse(v ?? '') == null
+                        ? 'Enter a number'
+                        : null,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _kg,
+              decoration: const InputDecoration(labelText: 'Kilograms / carton *'),
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              validator: (v) =>
+                  double.tryParse(v ?? '') == null ? 'Enter a number' : null,
+            ),
+            const SizedBox(height: 20),
+            FilledButton(onPressed: _submit, child: const Text('Save item')),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class SourcingAgentOrderDetailPage extends StatelessWidget {

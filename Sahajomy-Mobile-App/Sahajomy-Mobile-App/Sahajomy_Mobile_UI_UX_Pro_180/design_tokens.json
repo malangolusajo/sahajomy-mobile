@@ -1,0 +1,39 @@
+{
+  "brand": {
+    "navy": "#0F3D5E",
+    "navy_dark": "#0B2A40",
+    "coral": "#FF6B4A",
+    "coral_dark": "#E85A3A",
+    "logo_gold": "#ECBA20"
+  },
+  "neutral": {
+    "canvas": "#F7F8FA",
+    "surface": "#FFFFFF",
+    "ink": "#0F172A",
+    "muted": "#64748B",
+    "border": "#E2E8F0"
+  },
+  "status": {
+    "success": "#059669",
+    "warning": "#D97706",
+    "danger": "#E11D48"
+  },
+  "spacing": [
+    4,
+    8,
+    12,
+    16,
+    20,
+    24,
+    32,
+    40,
+    48
+  ],
+  "touch_min": 48,
+  "typography": {
+    "family": "Inter/system sans-serif",
+    "body": "14-16/20-24",
+    "screen_title": "24/32 800",
+    "section_title": "18-20/26-28 700"
+  }
+}

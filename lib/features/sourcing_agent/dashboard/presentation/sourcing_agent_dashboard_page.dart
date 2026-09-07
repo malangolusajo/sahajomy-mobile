@@ -80,7 +80,7 @@ class _SourcingAgentDashboardPageState
               context,
               MaterialPageRoute(
                 builder: (_) =>
-                    SourcingAgentPackingListListPage(initialBatches: batches),
+                    const SourcingAgentPackingListListPage(),
               ),
             ),
           ),

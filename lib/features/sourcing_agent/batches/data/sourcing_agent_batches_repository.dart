@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import '../../../../core/network/api_client.dart';
 
 class SourcingAgentBatchesRepository {
@@ -220,5 +222,84 @@ class SourcingAgentBatchesRepository {
           'instagram_url': instagramUrl,
           if (imageIndex != null) 'image_index': imageIndex,
         },
+      );
+
+  // ── Packing lists (detail, items, exports) ────────────
+  Future<Map<String, dynamic>> listPackingLists() =>
+      client.getObject('sourcing_agent/packing-lists');
+
+  Future<Map<String, dynamic>> getPackingList(String packingListId) =>
+      client.getObject('sourcing_agent/packing-lists/$packingListId');
+
+  Future<Map<String, dynamic>> addPackingListItem({
+    required String packingListId,
+    required String itemName,
+    required double pricePerPiece,
+    required int cartons,
+    required int itemsPerCarton,
+    required double cbmPerCarton,
+    required double kilogramPerCarton,
+    String? itemCode,
+    String? itemPicture,
+  }) =>
+      client.post<Map<String, dynamic>>(
+        'sourcing_agent/packing-lists/$packingListId/items',
+        data: {
+          'item_name': itemName,
+          'price_per_piece': pricePerPiece,
+          'item_code': itemCode,
+          'item_picture': itemPicture,
+          'cartons': cartons,
+          'items_per_carton': itemsPerCarton,
+          'cbm_per_carton': cbmPerCarton,
+          'kilogram_per_carton': kilogramPerCarton,
+        },
+      );
+
+  Future<Map<String, dynamic>> updatePackingListItem({
+    required String itemId,
+    String? itemName,
+    double? pricePerPiece,
+    int? cartons,
+    int? itemsPerCarton,
+    double? cbmPerCarton,
+    double? kilogramPerCarton,
+    String? itemCode,
+    String? itemPicture,
+  }) =>
+      client.put<Map<String, dynamic>>(
+        'sourcing_agent/packing-list-items/$itemId',
+        data: {
+          if (itemName != null) 'item_name': itemName,
+          if (pricePerPiece != null) 'price_per_piece': pricePerPiece,
+          if (itemCode != null) 'item_code': itemCode,
+          if (itemPicture != null) 'item_picture': itemPicture,
+          if (cartons != null) 'cartons': cartons,
+          if (itemsPerCarton != null) 'items_per_carton': itemsPerCarton,
+          if (cbmPerCarton != null) 'cbm_per_carton': cbmPerCarton,
+          if (kilogramPerCarton != null) 'kilogram_per_carton': kilogramPerCarton,
+        },
+      );
+
+  Future<Uint8List> exportPackingListPdf(String packingListId) =>
+      client.downloadBytes('sourcing_agent/packing-lists/$packingListId/export/pdf');
+
+  Future<Uint8List> exportPackingListExcel(String packingListId) =>
+      client.downloadBytes('sourcing_agent/packing-lists/$packingListId/export/excel');
+
+  // ── Invoices & receipts ───────────────────────────────
+  Future<Uint8List> downloadPublicDocument(String url) =>
+      client.downloadPublicBytes(url);
+
+  Future<Map<String, dynamic>> generateReceipt(String orderId, {String format = 'pdf'}) =>
+      client.post<Map<String, dynamic>>(
+        'sourcing_agent/orders/$orderId/generate-receipt',
+        queryParameters: {'format': format},
+      );
+
+  Future<Map<String, dynamic>> generateInvoice(String orderId, {String format = 'pdf'}) =>
+      client.post<Map<String, dynamic>>(
+        'sourcing_agent/orders/$orderId/generate-invoice',
+        queryParameters: {'format': format},
       );
 }
