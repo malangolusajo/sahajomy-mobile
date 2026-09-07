@@ -1298,7 +1298,7 @@ class _SourcingAgentPackingListDetailPageState
                     qrUrl,
                     width: 160,
                     height: 160,
-                    errorBuilder: (_, __, ___) => const SizedBox(
+                    errorBuilder: (_, _, _) => const SizedBox(
                       width: 160,
                       height: 160,
                       child: Icon(Icons.qr_code_2, size: 96),
@@ -1313,10 +1313,10 @@ class _SourcingAgentPackingListDetailPageState
               title: 'Agent details',
               children: [
                 SahajomyKeyValueList(entries: {
-                  if (agentName != null) 'Name': agentName,
-                  if (agentPhone != null) 'Phone / WhatsApp': agentPhone,
-                  if (agentInstagram != null) 'Instagram': agentInstagram,
-                  if (agentTiktok != null) 'TikTok': agentTiktok,
+                  'Name': ?agentName,
+                  'Phone / WhatsApp': ?agentPhone,
+                  'Instagram': ?agentInstagram,
+                  'TikTok': ?agentTiktok,
                 }),
               ],
             ),
@@ -1391,7 +1391,7 @@ class _SourcingAgentPackingListDetailPageState
                 width: 56,
                 height: 56,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
+                errorBuilder: (_, _, _) => Container(
                   width: 56,
                   height: 56,
                   color: theme.colorScheme.surfaceContainerHighest,

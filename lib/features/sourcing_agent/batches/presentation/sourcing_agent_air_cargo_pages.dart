@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../app/theme.dart';
 import '../../../customer/presentation/customer_components.dart';
 import '../../../repository_providers.dart';
-import '../../batches/data/sourcing_agent_batches_repository.dart';
 
 /// Screen 112 — Air cargo options
 class AgentAirCargoOptionsPage extends ConsumerStatefulWidget {
@@ -165,7 +164,7 @@ class _AgentBookAirCargoPageState extends ConsumerState<AgentBookAirCargoPage> {
               const CustomerHeroCard(eyebrow: 'Express air', title: 'Book air cargo', subtitle: 'Send goods by air from China to Africa.'),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: _cargoTypeId,
+                initialValue: _cargoTypeId,
                 decoration: const InputDecoration(labelText: 'Cargo type'),
                 items: types.map((t) => DropdownMenuItem(value: '${t['id']}', child: Text(t['name'] ?? ''))).toList(),
                 onChanged: (v) => setState(() => _cargoTypeId = v),

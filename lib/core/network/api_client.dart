@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:math';
-import 'dart:typed_data';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
@@ -279,9 +277,7 @@ class ApiClient {
     }
     final data = response.data;
     if (data == null) return Uint8List(0);
-    if (data is Uint8List) return data;
-    if (data is List<int>) return Uint8List.fromList(data);
-    throw const FormatException('Expected binary response for document.');
+    return data is Uint8List ? data : Uint8List.fromList(data);
   }
 
   /// Downloads bytes from an absolute public URL (e.g. a Cloudinary document
@@ -292,7 +288,14 @@ class ApiClient {
   }) async {
     final response = await _dio.get<List<int>>(
       url,
-      options: Options(responseType: ResponseType.bytes),
+      options: Options(
+        responseType: ResponseType.bytes,
+        extra: const {
+          'skipAuth': true,
+          'skipTenant': true,
+          'skipRefresh': true,
+        },
+      ),
       onReceiveProgress: onProgress,
     );
     if (response.statusCode == null ||
@@ -305,9 +308,7 @@ class ApiClient {
     }
     final data = response.data;
     if (data == null) return Uint8List(0);
-    if (data is Uint8List) return data;
-    if (data is List<int>) return Uint8List.fromList(data);
-    throw const FormatException('Expected binary response for document.');
+    return data is Uint8List ? data : Uint8List.fromList(data);
   }
 
   Options _mutationOptions(Options? options) {
@@ -365,9 +366,50 @@ class ApiClient {
         response.statusCode! >= 300) {
       throw _responseException(response);
     }
-    final data = response.data as List<dynamic>?;
-    return data?.cast<Map<String, dynamic>>() ?? <Map<String, dynamic>>[];
+    final data = response.data;
+    if (data == null) return <Map<String, dynamic>>[];
+    if (data is List) return _mapList(data);
+    if (data is Map) {
+      // FastAPI list endpoints in this project use both bare arrays and
+      // metadata envelopes such as {total, sea_bookings} or {receipts}.
+      // Keep decoding here so every repository observes the same contract.
+      const preferredKeys = <String>[
+        'items',
+        'results',
+        'data',
+        'sea_bookings',
+        'bookings',
+        'containers',
+        'warehouses',
+        'packing_lists',
+        'consolidated_packing_lists',
+        'receipts',
+        'invoices',
+        'customers',
+        'orders',
+        'notifications',
+        'activities',
+        'users',
+      ];
+      for (final key in preferredKeys) {
+        final value = data[key];
+        if (value is List) return _mapList(value);
+      }
+      final listValues = data.values.whereType<List>().toList();
+      if (listValues.length == 1) return _mapList(listValues.single);
+      throw const FormatException('Expected a list response.');
+    }
+    throw const FormatException('Expected a list response.');
   }
+
+  List<Map<String, dynamic>> _mapList(List<dynamic> data) => data
+      .map((item) {
+        if (item is! Map) {
+          throw const FormatException('Expected objects in list response.');
+        }
+        return Map<String, dynamic>.from(item);
+      })
+      .toList(growable: false);
 
   Map<String, dynamic> _handleObjectResponse(Response<dynamic> response) {
     if (response.statusCode == null ||

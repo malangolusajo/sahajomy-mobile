@@ -163,7 +163,8 @@ class SahajomyWorkspaceHeader extends StatelessWidget
 String? _professionalRoleLabel(String? role) => switch (role) {
   null || '' => null,
   'Customer' => 'MY ACCOUNT',
-  'Public' || 'Shared' => 'SAHAJOMY',
+  'Public' => null,
+  'Shared' => 'SHARED LINK',
   'Cargo Admin' => 'CARGO OPERATIONS',
   'Sourcing Agent' => 'SOURCING WORKSPACE',
   'Super Admin' => 'PLATFORM ADMIN',

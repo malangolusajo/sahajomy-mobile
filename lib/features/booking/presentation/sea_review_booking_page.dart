@@ -32,7 +32,8 @@ class SeaReviewBookingPage extends ConsumerStatefulWidget {
   final String? cartons;
 
   @override
-  ConsumerState<SeaReviewBookingPage> createState() => _SeaReviewBookingPageState();
+  ConsumerState<SeaReviewBookingPage> createState() =>
+      _SeaReviewBookingPageState();
 }
 
 class _SeaReviewBookingPageState extends ConsumerState<SeaReviewBookingPage> {
@@ -41,7 +42,8 @@ class _SeaReviewBookingPageState extends ConsumerState<SeaReviewBookingPage> {
   String? _error;
   bool _confirmed = false;
 
-  GuidedBookingRepository get _repo => ref.read(guidedBookingRepositoryProvider);
+  GuidedBookingRepository get _repo =>
+      ref.read(guidedBookingRepositoryProvider);
 
   Future<void> _confirm() async {
     if (_busy || _confirmed) return;
@@ -107,7 +109,8 @@ class _SeaReviewBookingPageState extends ConsumerState<SeaReviewBookingPage> {
           const CustomerHeroCard(
             eyebrow: 'Sea freight',
             title: 'Review booking',
-            subtitle: 'Confirm your sea freight booking details before submitting.',
+            subtitle:
+                'Confirm your sea freight booking details before submitting.',
           ),
           const SizedBox(height: 24),
           BookingSummaryCard(
@@ -141,7 +144,8 @@ class _SeaReviewBookingPageState extends ConsumerState<SeaReviewBookingPage> {
   }
 
   Widget _buildConfirmation() {
-    final ref = _booking!['booking_reference'] ??
+    final ref =
+        _booking!['booking_reference'] ??
         _booking!['sea_booking_id'] ??
         _booking!['id'] ??
         'Pending';
@@ -177,9 +181,12 @@ class _SeaReviewBookingPageState extends ConsumerState<SeaReviewBookingPage> {
               'Volume': '${widget.volume} CBM',
               'Goods type': widget.goodsType,
               if (_booking!['logistics_charge'] != null)
-                'Freight charge': '${_booking!['logistics_charge']} ${_booking!['currency'] ?? ''}',
+                'Freight charge':
+                    '${_booking!['logistics_charge']} ${_booking!['currency'] ?? ''}',
               if (_booking!['payment_status'] != null)
-                'Payment status': sahajomyTitleCase('${_booking!['payment_status']}'),
+                'Payment status': sahajomyTitleCase(
+                  '${_booking!['payment_status']}',
+                ),
             },
           ),
           const SizedBox(height: 28),

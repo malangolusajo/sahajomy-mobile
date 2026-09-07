@@ -110,6 +110,57 @@ void main() {
     expect(adapter.options?.extra['skipRefresh'], isTrue);
   });
 
+  test('decodes FastAPI list envelopes', () async {
+    FlutterSecureStorage.setMockInitialValues({});
+    final storage = TokenStorage();
+    final dio = Dio(BaseOptions(baseUrl: 'https://example.test/api/v1/'))
+      ..httpClientAdapter = _EnvelopeAdapter();
+    final api = ApiClient(
+      dio: dio,
+      tokenStorage: storage,
+      workspaceProvider: WorkspaceProvider(storage),
+      enableLogging: false,
+    );
+
+    final rows = await api.getList('cargo_admin/financial/receipts');
+
+    expect(rows, [
+      {'receipt_id': 'receipt-1'},
+    ]);
+  });
+
+  test('public document downloads omit auth and tenant context', () async {
+    FlutterSecureStorage.setMockInitialValues({
+      SecureStorage.accessTokenKey: 'stored-access-token',
+    });
+    final storage = TokenStorage();
+    final workspace = WorkspaceProvider(storage);
+    await workspace.setWorkspace(
+      companyId: 'company-1',
+      companyName: 'Cargo Co',
+      branchId: 'branch-1',
+    );
+    final adapter = _BinaryCaptureAdapter();
+    final dio = Dio(BaseOptions(baseUrl: 'https://example.test/api/v1/'))
+      ..httpClientAdapter = adapter;
+    final api = ApiClient(
+      dio: dio,
+      tokenStorage: storage,
+      workspaceProvider: workspace,
+      enableLogging: false,
+    );
+
+    final bytes = await api.downloadPublicBytes(
+      'https://files.example.test/document.pdf',
+    );
+
+    expect(bytes, [1, 2, 3]);
+    expect(adapter.options?.headers['Authorization'], isNull);
+    expect(adapter.options?.headers['X-Sahajomy-Company'], isNull);
+    expect(adapter.options?.headers['X-Sahajomy-Branch'], isNull);
+    expect(adapter.options?.extra['skipRefresh'], isTrue);
+  });
+
   test('server error text is never reflected into the UI exception', () async {
     FlutterSecureStorage.setMockInitialValues({});
     final storage = TokenStorage();
@@ -237,6 +288,40 @@ class _CaptureAdapter implements HttpClientAdapter {
   ) async {
     this.options = options;
     return _jsonResponse(200, {'ok': true});
+  }
+
+  @override
+  void close({bool force = false}) {}
+}
+
+class _EnvelopeAdapter implements HttpClientAdapter {
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future<void>? cancelFuture,
+  ) async => _jsonResponse(200, {
+    'total': 1,
+    'receipts': [
+      {'receipt_id': 'receipt-1'},
+    ],
+  });
+
+  @override
+  void close({bool force = false}) {}
+}
+
+class _BinaryCaptureAdapter implements HttpClientAdapter {
+  RequestOptions? options;
+
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future<void>? cancelFuture,
+  ) async {
+    this.options = options;
+    return ResponseBody.fromBytes([1, 2, 3], 200);
   }
 
   @override

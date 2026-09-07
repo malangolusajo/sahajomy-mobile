@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../app/theme.dart';
 import '../../../customer/presentation/customer_components.dart';
 import '../../../repository_providers.dart';
-import '../../batches/data/sourcing_agent_batches_repository.dart';
 
 /// Screen 176 — Edit product
 class AgentEditProductPage extends ConsumerStatefulWidget {
@@ -100,7 +99,7 @@ class _AgentEditProductPageState extends ConsumerState<AgentEditProductPage> {
                     )
                   : Image.network(
                       _imageUrl.text, width: 200, height: 200, fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
+                      errorBuilder: (_, _, _) => Container(
                         width: 200, height: 200, color: appCanvas,
                         child: const Icon(Icons.broken_image_outlined, size: 50, color: appMuted),
                       ),
@@ -121,7 +120,7 @@ class _AgentEditProductPageState extends ConsumerState<AgentEditProductPage> {
           TextFormField(controller: _imageUrl, decoration: const InputDecoration(labelText: 'Product image URL'), keyboardType: TextInputType.url),
           const SizedBox(height: 14),
           DropdownButtonFormField<String>(
-            value: _status,
+            initialValue: _status,
             decoration: const InputDecoration(labelText: 'Status'),
             items: const ['draft', 'published', 'archived'].map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
             onChanged: (v) => setState(() => _status = v ?? 'draft'),
@@ -344,7 +343,7 @@ class _AgentPublishPageState extends ConsumerState<AgentPublishPage> {
                       borderRadius: BorderRadius.circular(8),
                       child: p['image_url'] != null
                           ? Image.network(p['image_url'], width: 48, height: 48, fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => Container(width: 48, height: 48, color: appCanvas, child: const Icon(Icons.image_outlined, size: 24, color: appMuted)))
+                              errorBuilder: (_, _, _) => Container(width: 48, height: 48, color: appCanvas, child: const Icon(Icons.image_outlined, size: 24, color: appMuted)))
                           : Container(width: 48, height: 48, color: appCanvas, child: const Icon(Icons.image_outlined, size: 24, color: appMuted)),
                     ),
                   ),

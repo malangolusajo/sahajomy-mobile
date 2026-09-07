@@ -53,7 +53,7 @@ class _SuperAdminDashboardPageState
               _Metric('Approvals', data['pending_approvals']),
               _Metric('Operators', data['active_operators']),
               _Metric('Containers', data['total_containers']),
-              _Metric('Bookings', data['total_reservations']),
+              _Metric('Bookings', data['total_sea_bookings']),
               _Metric('Commission', '${data['current_commission_rate'] ?? 0}%'),
             ],
           ),

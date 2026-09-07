@@ -66,7 +66,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('public headers use the customer-facing Sahajomy label', (
+  testWidgets('public headers use only the contextual page title', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -78,7 +78,8 @@ void main() {
       ),
     );
 
-    expect(find.text('SAHAJOMY'), findsOneWidget);
+    expect(find.text('Services'), findsOneWidget);
+    expect(find.text('SAHAJOMY'), findsNothing);
     expect(find.text('PUBLIC'), findsNothing);
   });
 }

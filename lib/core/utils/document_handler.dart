@@ -37,10 +37,8 @@ class DocumentHandler {
     String? text,
   }) async {
     final xFile = XFile(path, name: fileName);
-    await Share.shareXFiles(
-      [xFile],
-      subject: subject,
-      text: text,
+    await SharePlus.instance.share(
+      ShareParams(files: [xFile], subject: subject, text: text),
     );
   }
 
@@ -61,13 +59,16 @@ class DocumentHandler {
     String? text,
   }) async {
     final path = await saveToTemp(bytes: bytes, fileName: fileName);
-    await shareFile(path: path, fileName: fileName, subject: subject, text: text);
+    await shareFile(
+      path: path,
+      fileName: fileName,
+      subject: subject,
+      text: text,
+    );
   }
 
   static String _sanitizeFileName(String name) {
-    final cleaned = name
-        .replaceAll(RegExp(r'[\\/:*?"<>|\r\n\t]'), '_')
-        .trim();
+    final cleaned = name.replaceAll(RegExp(r'[\\/:*?"<>|\r\n\t]'), '_').trim();
     if (cleaned.isEmpty) return 'document';
     return cleaned;
   }

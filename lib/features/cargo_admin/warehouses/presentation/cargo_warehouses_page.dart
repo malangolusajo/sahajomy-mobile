@@ -230,7 +230,7 @@ class _CargoAddWarehousePageState extends ConsumerState<CargoAddWarehousePage> {
           TextFormField(controller: _phone, decoration: const InputDecoration(labelText: 'Contact phone'), keyboardType: TextInputType.phone),
           const SizedBox(height: 16),
           DropdownButtonFormField<String>(
-            value: _type,
+            initialValue: _type,
             decoration: const InputDecoration(labelText: 'Warehouse type'),
             items: const [
               DropdownMenuItem(value: 'sea', child: Text('Sea')),
@@ -258,7 +258,6 @@ class CargoChinaAddressPage extends ConsumerStatefulWidget {
 class _CargoChinaAddressPageState extends ConsumerState<CargoChinaAddressPage> {
   final _formKey = GlobalKey<FormState>();
   late Future<Map<String, dynamic>> _warehouse;
-  bool _loaded = false;
   bool _busy = false;
 
   final _nameZh = TextEditingController();
@@ -286,7 +285,6 @@ class _CargoChinaAddressPageState extends ConsumerState<CargoChinaAddressPage> {
       _street.text = w['china_street'] ?? '';
       _detailed.text = w['china_detailed_address'] ?? '';
       _original.text = w['china_original_address'] ?? '';
-      setState(() => _loaded = true);
     });
   }
 

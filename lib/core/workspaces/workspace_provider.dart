@@ -122,7 +122,7 @@ class WorkspaceProvider extends StateNotifier<WorkspaceState> {
       return true;
     }
     final resource = switch (segment) {
-      'bookings' || 'sea_bookings' || 'reservations' => 'booking',
+      'bookings' || 'sea_bookings' => 'booking',
       'shipments' || 'shipment_orders' => 'shipment',
       'payments' => 'payment',
       'parcels' || 'warehouse_access' => 'parcel',

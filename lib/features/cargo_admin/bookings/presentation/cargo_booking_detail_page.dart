@@ -12,16 +12,20 @@ class CargoBookingDetailPage extends ConsumerStatefulWidget {
   final String bookingId;
 
   @override
-  ConsumerState<CargoBookingDetailPage> createState() => _CargoBookingDetailPageState();
+  ConsumerState<CargoBookingDetailPage> createState() =>
+      _CargoBookingDetailPageState();
 }
 
-class _CargoBookingDetailPageState extends ConsumerState<CargoBookingDetailPage> {
+class _CargoBookingDetailPageState
+    extends ConsumerState<CargoBookingDetailPage> {
   late Future<Map<String, dynamic>> _booking;
 
   @override
   void initState() {
     super.initState();
-    _booking = ref.read(cargoOperationsRepositoryProvider).getReservation(widget.bookingId);
+    _booking = ref
+        .read(cargoOperationsRepositoryProvider)
+        .getSeaBooking(widget.bookingId);
   }
 
   @override
@@ -41,7 +45,9 @@ class _CargoBookingDetailPageState extends ConsumerState<CargoBookingDetailPage>
             message: 'Could not load this booking.',
             actionLabel: 'Retry',
             onAction: () => setState(() {
-              _booking = ref.read(cargoOperationsRepositoryProvider).getReservation(widget.bookingId);
+              _booking = ref
+                  .read(cargoOperationsRepositoryProvider)
+                  .getSeaBooking(widget.bookingId);
             }),
           );
         }
@@ -54,21 +60,39 @@ class _CargoBookingDetailPageState extends ConsumerState<CargoBookingDetailPage>
             CustomerHeroCard(
               eyebrow: 'Sea cargo',
               title: b['shipping_mark'] ?? b['id'] ?? 'SAH-XXXX',
-              subtitle: '${b['customer_display_name'] ?? b['customer_name'] ?? 'Customer'} · ${b['carton_count'] ?? b['cbm_booked'] ?? 0} ${(b['cargo_type'] ?? 'sea') == 'air' ? 'kg' : 'cartons'}',
+              subtitle:
+                  '${b['customer_display_name'] ?? b['customer_name'] ?? 'Customer'} · ${b['carton_count'] ?? b['cbm_booked'] ?? 0} ${(b['cargo_type'] ?? 'sea') == 'air' ? 'kg' : 'cartons'}',
             ),
             const SizedBox(height: 20),
             _panel([
-              _row('ST', 'Goods status', goodsStatus.toString().replaceAll('_', ' '), brandCoral),
+              _row(
+                'ST',
+                'Goods status',
+                goodsStatus.toString().replaceAll('_', ' '),
+                brandCoral,
+              ),
               const Divider(height: 1, indent: 60),
-              _row('PM', 'Payment status', paymentStatus.toString().replaceAll('_', ' '), appMuted),
+              _row(
+                'PM',
+                'Payment status',
+                paymentStatus.toString().replaceAll('_', ' '),
+                appMuted,
+              ),
               const Divider(height: 1, indent: 60),
               _row('CB', 'CBM booked', '${b['cbm_booked'] ?? 0}', appMuted),
               const Divider(height: 1, indent: 60),
-              _row('LC', 'Logistics charge', '${b['currency'] ?? 'TZS'} ${b['logistics_charge'] ?? 0}', appMuted),
+              _row(
+                'LC',
+                'Logistics charge',
+                '${b['currency'] ?? 'TZS'} ${b['logistics_charge'] ?? 0}',
+                appMuted,
+              ),
             ]),
             const SizedBox(height: 24),
             FilledButton.icon(
-              onPressed: () => context.push('/cargo/bookings/${widget.bookingId}/packing-list'),
+              onPressed: () => context.push(
+                '/cargo/bookings/${widget.bookingId}/packing-list',
+              ),
               icon: const Icon(Icons.list_alt),
               label: const Text('Packing list'),
             ),
@@ -77,7 +101,9 @@ class _CargoBookingDetailPageState extends ConsumerState<CargoBookingDetailPage>
               children: [
                 Expanded(
                   child: OutlinedButton.icon(
-                    onPressed: goodsStatus == 'received' ? null : () => _updateStatus('received'),
+                    onPressed: goodsStatus == 'received'
+                        ? null
+                        : () => _updateStatus('received'),
                     icon: const Icon(Icons.download_done),
                     label: const Text('Mark received'),
                   ),
@@ -85,7 +111,9 @@ class _CargoBookingDetailPageState extends ConsumerState<CargoBookingDetailPage>
                 const SizedBox(width: 10),
                 Expanded(
                   child: OutlinedButton.icon(
-                    onPressed: paymentStatus == 'confirmed' ? null : () => _confirmPayment(),
+                    onPressed: paymentStatus == 'confirmed'
+                        ? null
+                        : () => _confirmPayment(),
                     icon: const Icon(Icons.payment),
                     label: const Text('Confirm payment'),
                   ),
@@ -99,59 +127,100 @@ class _CargoBookingDetailPageState extends ConsumerState<CargoBookingDetailPage>
   );
 
   Widget _panel(List<Widget> children) => Container(
-    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16), border: Border.all(color: appBorder)),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(color: appBorder),
+    ),
     child: Column(children: children),
   );
 
-  Widget _row(String badge, String title, String subtitle, Color badgeColor) => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-    child: Row(
-      children: [
-        Container(
-          width: 40, height: 40, alignment: Alignment.center,
-          decoration: BoxDecoration(color: badgeColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
-          child: Text(badge, style: TextStyle(color: badgeColor, fontWeight: FontWeight.w800)),
+  Widget _row(String badge, String title, String subtitle, Color badgeColor) =>
+      Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: badgeColor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                badge,
+                style: TextStyle(
+                  color: badgeColor,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(color: appMuted, fontSize: 13),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-        const SizedBox(width: 14),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
-              const SizedBox(height: 2),
-              Text(subtitle, style: const TextStyle(color: appMuted, fontSize: 13)),
-            ],
-          ),
-        ),
-      ],
-    ),
-  );
+      );
 
   Future<void> _updateStatus(String status) async {
     try {
-      await ref.read(cargoOperationsRepositoryProvider).updateReservationStatus(widget.bookingId, goodsStatus: status);
+      await ref
+          .read(cargoOperationsRepositoryProvider)
+          .updateSeaBookingStatus(widget.bookingId, goodsStatus: status);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Status updated')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('Status updated')));
         setState(() {
-          _booking = ref.read(cargoOperationsRepositoryProvider).getReservation(widget.bookingId);
+          _booking = ref
+              .read(cargoOperationsRepositoryProvider)
+              .getSeaBooking(widget.bookingId);
         });
       }
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
     }
   }
 
   Future<void> _confirmPayment() async {
     try {
-      await ref.read(cargoOperationsRepositoryProvider).confirmPayment(widget.bookingId);
+      await ref
+          .read(cargoOperationsRepositoryProvider)
+          .confirmPayment(widget.bookingId);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Payment confirmed')));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('Payment confirmed')));
         setState(() {
-          _booking = ref.read(cargoOperationsRepositoryProvider).getReservation(widget.bookingId);
+          _booking = ref
+              .read(cargoOperationsRepositoryProvider)
+              .getSeaBooking(widget.bookingId);
         });
       }
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
     }
   }
 }

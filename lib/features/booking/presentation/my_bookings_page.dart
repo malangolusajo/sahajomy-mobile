@@ -28,7 +28,9 @@ class _MyBookingsPageState extends ConsumerState<MyBookingsPage> {
   void _load() {
     setState(() {
       _seaBookings = ref.read(customerBookingRepositoryProvider).listBookings();
-      _airBookings = ref.read(customerAirCargoRepositoryProvider).listBookings();
+      _airBookings = ref
+          .read(customerAirCargoRepositoryProvider)
+          .listBookings();
     });
   }
 
@@ -55,7 +57,10 @@ class _MyBookingsPageState extends ConsumerState<MyBookingsPage> {
               if (snapshot.hasError) {
                 return SahajomyMessageState(
                   icon: Icons.cloud_off_outlined,
-                  message: logisticsError(snapshot.error, 'sea freight bookings'),
+                  message: logisticsError(
+                    snapshot.error,
+                    'sea freight bookings',
+                  ),
                   actionLabel: 'Reload',
                   onAction: _load,
                 );
@@ -65,7 +70,14 @@ class _MyBookingsPageState extends ConsumerState<MyBookingsPage> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Sea freight', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: appInk)),
+                  const Text(
+                    'Sea freight',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: appInk,
+                    ),
+                  ),
                   const SizedBox(height: 12),
                   for (final booking in bookings)
                     Padding(
@@ -73,7 +85,9 @@ class _MyBookingsPageState extends ConsumerState<MyBookingsPage> {
                       child: _BookingRow(
                         record: booking,
                         type: 'sea',
-                        onTap: () => context.push('/customer/sea-bookings/${booking['id']}'),
+                        onTap: () => context.push(
+                          '/customer/sea-bookings/${booking['id']}',
+                        ),
                       ),
                     ),
                 ],
@@ -93,7 +107,14 @@ class _MyBookingsPageState extends ConsumerState<MyBookingsPage> {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Air cargo', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: appInk)),
+                  const Text(
+                    'Air cargo',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: appInk,
+                    ),
+                  ),
                   const SizedBox(height: 12),
                   for (final booking in bookings)
                     Padding(
@@ -119,12 +140,26 @@ class _BookingRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ref = record['booking_reference'] ?? record['tracking_number'] ?? record['id'] ?? 'Booking';
-    final route = record['route'] ?? (record['destination_region'] != null ? 'To ${record['destination_region']}' : 'Route pending');
-    final status = record['status'] ?? record['payment_status'] ?? record['goods_status'] ?? 'Processing';
+    final ref =
+        record['booking_reference'] ??
+        record['tracking_number'] ??
+        record['id'] ??
+        'Booking';
+    final route =
+        record['route'] ??
+        (record['destination_region'] != null
+            ? 'To ${record['destination_region']}'
+            : 'Route pending');
+    final status =
+        record['status'] ??
+        record['payment_status'] ??
+        record['goods_status'] ??
+        'Processing';
     final cbm = record['cbm_booked'] ?? record['booked_cbm'];
     final weight = record['weight_kg'] ?? record['gross_weight'];
-    final detail = cbm != null ? '$route · $cbm CBM' : (weight != null ? '$route · $weight kg' : '$route');
+    final detail = cbm != null
+        ? '$route · $cbm CBM'
+        : (weight != null ? '$route · $weight kg' : '$route');
 
     return CustomerListItem(
       badgeLabel: type == 'sea' ? 'SEA' : 'AIR',

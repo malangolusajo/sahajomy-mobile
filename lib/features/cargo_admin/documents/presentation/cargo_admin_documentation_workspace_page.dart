@@ -6,6 +6,7 @@ import '../../../../core/ui/sahajomy_ui.dart';
 import '../data/cargo_admin_documents_repository.dart';
 import '../../dashboard/data/cargo_admin_dashboard_repository.dart';
 import '../../warehouse_automation/data/warehouse_automation_repository.dart';
+import '../../customs/presentation/customs_packing_list_detail_page.dart';
 
 class CargoAdminDocumentationWorkspacePage extends ConsumerStatefulWidget {
   const CargoAdminDocumentationWorkspacePage({super.key});
@@ -182,6 +183,17 @@ class _CargoAdminPackingListsPageState
                           'Packing list',
                     ),
                     subtitle: Text('${packingList['status'] ?? 'Draft'}'),
+                    trailing: const Icon(Icons.chevron_right_rounded),
+                    onTap: packingList['id'] == null
+                        ? null
+                        : () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => CustomsPackingListDetailPage(
+                                packingListId: '${packingList['id']}',
+                              ),
+                            ),
+                          ),
                   ),
               ],
             ),

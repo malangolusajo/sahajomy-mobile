@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../../app/theme.dart';
 import '../../../../features/repository_providers.dart';
@@ -57,7 +56,7 @@ class _CargoNotificationsPageState extends ConsumerState<CargoNotificationsPage>
 
   IconData _icon(String? type) {
     switch (type) {
-      case 'new_reservation': return Icons.receipt_long;
+      case 'new_sea_booking': return Icons.receipt_long;
       case 'payment': return Icons.payments;
       case 'container': return Icons.local_shipping;
       default: return Icons.notifications;

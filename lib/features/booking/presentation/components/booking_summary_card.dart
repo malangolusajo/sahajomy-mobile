@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../../app/theme.dart';
 import '../../../../core/ui/sahajomy_ui.dart';
 
@@ -26,10 +27,7 @@ class BookingSummaryCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (title != null) ...[
-            Text(
-              title!,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
+            Text(title!, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 16),
           ],
           SahajomyKeyValueList(entries: entries),

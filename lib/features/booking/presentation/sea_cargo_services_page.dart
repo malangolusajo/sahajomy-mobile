@@ -39,8 +39,9 @@ class _SeaCargoServicesPageState extends ConsumerState<SeaCargoServicesPage> {
       _error = null;
     });
     try {
-      final services =
-          await _repo.listSeaServices(account: BookingAccount.customer);
+      final services = await _repo.listSeaServices(
+        account: BookingAccount.customer,
+      );
       if (!mounted) return;
       setState(() {
         _services = services;
@@ -86,7 +87,8 @@ class _SeaCargoServicesPageState extends ConsumerState<SeaCargoServicesPage> {
           const CustomerHeroCard(
             eyebrow: 'Sea cargo',
             title: 'Choose your sailing',
-            subtitle: 'Compare cargo companies, available space and published rates.',
+            subtitle:
+                'Compare cargo companies, available space and published rates.',
           ),
           const SizedBox(height: 20),
           const BookingStepIndicator(
@@ -145,8 +147,9 @@ class _ServiceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final VoidCallback? tapHandler =
-        available ? () => onSelected(service) : null;
+    final VoidCallback? tapHandler = available
+        ? () => onSelected(service)
+        : null;
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: ServiceSelectionCard(

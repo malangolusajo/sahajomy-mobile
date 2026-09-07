@@ -118,7 +118,8 @@ class _AirReviewBookingPageState extends ConsumerState<AirReviewBookingPage> {
           const CustomerHeroCard(
             eyebrow: 'Express Air Cargo',
             title: 'Review booking',
-            subtitle: 'Confirm your air cargo booking details before submitting.',
+            subtitle:
+                'Confirm your air cargo booking details before submitting.',
           ),
           const SizedBox(height: 24),
           BookingSummaryCard(
@@ -140,7 +141,9 @@ class _AirReviewBookingPageState extends ConsumerState<AirReviewBookingPage> {
           const SizedBox(height: 28),
           FilledButton(
             onPressed: _busy ? null : _confirm,
-            child: Text(_busy ? 'Confirming booking...' : 'Confirm air booking'),
+            child: Text(
+              _busy ? 'Confirming booking...' : 'Confirm air booking',
+            ),
           ),
           TextButton(
             onPressed: _busy ? null : () => context.pop(),
@@ -152,7 +155,8 @@ class _AirReviewBookingPageState extends ConsumerState<AirReviewBookingPage> {
   }
 
   Widget _buildConfirmation() {
-    final ref = _booking!['tracking_number'] ??
+    final ref =
+        _booking!['tracking_number'] ??
         _booking!['booking_reference'] ??
         _booking!['id'] ??
         'Pending';

@@ -4,8 +4,9 @@ import 'package:sahajomy_mobile/features/repository_providers.dart';
 
 import '../../../../core/ui/sahajomy_ui.dart';
 import '../../presentation/customer_components.dart';
-import '../../reservations/data/customer_booking_repository.dart';
-import '../../reservations/presentation/booking_detail_page.dart';
+import '../../bookings/data/customer_booking_repository.dart';
+import '../../bookings/presentation/booking_detail_page.dart';
+import 'invoice_receipt_detail_page.dart';
 
 class CustomerDocumentsPage extends ConsumerStatefulWidget {
   const CustomerDocumentsPage({super.key});
@@ -24,11 +25,16 @@ class _CustomerDocumentsPageState extends ConsumerState<CustomerDocumentsPage> {
 
   Future<List<_CustomerDocument>> _loadDocuments() async {
     final bookings = await _repository.listBookings();
-    final details = await Future.wait(
-      bookings.map(
-        (booking) => _repository.getBooking('${booking['sea_booking_id'] ?? booking['id']}'),
-      ),
-    );
+    final details = <Map<String, dynamic>>[];
+    // Fetch sequentially to avoid flooding the API when an account has a long
+    // booking history. The backend currently exposes documents per booking.
+    for (final booking in bookings) {
+      details.add(
+        await _repository.getBooking(
+          '${booking['sea_booking_id'] ?? booking['id']}',
+        ),
+      );
+    }
     return [
       for (final booking in details)
         for (final entry in <String, String>{
@@ -36,13 +42,16 @@ class _CustomerDocumentsPageState extends ConsumerState<CustomerDocumentsPage> {
           'receipts': 'Payment receipt',
           'packing_lists': 'Packing list',
         }.entries)
-          for (final document in (booking[entry.key] as List? ?? const []))
-            _CustomerDocument(
-              bookingId: '${booking['sea_booking_id'] ?? booking['id']}',
-              title:
-                  '${(document as Map)['name'] ?? (document)['title'] ?? entry.value}',
-              subtitle: '${entry.value} · ${document['status'] ?? 'Available'}',
-            ),
+          for (final raw in (booking[entry.key] as List? ?? const []))
+            if (raw is Map)
+              _CustomerDocument(
+                bookingId: '${booking['sea_booking_id'] ?? booking['id']}',
+                title:
+                    '${raw['invoice_number'] ?? raw['receipt_number'] ?? raw['name'] ?? raw['title'] ?? entry.value}',
+                subtitle: '${entry.value} · ${raw['status'] ?? 'Available'}',
+                type: entry.key,
+                data: Map<String, dynamic>.from(raw),
+              ),
     ];
   }
 
@@ -97,11 +106,15 @@ class _CustomerDocument {
     required this.bookingId,
     required this.title,
     required this.subtitle,
+    required this.type,
+    required this.data,
   });
 
   final String bookingId;
   final String title;
   final String subtitle;
+  final String type;
+  final Map<String, dynamic> data;
 }
 
 class _DocumentCard extends StatelessWidget {
@@ -120,13 +133,23 @@ class _DocumentCard extends StatelessWidget {
       ),
       subtitle: Text(document.subtitle),
       trailing: const SahajomyStatusPill(label: 'PDF'),
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) =>
-              BookingDetailPage(bookingId: document.bookingId),
-        ),
-      ),
+      onTap: () {
+        final Widget page = switch (document.type) {
+          'invoices' => InvoiceDetailPage(
+            invoice: document.data,
+            seaBookingId: document.bookingId,
+          ),
+          'receipts' => ReceiptDetailPage(
+            receipt: document.data,
+            seaBookingId: document.bookingId,
+          ),
+          'packing_lists' => CustomerPackingListDetailPage(
+            document: document.data,
+          ),
+          _ => BookingDetailPage(bookingId: document.bookingId),
+        };
+        Navigator.push(context, MaterialPageRoute(builder: (_) => page));
+      },
     ),
   );
 }

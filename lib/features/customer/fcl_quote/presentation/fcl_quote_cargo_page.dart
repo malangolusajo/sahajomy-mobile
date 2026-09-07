@@ -78,14 +78,14 @@ class _FclQuoteCargoPageState extends State<FclQuoteCargoPage> {
           ),
           const SizedBox(height: 24),
           DropdownButtonFormField<String>(
-            value: _containerSize,
+            initialValue: _containerSize,
             decoration: const InputDecoration(labelText: 'Container size'),
             items: const ['20 ft', '40 ft', '40 ft High Cube'].map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
             onChanged: (v) => setState(() => _containerSize = v ?? _containerSize),
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<String>(
-            value: _goodsType,
+            initialValue: _goodsType,
             decoration: const InputDecoration(labelText: 'Goods type'),
             items: const ['Furniture & home goods', 'Electronics', 'Clothing', 'Machinery', 'Other'].map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
             onChanged: (v) => setState(() => _goodsType = v ?? _goodsType),
@@ -98,7 +98,7 @@ class _FclQuoteCargoPageState extends State<FclQuoteCargoPage> {
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<String>(
-            value: _readiness,
+            initialValue: _readiness,
             decoration: const InputDecoration(labelText: 'Cargo readiness'),
             items: const ['Ready within 7 days', 'Ready within 14 days', 'Ready within 30 days', 'Not ready yet'].map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
             onChanged: (v) => setState(() => _readiness = v ?? _readiness),

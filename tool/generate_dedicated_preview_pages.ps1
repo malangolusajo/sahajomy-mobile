@@ -45,8 +45,8 @@ $pageBuilders = @{
   'customer-orders.html' = 'const CustomerOrderListPage()'
   'customer-packing-list.html' = 'const CustomerPackingListPage()'
   'customer-profile.html' = 'const CustomerProfilePage()'
-  'customer-sea-bookings.html' = 'const ReservationListPage()'
-  'customer-sea-booking-detail.html' = 'const ReservationListPage()'
+  'customer-sea-bookings.html' = 'const BookingListPage()'
+  'customer-sea-booking-detail.html' = 'const BookingListPage()'
   'customer-book-cbm.html' = 'const ContainerListPage()'
   'customer-search-container.html' = 'const ContainerListPage()'
   'customer-shipment-order-detail.html' = 'const ShipmentListPage()'
@@ -59,7 +59,6 @@ $pageBuilders = @{
   'super-admin-warehouse-automation.html' = 'const SuperAdminWarehouseAutomationPage()'
   'cargo-admin-documentation-customers.html' = 'const CargoAdminCustomerRecordsPage()'
   'shared-workspace-selection.html' = 'const WorkspaceSelectionPage()'
-  'customer-sea-bookings.html' = "const LiveWorkflowPage(role: 'Customer', title: 'My sea bookings', endpoint: 'customer/sea-bookings', actionLabel: 'Book sea cargo', actionRoute: '/customer/sea-bookings/new')"
   'agent-sea-bookings.html' = "const LiveWorkflowPage(role: 'Sourcing Agent', title: 'My sea bookings', endpoint: 'sourcing_agent/sea-bookings', actionLabel: 'Book sea cargo', actionRoute: '/agent/sea-bookings/new')"
 }
 
@@ -68,21 +67,21 @@ $liveEndpoints = @{
   'agent-containers.html' = 'sourcing_agent/containers'
   'agent-express-air-cargo.html' = 'sourcing_agent/express-air-cargo/bookings'
   'agent-financials.html' = 'sourcing_agent/financials'
-  'agent-sea-bookings.html' = 'sourcing_agent/reservations'
+  'agent-sea-bookings.html' = 'sourcing_agent/sea-bookings'
   'agent-storefront.html' = 'sourcing_agent/public-profile'
   'agent-track-shipment.html' = 'tracking/agent/shipment_orders'
   'cargo-admin-customer-management.html' = 'cargo_admin/customers'
   'cargo-admin-express-air-cargo.html' = 'cargo_admin/express-air-cargo/bookings'
   'cargo-admin-fcl-requests.html' = 'cargo_admin/fcl-requests'
   'cargo-admin-notifications.html' = 'cargo_admin/notifications'
-  'cargo-admin-sea-bookings.html' = 'cargo_admin/reservations'
+  'cargo-admin-sea-bookings.html' = 'cargo_admin/sea-bookings'
   'cargo-admin-shipment-orders.html' = 'cargo_admin/shipment-orders'
   'cargo-admin-track-shipment.html' = 'tracking/admin/shipment_orders'
   'cargo-admin-warehouses.html' = 'cargo_admin/warehouses'
-  'customer-collection-code.html' = 'customer/reservations'
+  'customer-collection-code.html' = 'customer/sea-bookings'
   'customer-container-details.html' = 'customer/containers'
   'customer-order-details.html' = 'customer/orders'
-  'customer-sea-booking-detail.html' = 'customer/reservations'
+  'customer-sea-booking-detail.html' = 'customer/sea-bookings'
   'customer-shipment-order-detail.html' = 'customer/shipment-orders/'
   'public-agizisha-agent-storefront.html' = 'public/agizisha/agents'
   'public-agizisha-catalogue.html' = 'public/agizisha/products'
@@ -97,21 +96,17 @@ $liveEndpoints = @{
   'super-admin-goods-classification.html' = 'super_admin/goods/categories'
   'super-admin-notifications.html' = 'super_admin/notifications'
   'super-admin-operators.html' = 'super_admin/operators'
-  'super-admin-bookings.html' = 'super_admin/reservations'
+  'super-admin-bookings.html' = 'super_admin/sea-bookings'
   'super-admin-sourcing-agents.html' = 'super_admin/sourcing-agents'
   'super-admin-track-shipment.html' = 'tracking/admin/shipment_orders'
   'super-admin-user-details.html' = 'super_admin/users/recent'
   'agent-china-addresses.html' = 'sourcing_agent/china-addresses'
-  'agent-sea-bookings.html' = 'sourcing_agent/sea-bookings'
   'cargo-admin-billing-usage.html' = 'cargo_admin/billing/usage'
   'cargo-admin-financial-analytics.html' = 'cargo_admin/financial/analytics'
   'cargo-admin-pending-approval.html' = 'cargo_admin/approval-status'
-  'cargo-admin-sea-bookings.html' = 'cargo_admin/sea-bookings'
   'cargo-admin-staff-branches.html' = 'workspaces'
-  'customer-sea-booking-detail.html' = 'customer/sea-bookings'
   'customer-sea-bookings.html' = 'customer/sea-bookings'
   'shared-workspace-selection.html' = 'workspaces'
-  'super-admin-bookings.html' = 'super_admin/bookings'
   'super-admin-companies.html' = 'super_admin/companies'
   'super-admin-company-detail.html' = 'super_admin/companies'
   'super-admin-operator-detail.html' = 'super_admin/operators'
@@ -171,7 +166,7 @@ $lines.Add("import '../../customer/notifications/presentation/customer_notificat
 $lines.Add("import '../../customer/orders/presentation/customer_order_list_page.dart';")
 $lines.Add("import '../../customer/packing_lists/presentation/customer_packing_list_page.dart';")
 $lines.Add("import '../../customer/profile/presentation/customer_profile_page.dart';")
-$lines.Add("import '../../customer/reservations/presentation/reservation_list_page.dart';")
+$lines.Add("import '../../customer/bookings/presentation/booking_list_page.dart';")
 $lines.Add("import '../../customer/shipments/presentation/shipment_list_page.dart';")
 $lines.Add("import '../../customer/tracking/presentation/shipment_tracking_page.dart';")
 $lines.Add("import '../../super_admin/activity/presentation/super_admin_platform_activity_page.dart';")

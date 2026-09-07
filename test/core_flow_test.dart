@@ -270,12 +270,12 @@ void main() {
       h.router.routeInformationProvider.value.uri.path,
       '/customer/bookings/booking-42',
     );
-    expect(find.text('Preserved booking'), findsOneWidget);
+    expect(find.text('Pbooked booking'), findsOneWidget);
     await h.dispose(tester);
   });
 
   test(
-    'typed list endpoint preserves 403 instead of throwing a JSON type error',
+    'typed list endpoint retains 403 instead of throwing a JSON type error',
     () async {
       FlutterSecureStorage.setMockInitialValues({});
       final backend = _Backend()..rolesForbidden = true;
@@ -420,7 +420,7 @@ Future<_Harness> _mount(
     routes: [
       GoRoute(
         path: '/customer/bookings/booking-42',
-        builder: (_, _) => const Scaffold(body: Text('Preserved booking')),
+        builder: (_, _) => const Scaffold(body: Text('Pbooked booking')),
       ),
       for (final entry in _routes.entries)
         GoRoute(path: entry.key, builder: (_, _) => entry.value),

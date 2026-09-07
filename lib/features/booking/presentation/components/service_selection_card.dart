@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../../app/theme.dart';
 import '../../../../core/ui/sahajomy_ui.dart';
 
@@ -39,10 +40,7 @@ class ServiceSelectionCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      title,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
+                    Text(title, style: Theme.of(context).textTheme.titleMedium),
                     if (operator != null) ...[
                       const SizedBox(height: 2),
                       Text(
@@ -55,7 +53,10 @@ class ServiceSelectionCard extends StatelessWidget {
               ),
               if (isRecommended)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: brandCoralLight,
                     borderRadius: BorderRadius.circular(radiusRound),
@@ -93,7 +94,11 @@ class ServiceSelectionCard extends StatelessWidget {
             const SizedBox(height: 8),
             Row(
               children: [
-                const Icon(Icons.calendar_today_outlined, size: 14, color: appMuted),
+                const Icon(
+                  Icons.calendar_today_outlined,
+                  size: 14,
+                  color: appMuted,
+                ),
                 const SizedBox(width: 6),
                 Text(
                   departureDate!,

@@ -15,7 +15,7 @@ import 'customer/fcl_quote/data/customer_fcl_quote_repository.dart';
 import 'customer/notifications/data/customer_notifications_repository.dart';
 import 'customer/orders/data/customer_orders_repository.dart';
 import 'customer/orders/data/customer_sourcing_repository.dart';
-import 'customer/reservations/data/customer_booking_repository.dart';
+import 'customer/bookings/data/customer_booking_repository.dart';
 import 'customer/shipments/data/customer_shipments_repository.dart';
 import 'customer/tracking/data/customer_tracking_repository.dart';
 import 'customer/warehouse_access/data/customer_warehouse_access_repository.dart';
@@ -91,21 +91,17 @@ final customerOrdersRepositoryProvider = Provider<CustomerOrdersRepository>(
   (ref) => CustomerOrdersRepository(client: ref.watch(apiClientProvider)),
 );
 
-final customerBookingRepositoryProvider =
-    Provider<CustomerBookingRepository>(
-      (ref) =>
-          CustomerBookingRepository(client: ref.watch(apiClientProvider)),
-    );
+final customerBookingRepositoryProvider = Provider<CustomerBookingRepository>(
+  (ref) => CustomerBookingRepository(client: ref.watch(apiClientProvider)),
+);
 
-final customerFclQuoteRepositoryProvider =
-    Provider<CustomerFclQuoteRepository>(
-      (ref) => CustomerFclQuoteRepository(client: ref.watch(apiClientProvider)),
-    );
+final customerFclQuoteRepositoryProvider = Provider<CustomerFclQuoteRepository>(
+  (ref) => CustomerFclQuoteRepository(client: ref.watch(apiClientProvider)),
+);
 
-final customerSourcingRepositoryProvider =
-    Provider<CustomerSourcingRepository>(
-      (ref) => CustomerSourcingRepository(client: ref.watch(apiClientProvider)),
-    );
+final customerSourcingRepositoryProvider = Provider<CustomerSourcingRepository>(
+  (ref) => CustomerSourcingRepository(client: ref.watch(apiClientProvider)),
+);
 
 final customerShipmentsRepositoryProvider =
     Provider<CustomerShipmentsRepository>(

@@ -98,7 +98,7 @@ class _PrepareChinaAddressPageState extends ConsumerState<PrepareChinaAddressPag
           ),
           const SizedBox(height: 24),
           DropdownButtonFormField<String>(
-            value: _cargoMode,
+            initialValue: _cargoMode,
             decoration: const InputDecoration(labelText: 'Cargo mode'),
             items: const [
               DropdownMenuItem(value: 'sea', child: Text('Sea cargo')),
@@ -109,7 +109,7 @@ class _PrepareChinaAddressPageState extends ConsumerState<PrepareChinaAddressPag
           const SizedBox(height: 16),
           if (_cargoMode == 'sea')
             DropdownButtonFormField<String>(
-              value: _containerId,
+              initialValue: _containerId,
               decoration: const InputDecoration(labelText: 'Selected booking'),
               items: [
                 for (final c in _containers)
@@ -123,7 +123,7 @@ class _PrepareChinaAddressPageState extends ConsumerState<PrepareChinaAddressPag
             )
           else
             DropdownButtonFormField<String>(
-              value: _airBookingId,
+              initialValue: _airBookingId,
               decoration: const InputDecoration(labelText: 'Selected booking'),
               items: [
                 for (final b in _airBookings)

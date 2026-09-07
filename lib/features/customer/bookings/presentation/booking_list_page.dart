@@ -10,8 +10,7 @@ import 'booking_detail_page.dart';
 class BookingListPage extends ConsumerStatefulWidget {
   const BookingListPage({super.key});
   @override
-  ConsumerState<BookingListPage> createState() =>
-      _BookingListPageState();
+  ConsumerState<BookingListPage> createState() => _BookingListPageState();
 }
 
 class _BookingListPageState extends ConsumerState<BookingListPage> {
@@ -20,8 +19,7 @@ class _BookingListPageState extends ConsumerState<BookingListPage> {
   late Future<List<Map<String, dynamic>>> _bookings = Future.microtask(
     () => _repository.listBookings(),
   );
-  void _retry() =>
-      setState(() => _bookings = _repository.listBookings());
+  void _retry() => setState(() => _bookings = _repository.listBookings());
 
   @override
   Widget build(BuildContext context) => CustomerScaffold(
@@ -87,8 +85,13 @@ class _BookingItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final reference = item['booking_reference'] ?? item['sea_booking_id'] ?? item['id'] ?? 'Booking';
-    final status = item['goods_status'] ?? item['payment_status'] ?? 'Status unavailable';
+    final reference =
+        item['booking_reference'] ??
+        item['sea_booking_id'] ??
+        item['id'] ??
+        'Booking';
+    final status =
+        item['goods_status'] ?? item['payment_status'] ?? 'Status unavailable';
     return ListTile(
       leading: CircleAvatar(
         radius: 15,
@@ -110,8 +113,9 @@ class _BookingItem extends StatelessWidget {
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) =>
-              BookingDetailPage(bookingId: '${item['sea_booking_id'] ?? item['id']}'),
+          builder: (_) => BookingDetailPage(
+            bookingId: '${item['sea_booking_id'] ?? item['id']}',
+          ),
         ),
       ),
     );

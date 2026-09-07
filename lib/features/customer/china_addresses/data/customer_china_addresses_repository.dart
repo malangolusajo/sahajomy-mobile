@@ -24,8 +24,8 @@ class CustomerChinaAddressesRepository {
           'cargo_mode': cargoMode,
           'destination_country': destinationCountry,
           'destination_city': destinationCity,
-          if (containerId != null) 'container_id': containerId,
-          if (airBookingId != null) 'air_booking_id': airBookingId,
+          'container_id': ?containerId,
+          'air_booking_id': ?airBookingId,
         },
       );
 
@@ -36,8 +36,8 @@ class CustomerChinaAddressesRepository {
       client.patch<Map<String, dynamic>>(
         'customer/china-addresses/forwarding-profile',
         data: {
-          if (fullName != null) 'full_name': fullName,
-          if (phone != null) 'phone': phone,
+          'full_name': ?fullName,
+          'phone': ?phone,
         },
       );
 }

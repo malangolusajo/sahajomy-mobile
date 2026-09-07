@@ -4,7 +4,7 @@ import 'package:sahajomy_mobile/features/repository_providers.dart';
 
 import '../../../../core/ui/sahajomy_ui.dart';
 import '../../presentation/customer_components.dart';
-import '../../reservations/data/customer_booking_repository.dart';
+import '../../bookings/data/customer_booking_repository.dart';
 
 class CustomerPackingListPage extends ConsumerStatefulWidget {
   const CustomerPackingListPage({super.key});
@@ -22,8 +22,7 @@ class _CustomerPackingListPageState
     () => _repository.listBookings(),
   );
 
-  void _retry() =>
-      setState(() => _bookings = _repository.listBookings());
+  void _retry() => setState(() => _bookings = _repository.listBookings());
 
   @override
   Widget build(BuildContext context) => CustomerScaffold(
@@ -46,7 +45,8 @@ class _CustomerPackingListPageState
         if (bookings.isEmpty) {
           return const CustomerEmptyState(
             icon: Icons.inventory_2_outlined,
-            message: 'Packing lists will appear once your shipment is prepared.',
+            message:
+                'Packing lists will appear once your shipment is prepared.',
           );
         }
         return ListView(

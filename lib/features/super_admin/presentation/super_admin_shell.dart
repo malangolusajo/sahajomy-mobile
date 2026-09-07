@@ -120,7 +120,7 @@ class _SuperAdminMorePage extends StatelessWidget {
         title: 'Bookings',
         subtitle: 'Review platform booking activity.',
         icon: Icons.event_available_outlined,
-        route: '/admin/reservations',
+        route: '/admin/sea-bookings',
       ),
       FeatureMenuEntry(
         title: 'Track shipments',

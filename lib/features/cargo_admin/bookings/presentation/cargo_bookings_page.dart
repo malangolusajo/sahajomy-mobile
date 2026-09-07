@@ -15,13 +15,15 @@ class CargoBookingsPage extends ConsumerStatefulWidget {
 
 class _CargoBookingsPageState extends ConsumerState<CargoBookingsPage> {
   late Future<Map<String, dynamic>> _dashboard;
-  late Future<List<Map<String, dynamic>>> _reservations;
+  late Future<List<Map<String, dynamic>>> _seaBookings;
 
   @override
   void initState() {
     super.initState();
     _dashboard = ref.read(cargoOperationsRepositoryProvider).dashboard();
-    _reservations = ref.read(cargoOperationsRepositoryProvider).listReservations();
+    _seaBookings = ref
+        .read(cargoOperationsRepositoryProvider)
+        .listSeaBookings();
   }
 
   @override
@@ -29,14 +31,21 @@ class _CargoBookingsPageState extends ConsumerState<CargoBookingsPage> {
     eyebrow: 'CARGO COMPANY',
     title: 'Cargo · Bookings',
     notificationRoute: '/cargo/notifications',
-    actions: [IconButton(onPressed: () => context.push('/cargo/scanner'), icon: const Icon(Icons.qr_code_scanner))],
+    actions: [
+      IconButton(
+        onPressed: () => context.push('/cargo/scanner'),
+        icon: const Icon(Icons.qr_code_scanner),
+      ),
+    ],
     body: RefreshIndicator(
       onRefresh: () async {
         setState(() {
           _dashboard = ref.read(cargoOperationsRepositoryProvider).dashboard();
-          _reservations = ref.read(cargoOperationsRepositoryProvider).listReservations();
+          _seaBookings = ref
+              .read(cargoOperationsRepositoryProvider)
+              .listSeaBookings();
         });
-        await _reservations;
+        await _seaBookings;
       },
       child: ListView(
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
@@ -54,7 +63,7 @@ class _CargoBookingsPageState extends ConsumerState<CargoBookingsPage> {
           ),
           const SizedBox(height: 16),
           FutureBuilder<List<Map<String, dynamic>>>(
-            future: _reservations,
+            future: _seaBookings,
             builder: (context, snapshot) {
               if (snapshot.connectionState != ConnectionState.done) {
                 return Row(
@@ -66,8 +75,12 @@ class _CargoBookingsPageState extends ConsumerState<CargoBookingsPage> {
                 );
               }
               final list = snapshot.data ?? [];
-              final awaiting = list.where((r) => (r['goods_status'] ?? '') == 'ready').length;
-              final readyToLoad = list.where((r) => (r['goods_status'] ?? '') == 'released').length;
+              final awaiting = list
+                  .where((r) => (r['goods_status'] ?? '') == 'ready')
+                  .length;
+              final readyToLoad = list
+                  .where((r) => (r['goods_status'] ?? '') == 'released')
+                  .length;
               return Row(
                 children: [
                   Expanded(child: _metric('Awaiting intake', '$awaiting')),
@@ -81,7 +94,7 @@ class _CargoBookingsPageState extends ConsumerState<CargoBookingsPage> {
           const CustomerSectionHeader(title: 'Recent bookings'),
           const SizedBox(height: 8),
           FutureBuilder<List<Map<String, dynamic>>>(
-            future: _reservations,
+            future: _seaBookings,
             builder: (context, snapshot) {
               if (snapshot.connectionState != ConnectionState.done) {
                 return const CustomerSkeletonList(count: 5);
@@ -92,7 +105,9 @@ class _CargoBookingsPageState extends ConsumerState<CargoBookingsPage> {
                   message: 'Could not load bookings.',
                   actionLabel: 'Retry',
                   onAction: () => setState(() {
-                    _reservations = ref.read(cargoOperationsRepositoryProvider).listReservations();
+                    _seaBookings = ref
+                        .read(cargoOperationsRepositoryProvider)
+                        .listSeaBookings();
                   }),
                 );
               }
@@ -113,7 +128,8 @@ class _CargoBookingsPageState extends ConsumerState<CargoBookingsPage> {
                   children: [
                     for (var i = 0; i < list.length; i++) ...[
                       _bookingRow(list[i], i + 1),
-                      if (i < list.length - 1) const Divider(height: 1, indent: 60),
+                      if (i < list.length - 1)
+                        const Divider(height: 1, indent: 60),
                     ],
                   ],
                 ),
@@ -137,14 +153,21 @@ class _CargoBookingsPageState extends ConsumerState<CargoBookingsPage> {
       children: [
         Text(label, style: const TextStyle(color: appMuted, fontSize: 12)),
         const SizedBox(height: 4),
-        Text(value, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800)),
+        Text(
+          value,
+          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
+        ),
       ],
     ),
   );
 
   Widget _bookingRow(Map<String, dynamic> r, int idx) {
     final ref = r['shipping_mark'] ?? r['id'] ?? 'SAH-XXXX';
-    final customer = r['customer_display_name'] ?? r['customer_name'] ?? r['customer']?['name'] ?? 'Customer';
+    final customer =
+        r['customer_display_name'] ??
+        r['customer_name'] ??
+        r['customer']?['name'] ??
+        'Customer';
     final cartons = r['carton_count'] ?? r['cbm_booked'] ?? '—';
     final mode = r['cargo_type'] ?? r['service_type'] ?? 'Sea cargo';
     final status = r['goods_status'] ?? r['status'] ?? 'pending';
@@ -159,19 +182,36 @@ class _CargoBookingsPageState extends ConsumerState<CargoBookingsPage> {
               height: 40,
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: (idx <= 1 ? brandCoral : appMuted).withValues(alpha: 0.1),
+                color: (idx <= 1 ? brandCoral : appMuted).withValues(
+                  alpha: 0.1,
+                ),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Text('B$idx', style: TextStyle(color: idx <= 1 ? brandCoral : appMuted, fontWeight: FontWeight.w800)),
+              child: Text(
+                'B$idx',
+                style: TextStyle(
+                  color: idx <= 1 ? brandCoral : appMuted,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
             ),
             const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('$ref · $customer', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
+                  Text(
+                    '$ref · $customer',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15,
+                    ),
+                  ),
                   const SizedBox(height: 2),
-                  Text('$cartons ${mode == 'air' ? 'kg' : 'cartons'} · ${mode == 'air' ? 'Air cargo' : 'Sea cargo'}', style: const TextStyle(color: appMuted, fontSize: 13)),
+                  Text(
+                    '$cartons ${mode == 'air' ? 'kg' : 'cartons'} · ${mode == 'air' ? 'Air cargo' : 'Sea cargo'}',
+                    style: const TextStyle(color: appMuted, fontSize: 13),
+                  ),
                 ],
               ),
             ),
@@ -197,9 +237,23 @@ class _MetricSkeleton extends StatelessWidget {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(height: 12, width: 70, decoration: BoxDecoration(color: appBorder, borderRadius: BorderRadius.circular(6))),
+        Container(
+          height: 12,
+          width: 70,
+          decoration: BoxDecoration(
+            color: appBorder,
+            borderRadius: BorderRadius.circular(6),
+          ),
+        ),
         const SizedBox(height: 8),
-        Container(height: 22, width: 32, decoration: BoxDecoration(color: appBorder, borderRadius: BorderRadius.circular(6))),
+        Container(
+          height: 22,
+          width: 32,
+          decoration: BoxDecoration(
+            color: appBorder,
+            borderRadius: BorderRadius.circular(6),
+          ),
+        ),
       ],
     ),
   );

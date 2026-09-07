@@ -52,15 +52,19 @@ class _AgentUpdatePaymentStatusPageState extends ConsumerState<AgentUpdatePaymen
         const SizedBox(height: 20),
         const Text('Payment status', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
         const SizedBox(height: 8),
-        ...['unpaid', 'paid'].map((s) => RadioListTile<String>(
-          value: s,
+        RadioGroup<String>(
           groupValue: _status,
           onChanged: (v) => setState(() => _status = v ?? 'unpaid'),
-          title: Text(s == 'paid' ? 'Paid' : 'Unpaid'),
-          subtitle: Text(s == 'paid' ? 'Customer has settled this order' : 'Awaiting payment'),
-          tileColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: const BorderSide(color: appBorder)),
-        )),
+          child: Column(
+            children: ['unpaid', 'paid'].map((s) => RadioListTile<String>(
+              value: s,
+              title: Text(s == 'paid' ? 'Paid' : 'Unpaid'),
+              subtitle: Text(s == 'paid' ? 'Customer has settled this order' : 'Awaiting payment'),
+              tileColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: const BorderSide(color: appBorder)),
+            )).toList(),
+          ),
+        ),
         const SizedBox(height: 24),
         FilledButton(onPressed: _busy ? null : _save, child: Text(_busy ? 'Saving...' : 'Confirm')),
       ],
@@ -334,8 +338,8 @@ class _AgentDocumentDetailPageState
             entries: {
               'Customer': '$customer',
               'Amount': '$amount $currency',
-              if (generatedAt != null) 'Generated': generatedAt,
-              if (dueDate != null) 'Due date': dueDate,
+              'Generated': ?generatedAt,
+              'Due date': ?dueDate,
               if (d['batch_title'] != null) 'Batch': '${d['batch_title']}',
             },
           ),
@@ -624,7 +628,7 @@ class _AgentBookCbmPageState extends ConsumerState<AgentBookCbmPage> {
   }
 }
 
-/// Screen 111 — Sea bookings (renamed from "reservations")
+/// Screen 111 — Sea bookings.
 class AgentSeaBookingsPage extends ConsumerStatefulWidget {
   const AgentSeaBookingsPage({super.key});
 

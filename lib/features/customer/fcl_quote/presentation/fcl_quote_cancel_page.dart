@@ -53,7 +53,7 @@ class _FclQuoteCancelPageState extends State<FclQuoteCancelPage> {
         ),
         const SizedBox(height: 16),
         DropdownButtonFormField<String>(
-          value: _reason,
+          initialValue: _reason,
           decoration: const InputDecoration(labelText: 'Reason for cancelling'),
           items: const [
             'Found a better price elsewhere',

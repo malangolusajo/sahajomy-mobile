@@ -8,14 +8,14 @@ The Flutter application is at the repository root (`pubspec.yaml`, `lib/`). The 
 | --- | --- | --- | --- |
 | 001 Splash / shared | Read secure session and onboarding preference; GET auth/me with refresh interceptor for existing sessions | Verified role; enter checking-workspace or onboarding/sign-in | Startup indicator; retry on offline/server error; reject invalid session |
 | 006 Welcome / shared | POST auth/send-otp {phone_number} | masked_email, expires_in_minutes; OTP page. Exact new-registration error routes to registration with entered phone | Form validation, busy, backend error, retry; no list/empty state |
-| 007 Create account / shared | POST auth/send-otp {phone_number,name,email} | masked_email, expires_in_minutes; OTP page | Preserve fields on error, disable duplicate submit; email errors from server |
+| 007 Create account / shared | POST auth/send-otp {phone_number,name,email} | masked_email, expires_in_minutes; OTP page | Retain fields on error, disable duplicate submit; email errors from server |
 | 008 Verify code / shared | POST auth/verify-otp {phone_number,otp_code}; GET auth/me; existing MFA step retained | Secure tokens, verified role; notification permission then workspace check; pending deep link retained | Invalid code inline; expiry from server duration/410; resend uses send-otp; rate-limit error; busy |
 | 009 Code expired / shared | Recovery from actual OTP expiry; send-otp on request-new-code | New challenge returns to verification | Resend busy/error; change-number recovery; no fabricated reference |
 | 010 Account suspended / shared | Actual suspended error (backend can return 400 from OTP service or 403 from auth); official support link | Contact support or return to sign-in | Launch failure fallback; no fabricated support case |
 | 011 Stay updated / authenticated shared | Native OS notification permission request | Allowed/denied/unavailable; continue to workspace check | Busy, denied explanation, retry/settings, optional skip |
 | 012 Switch workspace / authenticated shared | GET workspaces (no tenant header) | personal object, companies list: id,type,company_id,company_name,branch_id,branch_name,role,status,permissions | Loading, refresh, retry, personal-only; select then Continue; clear old tenant before saving |
 | 013 Choose branch / company members | GET workspaces/branches only with company.branch.manage; GET workspaces/roles validates selected tenant scope | id,name,city,country,company_id; persist authorized branch, then checking screen | Loading/error/empty/retry; members without permission keep backend default branch |
-| 014 Checking workspace / authenticated shared | GET auth/me + GET workspaces; selected company GET workspaces/roles checks membership/branch headers | Refresh membership permissions and select role shell or preserved deep link | Indeterminate progress (no invented percentage); offline/retry; removed membership clears selection and returns picker |
+| 014 Checking workspace / authenticated shared | GET auth/me + GET workspaces; selected company GET workspaces/roles checks membership/branch headers | Refresh membership permissions and select role shell or pbooked deep link | Indeterminate progress (no invented percentage); offline/retry; removed membership clears selection and returns picker |
 
 ## Existing implementation reused
 

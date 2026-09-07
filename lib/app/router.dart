@@ -18,19 +18,19 @@ import '../features/auth/presentation/registration_page.dart';
 import '../features/auth/presentation/sign_in_page.dart';
 import '../features/auth/presentation/welcome_page.dart';
 import '../features/cargo_admin/presentation/cargo_admin_shell.dart';
-import '../features/cargo_admin/bookings/presentation/cargo_bookings_page.dart';
 import '../features/cargo_admin/bookings/presentation/cargo_booking_detail_page.dart';
 import '../features/cargo_admin/containers/presentation/cargo_containers_page.dart';
 import '../features/cargo_admin/containers/presentation/cargo_container_detail_page.dart';
 import '../features/cargo_admin/receipts/presentation/cargo_receipts_page.dart';
-import '../features/cargo_admin/dashboard/presentation/cargo_account_page.dart';
 import '../features/cargo_admin/warehouses/presentation/cargo_warehouses_page.dart';
 import '../features/cargo_admin/warehouses/presentation/cargo_warehouse_qr_page.dart';
 import '../features/cargo_admin/warehouse_automation/presentation/cargo_warehouse_scanner_page.dart';
 import '../features/cargo_admin/warehouse_automation/presentation/cargo_scan_result_pages.dart';
 import '../features/cargo_admin/warehouse_automation/presentation/cargo_intake_pages.dart';
-import '../features/cargo_admin/reservations/presentation/cargo_reservations_page.dart';
+import '../features/cargo_admin/warehouse_automation/presentation/cargo_admin_warehouse_automation_page.dart';
 import '../features/cargo_admin/operations/presentation/cargo_operations_pages.dart';
+import '../features/cargo_admin/operations/presentation/consolidated_packing_list_page.dart';
+import '../features/cargo_admin/operations/presentation/cargo_loading_checklist_page.dart';
 import '../features/cargo_admin/receipts/presentation/cargo_document_detail_page.dart';
 import '../features/cargo_admin/air_cargo/presentation/cargo_air_pages.dart';
 import '../features/cargo_admin/staff/presentation/cargo_staff_page.dart';
@@ -56,8 +56,8 @@ import '../features/reference/presentation/dedicated_preview_pages.dart';
 import '../features/reference/presentation/native_reference_screen.dart';
 import '../features/reference/presentation/native_screen_specs.dart';
 import '../features/reference/presentation/record_detail_page.dart';
-import '../features/customer/reservations/presentation/booking_detail_page.dart';
-import '../features/customer/reservations/presentation/booking_list_page.dart';
+import '../features/customer/bookings/presentation/booking_detail_page.dart';
+import '../features/customer/bookings/presentation/booking_list_page.dart';
 import '../features/customer/shipments/presentation/shipment_list_page.dart';
 import '../features/customer/china_addresses/presentation/china_address_detail_page.dart';
 import '../features/customer/china_addresses/presentation/forwarding_profile_page.dart';
@@ -292,84 +292,358 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/cargo-admin',
         builder: (context, state) => const CargoAdminShell(),
       ),
-      GoRoute(path: '/cargo/bookings/:id', builder: (context, state) => CargoBookingDetailPage(bookingId: state.pathParameters['id'] ?? '')),
-      GoRoute(path: '/cargo/bookings/:id/packing-list', builder: (context, state) => CargoBookingDetailPage(bookingId: state.pathParameters['id'] ?? '')),
-      GoRoute(path: '/cargo/containers', builder: (context, state) => const CargoContainersPage()),
-      GoRoute(path: '/cargo/containers/new', builder: (context, state) => const CargoCreateContainerPage()),
-      GoRoute(path: '/cargo/containers/:id', builder: (context, state) => CargoContainerDetailPage(containerId: state.pathParameters['id'] ?? '')),
-      GoRoute(path: '/cargo/containers/:id/packing-list', builder: (context, state) => CargoContainerDetailPage(containerId: state.pathParameters['id'] ?? '')),
-      GoRoute(path: '/cargo/receipts', builder: (context, state) => const CargoReceiptsPage()),
-      GoRoute(path: '/cargo/receipts/:id', builder: (context, state) => const CargoReceiptsPage()),
-      GoRoute(path: '/cargo/warehouses', builder: (context, state) => const CargoWarehousesPage()),
-      GoRoute(path: '/cargo/warehouses/new', builder: (context, state) => const CargoAddWarehousePage()),
-      GoRoute(path: '/cargo/warehouses/:id', builder: (context, state) => CargoWarehouseDetailPage(warehouseId: state.pathParameters['id'] ?? '')),
-      GoRoute(path: '/cargo/warehouses/:id/qr', builder: (context, state) => CargoWarehouseQrPage(warehouseId: state.pathParameters['id'] ?? '')),
-      GoRoute(path: '/cargo/warehouses/:id/qr/fullscreen', builder: (context, state) => const CargoWarehouseQrFullscreenPage()),
-      GoRoute(path: '/cargo/warehouses/:id/qr/revoked', builder: (context, state) => const CargoWarehouseQrRevokedPage()),
-      GoRoute(path: '/cargo/warehouses/:id/china-address', builder: (context, state) => CargoChinaAddressPage(warehouseId: state.pathParameters['id'] ?? '')),
-      GoRoute(path: '/cargo/scanner', builder: (context, state) => CargoWarehouseScannerPage(warehouseId: state.uri.queryParameters['warehouse_id'] ?? '')),
-      GoRoute(path: '/cargo/scanner/matched', builder: (context, state) => ScanMatchedPage(result: state.extra as Map<String, dynamic>?, warehouseId: state.uri.queryParameters['warehouse_id'])),
-      GoRoute(path: '/cargo/scanner/unmatched', builder: (context, state) => ScanUnmatchedPage(result: state.extra as Map<String, dynamic>?)),
-      GoRoute(path: '/cargo/scanner/duplicate', builder: (context, state) => ScanDuplicatePage(result: state.extra as Map<String, dynamic>?)),
-      GoRoute(path: '/cargo/scanner/low-confidence', builder: (context, state) => ScanLowConfidencePage(result: state.extra as Map<String, dynamic>?)),
-      GoRoute(path: '/cargo/scanner/invalid-label', builder: (context, state) => const ScanInvalidLabelPage()),
-      GoRoute(path: '/cargo/scanner/manual', builder: (context, state) => CargoManualIntakePage(warehouseId: (state.extra as Map<String, dynamic>?)?['warehouse_id'])),
-      GoRoute(path: '/cargo/scanner/choose-label', builder: (context, state) => CargoChooseLabelImagePage(warehouseId: (state.extra as Map<String, dynamic>?)?['warehouse_id'])),
-      GoRoute(path: '/cargo/scanner/camera-permission', builder: (context, state) => const CargoCameraPermissionPage()),
-      GoRoute(path: '/cargo/scanner/offline-queue', builder: (context, state) => const CargoOfflineScanQueuePage()),
-      GoRoute(path: '/cargo/scanner/history', builder: (context, state) => const CargoScanHistoryPage()),
-      GoRoute(path: '/cargo/reservations', builder: (context, state) => CargoReservationsPage(containerId: state.uri.queryParameters['container_id'])),
-      GoRoute(path: '/cargo/reservations/:id', builder: (context, state) => CargoReservationDetailPage(reservationId: state.pathParameters['id'] ?? '')),
-      GoRoute(path: '/cargo/reservations/:id/packing-list', builder: (context, state) => CargoReservationDetailPage(reservationId: state.pathParameters['id'] ?? '')),
-      GoRoute(path: '/cargo/containers/:id/consolidated-packing-list', builder: (context, state) => CargoConsolidatedPackingListPage(containerId: state.pathParameters['id'] ?? '')),
-      GoRoute(path: '/cargo/containers/:id/loading-checklist', builder: (context, state) => CargoLoadingChecklistPage(containerId: state.pathParameters['id'] ?? '')),
-      GoRoute(path: '/cargo/tracking/update', builder: (context, state) => CargoTrackingUpdatePage(entityId: state.uri.queryParameters['id'] ?? '')),
-      GoRoute(path: '/cargo/collection/requests', builder: (context, state) => const CargoCollectionRequestsPage()),
-      GoRoute(path: '/cargo/collection/verify', builder: (context, state) => const CargoVerifyCollectionPage()),
-      GoRoute(path: '/cargo/collection/confirm', builder: (context, state) => const CargoConfirmHandoverPage()),
-      GoRoute(path: '/cargo/collection/pin-entry', builder: (context, state) => const CargoCollectionPinEntryPage()),
-      GoRoute(path: '/cargo/collection/code-used', builder: (context, state) => const CargoCollectionCodeUsedPage()),
-      GoRoute(path: '/cargo/receipts/:id', builder: (context, state) => CargoDocumentDetailPage(documentId: state.pathParameters['id'] ?? '', type: state.uri.queryParameters['type'] ?? 'receipt')),
-      GoRoute(path: '/cargo/air-schedules', builder: (context, state) => const CargoAirSchedulesPage()),
-      GoRoute(path: '/cargo/air-schedules/new', builder: (context, state) => const CargoCreateAirSchedulePage()),
-      GoRoute(path: '/cargo/air-schedules/:id', builder: (context, state) => CargoAirScheduleDetailPage(scheduleId: state.pathParameters['id'] ?? '')),
-      GoRoute(path: '/cargo/air-bookings', builder: (context, state) => const CargoAirBookingsPage()),
-      GoRoute(path: '/cargo/air-bookings/:id', builder: (context, state) => CargoAirBookingDetailPage(bookingId: state.pathParameters['id'] ?? '')),
-      GoRoute(path: '/cargo/staff', builder: (context, state) => const CargoStaffPage()),
-      GoRoute(path: '/cargo/staff/new', builder: (context, state) => const CargoCreateStaffPage()),
-      GoRoute(path: '/cargo/workspace/branch', builder: (context, state) => const CargoBranchWorkspacePage()),
-      GoRoute(path: '/cargo/notifications', builder: (context, state) => const CargoNotificationsPage()),
-      GoRoute(path: '/cargo/customs', builder: (context, state) => const CargoCustomsDashboardPage()),
-      GoRoute(path: '/cargo/customs/shipments/:id', builder: (context, state) => CargoCustomsShipmentPage(shipmentId: state.pathParameters['id'] ?? '')),
-      GoRoute(path: '/cargo/customs/shipments/:id/documents', builder: (context, state) => CargoCustomsDocumentsPage(shipmentId: state.pathParameters['id'] ?? '')),
-      GoRoute(path: '/cargo/customs/shipments/:id/update-status', builder: (context, state) => CargoCustomsUpdateStatusPage(shipmentId: state.pathParameters['id'] ?? '')),
-      GoRoute(path: '/cargo/customs/shipments/:id/release', builder: (context, state) => CargoCustomsReleasePage(shipmentId: state.pathParameters['id'] ?? '')),
+      GoRoute(
+        path: '/cargo/bookings/:id',
+        builder: (context, state) =>
+            CargoBookingDetailPage(bookingId: state.pathParameters['id'] ?? ''),
+      ),
+      GoRoute(
+        path: '/cargo/bookings/:id/packing-list',
+        builder: (context, state) =>
+            CargoBookingDetailPage(bookingId: state.pathParameters['id'] ?? ''),
+      ),
+      GoRoute(
+        path: '/cargo/containers',
+        builder: (context, state) => const CargoContainersPage(),
+      ),
+      GoRoute(
+        path: '/cargo/containers/new',
+        builder: (context, state) => const CargoCreateContainerPage(),
+      ),
+      GoRoute(
+        path: '/cargo/containers/:id',
+        builder: (context, state) => CargoContainerDetailPage(
+          containerId: state.pathParameters['id'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: '/cargo/containers/:id/packing-list',
+        builder: (context, state) => CargoContainerDetailPage(
+          containerId: state.pathParameters['id'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: '/cargo/receipts',
+        builder: (context, state) => const CargoReceiptsPage(),
+      ),
+      GoRoute(
+        path: '/cargo/receipts/:id',
+        builder: (context, state) => CargoDocumentDetailPage(
+          documentId: state.pathParameters['id'] ?? '',
+          type: state.uri.queryParameters['type'] ?? 'receipt',
+        ),
+      ),
+      GoRoute(
+        path: '/cargo/warehouses',
+        builder: (context, state) => const CargoWarehousesPage(),
+      ),
+      GoRoute(
+        path: '/cargo/warehouses/new',
+        builder: (context, state) => const CargoAddWarehousePage(),
+      ),
+      GoRoute(
+        path: '/cargo/warehouses/:id',
+        builder: (context, state) => CargoWarehouseDetailPage(
+          warehouseId: state.pathParameters['id'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: '/cargo/warehouses/:id/qr',
+        builder: (context, state) =>
+            CargoWarehouseQrPage(warehouseId: state.pathParameters['id'] ?? ''),
+      ),
+      GoRoute(
+        path: '/cargo/warehouses/:id/qr/fullscreen',
+        builder: (context, state) => const CargoWarehouseQrFullscreenPage(),
+      ),
+      GoRoute(
+        path: '/cargo/warehouses/:id/qr/revoked',
+        builder: (context, state) => const CargoWarehouseQrRevokedPage(),
+      ),
+      GoRoute(
+        path: '/cargo/warehouses/:id/china-address',
+        builder: (context, state) => CargoChinaAddressPage(
+          warehouseId: state.pathParameters['id'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: '/cargo/scanner',
+        builder: (context, state) => CargoWarehouseScannerPage(
+          warehouseId: state.uri.queryParameters['warehouse_id'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: '/cargo/scanner/matched',
+        builder: (context, state) => ScanMatchedPage(
+          result: state.extra as Map<String, dynamic>?,
+          warehouseId: state.uri.queryParameters['warehouse_id'],
+        ),
+      ),
+      GoRoute(
+        path: '/cargo/scanner/unmatched',
+        builder: (context, state) =>
+            ScanUnmatchedPage(result: state.extra as Map<String, dynamic>?),
+      ),
+      GoRoute(
+        path: '/cargo/scanner/duplicate',
+        builder: (context, state) =>
+            ScanDuplicatePage(result: state.extra as Map<String, dynamic>?),
+      ),
+      GoRoute(
+        path: '/cargo/scanner/low-confidence',
+        builder: (context, state) =>
+            ScanLowConfidencePage(result: state.extra as Map<String, dynamic>?),
+      ),
+      GoRoute(
+        path: '/cargo/scanner/invalid-label',
+        builder: (context, state) => const ScanInvalidLabelPage(),
+      ),
+      GoRoute(
+        path: '/cargo/scanner/manual',
+        builder: (context, state) => CargoManualIntakePage(
+          warehouseId: (state.extra as Map<String, dynamic>?)?['warehouse_id'],
+        ),
+      ),
+      GoRoute(
+        path: '/cargo/scanner/choose-label',
+        builder: (context, state) => CargoChooseLabelImagePage(
+          warehouseId: (state.extra as Map<String, dynamic>?)?['warehouse_id'],
+        ),
+      ),
+      GoRoute(
+        path: '/cargo/scanner/camera-permission',
+        builder: (context, state) => const CargoCameraPermissionPage(),
+      ),
+      GoRoute(
+        path: '/cargo/scanner/offline-queue',
+        builder: (context, state) => const CargoOfflineScanQueuePage(),
+      ),
+      GoRoute(
+        path: '/cargo/scanner/history',
+        builder: (context, state) => const CargoScanHistoryPage(),
+      ),
+      GoRoute(
+        path: '/cargo/containers/:id/consolidated-packing-list',
+        builder: (context, state) => CargoConsolidatedPackingListPage(
+          containerId: state.pathParameters['id'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: '/cargo/containers/:id/loading-checklist',
+        builder: (context, state) => CargoLoadingChecklistPage(
+          containerId: state.pathParameters['id'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: '/cargo/tracking/update',
+        builder: (context, state) => CargoTrackingUpdatePage(
+          entityId: state.uri.queryParameters['id'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: '/cargo/collection/requests',
+        builder: (context, state) => const CargoAdminWarehouseAutomationPage(),
+      ),
+      GoRoute(
+        path: '/cargo/collection/verify',
+        builder: (context, state) => const CargoAdminWarehouseAutomationPage(),
+      ),
+      GoRoute(
+        path: '/cargo/collection/confirm',
+        builder: (context, state) => const CargoAdminWarehouseAutomationPage(),
+      ),
+      GoRoute(
+        path: '/cargo/collection/pin-entry',
+        builder: (context, state) => const CargoAdminWarehouseAutomationPage(),
+      ),
+      GoRoute(
+        path: '/cargo/collection/code-used',
+        builder: (context, state) => const CargoAdminWarehouseAutomationPage(),
+      ),
+      GoRoute(
+        path: '/cargo/air-schedules',
+        builder: (context, state) => const CargoAirSchedulesPage(),
+      ),
+      GoRoute(
+        path: '/cargo/air-schedules/new',
+        builder: (context, state) => const CargoCreateAirSchedulePage(),
+      ),
+      GoRoute(
+        path: '/cargo/air-schedules/:id',
+        builder: (context, state) => CargoAirScheduleDetailPage(
+          scheduleId: state.pathParameters['id'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: '/cargo/air-bookings',
+        builder: (context, state) => const CargoAirBookingsPage(),
+      ),
+      GoRoute(
+        path: '/cargo/air-bookings/:id',
+        builder: (context, state) => CargoAirBookingDetailPage(
+          bookingId: state.pathParameters['id'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: '/cargo/staff',
+        builder: (context, state) => const CargoStaffPage(),
+      ),
+      GoRoute(
+        path: '/cargo/staff/new',
+        builder: (context, state) => const CargoCreateStaffPage(),
+      ),
+      GoRoute(
+        path: '/cargo/workspace/branch',
+        builder: (context, state) => const CargoBranchWorkspacePage(),
+      ),
+      GoRoute(
+        path: '/cargo/notifications',
+        builder: (context, state) => const CargoNotificationsPage(),
+      ),
+      GoRoute(
+        path: '/cargo/customs',
+        builder: (context, state) => const CargoCustomsDashboardPage(),
+      ),
+      GoRoute(
+        path: '/cargo/customs/shipments/:id',
+        builder: (context, state) => CargoCustomsShipmentPage(
+          shipmentId: state.pathParameters['id'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: '/cargo/customs/shipments/:id/documents',
+        builder: (context, state) => CargoCustomsDocumentsPage(
+          shipmentId: state.pathParameters['id'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: '/cargo/customs/shipments/:id/update-status',
+        builder: (context, state) => CargoCustomsUpdateStatusPage(
+          shipmentId: state.pathParameters['id'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: '/cargo/customs/shipments/:id/release',
+        builder: (context, state) => CargoCustomsReleasePage(
+          shipmentId: state.pathParameters['id'] ?? '',
+        ),
+      ),
       GoRoute(
         path: '/sourcing-agent',
         builder: (context, state) => const SourcingAgentShell(),
       ),
       // ── Sourcing agent real pages ──────────────────────────
-      GoRoute(path: '/agent/financials', builder: (context, state) => const AgentFinancialsPage()),
-      GoRoute(path: '/agent/account', builder: (context, state) => const AgentAccountPage()),
-      GoRoute(path: '/agent/verification', builder: (context, state) => const AgentVerificationPage()),
-      GoRoute(path: '/agent/containers', builder: (context, state) => const AgentAvailableContainersPage()),
-      GoRoute(path: '/agent/sea-bookings', builder: (context, state) => const AgentSeaBookingsPage()),
-      GoRoute(path: '/agent/products', builder: (context, state) => const SourcingAgentProductManagementPage()),
-      GoRoute(path: '/agent/invoices', builder: (context, state) => const AgentInvoicesPage()),
-      GoRoute(path: '/agent/receipts', builder: (context, state) => const AgentReceiptsPage()),
-      GoRoute(path: '/agent/express-air-cargo', builder: (context, state) => const AgentAirCargoOptionsPage()),
-      GoRoute(path: '/agent/express-air-cargo/book', builder: (context, state) => const AgentBookAirCargoPage()),
-      GoRoute(path: '/agent/express-air-cargo/:bookingId/label', builder: (context, state) => AgentAirShippingLabelPage(bookingId: state.pathParameters['bookingId'] ?? '')),
-      GoRoute(path: '/agent/express-air-cargo/:bookingId/label/edit', builder: (context, state) => AgentEditShippingLabelPage(bookingId: state.pathParameters['bookingId'] ?? '', label: state.extra as Map<String, dynamic>? ?? {})),
-      GoRoute(path: '/agent/orders/:orderId/payment', builder: (context, state) => AgentUpdatePaymentStatusPage(orderId: state.pathParameters['orderId'] ?? '', customerName: state.uri.queryParameters['customer'] ?? 'Customer')),
-      GoRoute(path: '/agent/orders/:orderId/share-invoice', builder: (context, state) => AgentShareInvoicePage(orderId: state.pathParameters['orderId'] ?? '', invoiceNumber: state.uri.queryParameters['invoice'] ?? 'Invoice')),
-      GoRoute(path: '/agent/containers/:containerId/book-cbm', builder: (context, state) => AgentBookCbmPage(container: state.extra as Map<String, dynamic>? ?? {})),
-      GoRoute(path: '/agent/batches/:batchId/products/:productId/edit', builder: (context, state) => AgentEditProductPage(batchId: state.pathParameters['batchId'] ?? '', product: state.extra as Map<String, dynamic>? ?? {})),
-      GoRoute(path: '/agent/batches/:batchId/products/import-instagram', builder: (context, state) => AgentInstagramImportPage(batchId: state.pathParameters['batchId'] ?? '')),
-      GoRoute(path: '/agent/batches/:batchId/share', builder: (context, state) => AgentShareBatchPage(batchId: state.pathParameters['batchId'] ?? '', batchTitle: state.uri.queryParameters['title'] ?? 'Batch')),
-      GoRoute(path: '/agent/batches/:batchId/publish', builder: (context, state) => AgentPublishPage(batchId: state.pathParameters['batchId'] ?? '')),
-      GoRoute(path: '/agent/goods-types/:id/attributes', builder: (context, state) => AgentDynamicAttributesPage(goodsTypeId: state.pathParameters['id'] ?? '', goodsTypeName: state.uri.queryParameters['name'] ?? 'Goods type')),
-      GoRoute(path: '/agent/products/variants', builder: (context, state) => AgentProductVariantsPage(product: state.extra as Map<String, dynamic>? ?? {})),
+      GoRoute(
+        path: '/agent/financials',
+        builder: (context, state) => const AgentFinancialsPage(),
+      ),
+      GoRoute(
+        path: '/agent/account',
+        builder: (context, state) => const AgentAccountPage(),
+      ),
+      GoRoute(
+        path: '/agent/verification',
+        builder: (context, state) => const AgentVerificationPage(),
+      ),
+      GoRoute(
+        path: '/agent/containers',
+        builder: (context, state) => const AgentAvailableContainersPage(),
+      ),
+      GoRoute(
+        path: '/agent/sea-bookings',
+        builder: (context, state) => const AgentSeaBookingsPage(),
+      ),
+      GoRoute(
+        path: '/agent/products',
+        builder: (context, state) => const SourcingAgentProductManagementPage(),
+      ),
+      GoRoute(
+        path: '/agent/invoices',
+        builder: (context, state) => const AgentInvoicesPage(),
+      ),
+      GoRoute(
+        path: '/agent/receipts',
+        builder: (context, state) => const AgentReceiptsPage(),
+      ),
+      GoRoute(
+        path: '/agent/express-air-cargo',
+        builder: (context, state) => const AgentAirCargoOptionsPage(),
+      ),
+      GoRoute(
+        path: '/agent/express-air-cargo/book',
+        builder: (context, state) => const AgentBookAirCargoPage(),
+      ),
+      GoRoute(
+        path: '/agent/express-air-cargo/:bookingId/label',
+        builder: (context, state) => AgentAirShippingLabelPage(
+          bookingId: state.pathParameters['bookingId'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: '/agent/express-air-cargo/:bookingId/label/edit',
+        builder: (context, state) => AgentEditShippingLabelPage(
+          bookingId: state.pathParameters['bookingId'] ?? '',
+          label: state.extra as Map<String, dynamic>? ?? {},
+        ),
+      ),
+      GoRoute(
+        path: '/agent/orders/:orderId/payment',
+        builder: (context, state) => AgentUpdatePaymentStatusPage(
+          orderId: state.pathParameters['orderId'] ?? '',
+          customerName: state.uri.queryParameters['customer'] ?? 'Customer',
+        ),
+      ),
+      GoRoute(
+        path: '/agent/orders/:orderId/share-invoice',
+        builder: (context, state) => AgentShareInvoicePage(
+          orderId: state.pathParameters['orderId'] ?? '',
+          invoiceNumber: state.uri.queryParameters['invoice'] ?? 'Invoice',
+        ),
+      ),
+      GoRoute(
+        path: '/agent/containers/:containerId/book-cbm',
+        builder: (context, state) => AgentBookCbmPage(
+          container: state.extra as Map<String, dynamic>? ?? {},
+        ),
+      ),
+      GoRoute(
+        path: '/agent/batches/:batchId/products/:productId/edit',
+        builder: (context, state) => AgentEditProductPage(
+          batchId: state.pathParameters['batchId'] ?? '',
+          product: state.extra as Map<String, dynamic>? ?? {},
+        ),
+      ),
+      GoRoute(
+        path: '/agent/batches/:batchId/products/import-instagram',
+        builder: (context, state) => AgentInstagramImportPage(
+          batchId: state.pathParameters['batchId'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: '/agent/batches/:batchId/share',
+        builder: (context, state) => AgentShareBatchPage(
+          batchId: state.pathParameters['batchId'] ?? '',
+          batchTitle: state.uri.queryParameters['title'] ?? 'Batch',
+        ),
+      ),
+      GoRoute(
+        path: '/agent/batches/:batchId/publish',
+        builder: (context, state) =>
+            AgentPublishPage(batchId: state.pathParameters['batchId'] ?? ''),
+      ),
+      GoRoute(
+        path: '/agent/goods-types/:id/attributes',
+        builder: (context, state) => AgentDynamicAttributesPage(
+          goodsTypeId: state.pathParameters['id'] ?? '',
+          goodsTypeName: state.uri.queryParameters['name'] ?? 'Goods type',
+        ),
+      ),
+      GoRoute(
+        path: '/agent/products/variants',
+        builder: (context, state) => AgentProductVariantsPage(
+          product: state.extra as Map<String, dynamic>? ?? {},
+        ),
+      ),
       GoRoute(
         path: '/agent/packing-lists/:packingListId',
         builder: (context, state) => SourcingAgentPackingListDetailPage(
@@ -406,9 +680,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/customer/track-shipment/:ref',
-        builder: (context, state) => ShipmentTrackingPage(
-          entityId: state.pathParameters['ref'],
-        ),
+        builder: (context, state) =>
+            ShipmentTrackingPage(entityId: state.pathParameters['ref']),
       ),
       GoRoute(
         path: '/customer/bookings',
@@ -432,11 +705,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/customer/fcl-quote/cargo',
-        builder: (context, state) => FclQuoteCargoPage(routeData: state.extra as Map<String, dynamic>?),
+        builder: (context, state) =>
+            FclQuoteCargoPage(routeData: state.extra as Map<String, dynamic>?),
       ),
       GoRoute(
         path: '/customer/fcl-quote/review',
-        builder: (context, state) => FclQuoteReviewPage(quoteData: state.extra as Map<String, dynamic>?),
+        builder: (context, state) =>
+            FclQuoteReviewPage(quoteData: state.extra as Map<String, dynamic>?),
       ),
       GoRoute(
         path: '/customer/fcl-quote/submitted',
@@ -448,15 +723,18 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/customer/fcl-quote/requests/:id',
-        builder: (context, state) => FclQuoteDetailPage(requestId: state.pathParameters['id'] ?? ''),
+        builder: (context, state) =>
+            FclQuoteDetailPage(requestId: state.pathParameters['id'] ?? ''),
       ),
       GoRoute(
         path: '/customer/fcl-quote/requests/:id/cancel',
-        builder: (context, state) => FclQuoteCancelPage(requestId: state.pathParameters['id'] ?? ''),
+        builder: (context, state) =>
+            FclQuoteCancelPage(requestId: state.pathParameters['id'] ?? ''),
       ),
       GoRoute(
         path: '/customer/china-addresses/:id',
-        builder: (context, state) => ChinaAddressDetailPage(addressId: state.pathParameters['id'] ?? ''),
+        builder: (context, state) =>
+            ChinaAddressDetailPage(addressId: state.pathParameters['id'] ?? ''),
       ),
       GoRoute(
         path: '/customer/forwarding-profile',
@@ -468,7 +746,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/customer/shipping-mark',
-        builder: (context, state) => const ShippingMarkPage(),
+        builder: (context, state) => ShippingMarkPage(
+          seaBookingId: state.uri.queryParameters['sea_booking_id'],
+        ),
       ),
       GoRoute(
         path: '/customer/agiza/search',
@@ -476,11 +756,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/customer/agiza/agent/:id',
-        builder: (context, state) => SourcingAgentPage(agent: state.extra as Map<String, dynamic>? ?? {}),
+        builder: (context, state) => SourcingAgentPage(
+          agent: state.extra as Map<String, dynamic>? ?? {},
+        ),
       ),
       GoRoute(
         path: '/customer/agiza/product/:id',
-        builder: (context, state) => ProductDetailsPage(productId: state.pathParameters['id'] ?? ''),
+        builder: (context, state) =>
+            ProductDetailsPage(productId: state.pathParameters['id'] ?? ''),
       ),
       GoRoute(
         path: '/customer/sourcing-request-submitted',
@@ -488,20 +771,21 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/customer/orders/:id',
-        builder: (context, state) => SourcingOrderDetailPage(orderId: state.pathParameters['id'] ?? ''),
+        builder: (context, state) =>
+            SourcingOrderDetailPage(orderId: state.pathParameters['id'] ?? ''),
       ),
       GoRoute(
         path: '/customer/invoice',
         builder: (context, state) => InvoiceDetailPage(
           invoice: state.extra as Map<String, dynamic>? ?? {},
-          reservationId: state.uri.queryParameters['reservation_id'],
+          seaBookingId: state.uri.queryParameters['sea_booking_id'],
         ),
       ),
       GoRoute(
         path: '/customer/receipt',
         builder: (context, state) => ReceiptDetailPage(
           receipt: state.extra as Map<String, dynamic>? ?? {},
-          reservationId: state.uri.queryParameters['reservation_id'],
+          seaBookingId: state.uri.queryParameters['sea_booking_id'],
         ),
       ),
       GoRoute(
@@ -518,8 +802,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         GoRoute(
           path: entry.key,
           builder: (context, state) {
-            if (entry.value == 'customer-sea-bookings.html' ||
-                entry.value == 'customer-reservations.html') {
+            if (entry.value == 'customer-sea-bookings.html') {
               return const BookingListPage();
             }
             final bookingId = state.pathParameters['seaBookingId'];

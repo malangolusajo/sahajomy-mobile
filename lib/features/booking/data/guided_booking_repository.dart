@@ -15,9 +15,7 @@ class GuidedBookingRepository {
     final endpoint = account == BookingAccount.customer
         ? 'customer/containers'
         : 'sourcing_agent/containers';
-    final response = await client.get<Object>(
-      endpoint,
-    );
+    final response = await client.get<Object>(endpoint);
     return _records(response);
   }
 
@@ -27,8 +25,12 @@ class GuidedBookingRepository {
     required String destinationCountry,
   }) => client.post<Map<String, dynamic>>(
     'forwarding/prepare-address',
-    data: {'cargo_mode': 'sea', 'container_id': containerId,
-      'destination_city': destinationCity, 'destination_country': destinationCountry},
+    data: {
+      'cargo_mode': 'sea',
+      'container_id': containerId,
+      'destination_city': destinationCity,
+      'destination_country': destinationCountry,
+    },
   );
 
   Future<Map<String, dynamic>> confirmSeaBooking({

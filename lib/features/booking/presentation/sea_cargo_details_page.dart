@@ -17,7 +17,8 @@ class SeaCargoDetailsPage extends ConsumerStatefulWidget {
   final String routeName;
 
   @override
-  ConsumerState<SeaCargoDetailsPage> createState() => _SeaCargoDetailsPageState();
+  ConsumerState<SeaCargoDetailsPage> createState() =>
+      _SeaCargoDetailsPageState();
 }
 
 class _SeaCargoDetailsPageState extends ConsumerState<SeaCargoDetailsPage> {
@@ -53,11 +54,15 @@ class _SeaCargoDetailsPageState extends ConsumerState<SeaCargoDetailsPage> {
     super.dispose();
   }
 
-  String? _required(String? v) => v == null || v.trim().length < 2 ? 'Enter at least two characters.' : null;
+  String? _required(String? v) => v == null || v.trim().length < 2
+      ? 'Enter at least two characters.'
+      : null;
 
   String? _volumeValidator(String? v) {
     final value = double.tryParse(v?.trim() ?? '');
-    if (value == null || !value.isFinite || value <= 0) return 'Enter a volume greater than zero.';
+    if (value == null || !value.isFinite || value <= 0) {
+      return 'Enter a volume greater than zero.';
+    }
     return null;
   }
 
@@ -122,13 +127,17 @@ class _SeaCargoDetailsPageState extends ConsumerState<SeaCargoDetailsPage> {
               decoration: const InputDecoration(labelText: 'Quantity'),
               validator: (v) {
                 if (v == null || v.trim().isEmpty) return 'Enter quantity.';
-                return (int.tryParse(v.trim()) ?? 0) > 0 ? null : 'Enter a positive number.';
+                return (int.tryParse(v.trim()) ?? 0) > 0
+                    ? null
+                    : 'Enter a positive number.';
               },
             ),
             const SizedBox(height: 16),
             TextFormField(
               controller: _volume,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               decoration: const InputDecoration(labelText: 'Volume (CBM)'),
               validator: _volumeValidator,
             ),
@@ -136,10 +145,14 @@ class _SeaCargoDetailsPageState extends ConsumerState<SeaCargoDetailsPage> {
             TextFormField(
               controller: _cartons,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'Carton count (optional)'),
+              decoration: const InputDecoration(
+                labelText: 'Carton count (optional)',
+              ),
               validator: (v) {
                 if (v == null || v.trim().isEmpty) return null;
-                return (int.tryParse(v.trim()) ?? 0) > 0 ? null : 'Enter a positive number.';
+                return (int.tryParse(v.trim()) ?? 0) > 0
+                    ? null
+                    : 'Enter a positive number.';
               },
             ),
             if (_error != null) ...[

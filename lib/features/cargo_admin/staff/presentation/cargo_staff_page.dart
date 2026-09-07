@@ -72,7 +72,7 @@ class _CargoCreateStaffPageState extends State<CargoCreateStaffPage> {
       const SizedBox(height: 16),
       TextFormField(controller: _email, decoration: const InputDecoration(labelText: 'Email'), keyboardType: TextInputType.emailAddress, validator: (v) => (v == null || !v.contains('@')) ? 'Valid email required' : null),
       const SizedBox(height: 16),
-      DropdownButtonFormField<String>(value: _role, decoration: const InputDecoration(labelText: 'Role'), items: const [
+      DropdownButtonFormField<String>(initialValue: _role, decoration: const InputDecoration(labelText: 'Role'), items: const [
         DropdownMenuItem(value: 'warehouse_operator', child: Text('Warehouse operator')),
         DropdownMenuItem(value: 'finance', child: Text('Finance')),
         DropdownMenuItem(value: 'admin', child: Text('Admin')),

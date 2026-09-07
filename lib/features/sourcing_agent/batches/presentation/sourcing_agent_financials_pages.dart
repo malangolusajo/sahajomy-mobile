@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../app/theme.dart';
 import '../../../customer/presentation/customer_components.dart';
 import '../../../repository_providers.dart';
-import '../../batches/data/sourcing_agent_batches_repository.dart';
 
 /// Screen 115 — Financials overview
 class AgentFinancialsPage extends ConsumerStatefulWidget {
@@ -253,7 +252,7 @@ class _AgentInstagramImportPageState extends ConsumerState<AgentInstagramImportP
               height: 240,
               width: double.infinity,
               fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(height: 240, color: appCanvas, child: const Icon(Icons.broken_image_outlined, size: 48, color: appMuted)),
+              errorBuilder: (_, _, _) => Container(height: 240, color: appCanvas, child: const Icon(Icons.broken_image_outlined, size: 48, color: appMuted)),
             ),
           ),
           const SizedBox(height: 12),

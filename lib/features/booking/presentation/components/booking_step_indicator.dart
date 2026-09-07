@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../../app/theme.dart';
 
 class BookingStepIndicator extends StatelessWidget {
@@ -30,19 +31,25 @@ class BookingStepIndicator extends StatelessWidget {
                         color: i < currentStep
                             ? brandNavy
                             : i == currentStep
-                                ? brandCoral
-                                : appBorder,
+                            ? brandCoral
+                            : appBorder,
                         shape: BoxShape.circle,
                       ),
                       alignment: Alignment.center,
                       child: i < currentStep
-                          ? const Icon(Icons.check, size: 16, color: Colors.white)
+                          ? const Icon(
+                              Icons.check,
+                              size: 16,
+                              color: Colors.white,
+                            )
                           : Text(
                               '${i + 1}',
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w800,
-                                color: i == currentStep ? Colors.white : appMuted,
+                                color: i == currentStep
+                                    ? Colors.white
+                                    : appMuted,
                               ),
                             ),
                     ),
@@ -60,7 +67,9 @@ class BookingStepIndicator extends StatelessWidget {
                   steps[i],
                   style: TextStyle(
                     fontSize: 11,
-                    fontWeight: i == currentStep ? FontWeight.w800 : FontWeight.w600,
+                    fontWeight: i == currentStep
+                        ? FontWeight.w800
+                        : FontWeight.w600,
                     color: i <= currentStep ? brandNavy : appMuted,
                   ),
                   textAlign: TextAlign.center,

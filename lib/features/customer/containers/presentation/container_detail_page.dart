@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/ui/sahajomy_ui.dart';
 import '../../presentation/customer_components.dart';
-import '../../reservations/presentation/book_container_page.dart';
+import '../../bookings/presentation/book_container_page.dart';
 
 class ContainerDetailPage extends StatelessWidget {
   const ContainerDetailPage({required this.container, super.key});
@@ -37,7 +37,9 @@ class ContainerDetailPage extends StatelessWidget {
                 style: const TextStyle(fontWeight: FontWeight.w800),
               ),
               subtitle: Text('$size · $origin → $destination'),
-              trailing: SahajomyStatusPill(label: '${container['status'] ?? 'Status unavailable'}'),
+              trailing: SahajomyStatusPill(
+                label: '${container['status'] ?? 'Status unavailable'}',
+              ),
             ),
           ),
           const SizedBox(height: 12),
