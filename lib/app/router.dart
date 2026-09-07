@@ -41,6 +41,27 @@ import '../features/reference/presentation/record_detail_page.dart';
 import '../features/customer/reservations/presentation/booking_detail_page.dart';
 import '../features/customer/reservations/presentation/booking_list_page.dart';
 import '../features/customer/shipments/presentation/shipment_list_page.dart';
+import '../features/customer/china_addresses/presentation/china_address_detail_page.dart';
+import '../features/customer/china_addresses/presentation/forwarding_profile_page.dart';
+import '../features/customer/china_addresses/presentation/prepare_china_address_page.dart';
+import '../features/customer/documents/presentation/shipping_mark_page.dart';
+import '../features/customer/documents/presentation/invoice_receipt_detail_page.dart';
+import '../features/customer/sourcing/presentation/search_products_agents_page.dart';
+import '../features/customer/sourcing/presentation/sourcing_agent_page.dart';
+import '../features/customer/sourcing/presentation/product_details_page.dart';
+import '../features/customer/sourcing/presentation/sourcing_request_submitted_page.dart';
+import '../features/customer/sourcing/presentation/sourcing_order_detail_page.dart';
+import '../features/customer/warehouse_access/presentation/collection_code_expired_page.dart';
+import '../features/customer/account/presentation/help_support_page.dart';
+import '../features/customer/account/presentation/privacy_security_page.dart';
+import '../features/customer/fcl_quote/presentation/fcl_quote_intro_page.dart';
+import '../features/customer/fcl_quote/presentation/fcl_quote_route_page.dart';
+import '../features/customer/fcl_quote/presentation/fcl_quote_cargo_page.dart';
+import '../features/customer/fcl_quote/presentation/fcl_quote_review_page.dart';
+import '../features/customer/fcl_quote/presentation/fcl_quote_submitted_page.dart';
+import '../features/customer/fcl_quote/presentation/fcl_quote_requests_page.dart';
+import '../features/customer/fcl_quote/presentation/fcl_quote_detail_page.dart';
+import '../features/customer/fcl_quote/presentation/fcl_quote_cancel_page.dart';
 import '../features/sourcing_agent/presentation/sourcing_agent_shell.dart';
 import '../features/super_admin/presentation/super_admin_shell.dart';
 import 'app_route_aliases.dart';
@@ -290,15 +311,99 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/customer/privacy',
-        redirect: (context, state) => '/privacy',
+        builder: (context, state) => const PrivacySecurityPage(),
       ),
       GoRoute(
         path: '/customer/support',
-        redirect: (context, state) => '/support',
+        builder: (context, state) => const HelpSupportPage(),
       ),
       GoRoute(
         path: '/customer/fcl-quote',
-        redirect: (context, state) => '/fcl-quote-request',
+        builder: (context, state) => const FclQuoteIntroPage(),
+      ),
+      GoRoute(
+        path: '/customer/fcl-quote/route',
+        builder: (context, state) => const FclQuoteRoutePage(),
+      ),
+      GoRoute(
+        path: '/customer/fcl-quote/cargo',
+        builder: (context, state) => FclQuoteCargoPage(routeData: state.extra as Map<String, dynamic>?),
+      ),
+      GoRoute(
+        path: '/customer/fcl-quote/review',
+        builder: (context, state) => FclQuoteReviewPage(quoteData: state.extra as Map<String, dynamic>?),
+      ),
+      GoRoute(
+        path: '/customer/fcl-quote/submitted',
+        builder: (context, state) => const FclQuoteSubmittedPage(),
+      ),
+      GoRoute(
+        path: '/customer/fcl-quote/requests',
+        builder: (context, state) => const FclQuoteRequestsPage(),
+      ),
+      GoRoute(
+        path: '/customer/fcl-quote/requests/:id',
+        builder: (context, state) => FclQuoteDetailPage(requestId: state.pathParameters['id'] ?? ''),
+      ),
+      GoRoute(
+        path: '/customer/fcl-quote/requests/:id/cancel',
+        builder: (context, state) => FclQuoteCancelPage(requestId: state.pathParameters['id'] ?? ''),
+      ),
+      GoRoute(
+        path: '/customer/china-addresses/:id',
+        builder: (context, state) => ChinaAddressDetailPage(addressId: state.pathParameters['id'] ?? ''),
+      ),
+      GoRoute(
+        path: '/customer/forwarding-profile',
+        builder: (context, state) => const ForwardingProfilePage(),
+      ),
+      GoRoute(
+        path: '/customer/prepare-china-address',
+        builder: (context, state) => const PrepareChinaAddressPage(),
+      ),
+      GoRoute(
+        path: '/customer/shipping-mark',
+        builder: (context, state) => const ShippingMarkPage(),
+      ),
+      GoRoute(
+        path: '/customer/agiza/search',
+        builder: (context, state) => const SearchProductsAgentsPage(),
+      ),
+      GoRoute(
+        path: '/customer/agiza/agent/:id',
+        builder: (context, state) => SourcingAgentPage(agent: state.extra as Map<String, dynamic>? ?? {}),
+      ),
+      GoRoute(
+        path: '/customer/agiza/product/:id',
+        builder: (context, state) => ProductDetailsPage(productId: state.pathParameters['id'] ?? ''),
+      ),
+      GoRoute(
+        path: '/customer/sourcing-request-submitted',
+        builder: (context, state) => const SourcingRequestSubmittedPage(),
+      ),
+      GoRoute(
+        path: '/customer/orders/:id',
+        builder: (context, state) => SourcingOrderDetailPage(orderId: state.pathParameters['id'] ?? ''),
+      ),
+      GoRoute(
+        path: '/customer/invoice',
+        builder: (context, state) => InvoiceDetailPage(
+          invoice: state.extra as Map<String, dynamic>? ?? {},
+          reservationId: state.uri.queryParameters['reservation_id'],
+        ),
+      ),
+      GoRoute(
+        path: '/customer/receipt',
+        builder: (context, state) => ReceiptDetailPage(
+          receipt: state.extra as Map<String, dynamic>? ?? {},
+          reservationId: state.uri.queryParameters['reservation_id'],
+        ),
+      ),
+      GoRoute(
+        path: '/customer/collection/expired',
+        builder: (context, state) => CollectionCodeExpiredPage(
+          reference: state.uri.queryParameters['reference'],
+        ),
       ),
       GoRoute(
         path: '/customer/collection',

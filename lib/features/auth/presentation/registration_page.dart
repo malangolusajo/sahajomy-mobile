@@ -64,7 +64,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
       ref.read(pendingEmailProvider.notifier).state = email;
       context.go('/otp');
     } on ApiException catch (error) {
-      if (mounted)
+      if (mounted) {
         setState(() {
           if (error.message.toLowerCase().contains('email')) {
             _emailError = error.message;
@@ -74,6 +74,7 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
             _errorMessage = error.message;
           }
         });
+      }
     } on FormatException catch (error) {
       if (mounted) setState(() => _errorMessage = error.message);
     } catch (_) {

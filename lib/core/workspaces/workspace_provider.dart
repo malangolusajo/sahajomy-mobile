@@ -118,8 +118,9 @@ class WorkspaceProvider extends StateNotifier<WorkspaceState> {
     final segments = Uri.parse(location).pathSegments;
     if (segments.length < 2) return true;
     final segment = segments[1].replaceAll('-', '_');
-    if (const {'profile', 'notifications', 'account'}.contains(segment))
+    if (const {'profile', 'notifications', 'account'}.contains(segment)) {
       return true;
+    }
     final resource = switch (segment) {
       'bookings' || 'sea_bookings' || 'reservations' => 'booking',
       'shipments' || 'shipment_orders' => 'shipment',

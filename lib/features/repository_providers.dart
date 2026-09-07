@@ -10,8 +10,10 @@ import 'customer/air_cargo/data/customer_air_cargo_repository.dart';
 import 'customer/china_addresses/data/customer_china_addresses_repository.dart';
 import 'customer/containers/data/customer_containers_repository.dart';
 import 'customer/dashboard/data/customer_dashboard_repository.dart';
+import 'customer/fcl_quote/data/customer_fcl_quote_repository.dart';
 import 'customer/notifications/data/customer_notifications_repository.dart';
 import 'customer/orders/data/customer_orders_repository.dart';
+import 'customer/orders/data/customer_sourcing_repository.dart';
 import 'customer/reservations/data/customer_booking_repository.dart';
 import 'customer/shipments/data/customer_shipments_repository.dart';
 import 'customer/tracking/data/customer_tracking_repository.dart';
@@ -88,6 +90,16 @@ final customerBookingRepositoryProvider =
     Provider<CustomerBookingRepository>(
       (ref) =>
           CustomerBookingRepository(client: ref.watch(apiClientProvider)),
+    );
+
+final customerFclQuoteRepositoryProvider =
+    Provider<CustomerFclQuoteRepository>(
+      (ref) => CustomerFclQuoteRepository(client: ref.watch(apiClientProvider)),
+    );
+
+final customerSourcingRepositoryProvider =
+    Provider<CustomerSourcingRepository>(
+      (ref) => CustomerSourcingRepository(client: ref.watch(apiClientProvider)),
     );
 
 final customerShipmentsRepositoryProvider =
