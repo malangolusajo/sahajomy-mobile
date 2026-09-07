@@ -3,15 +3,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../app/theme.dart';
 import '../../../core/ui/core_flow_ui.dart';
-import '../../../core/ui/sahajomy_ui.dart';
 import '../domain/otp_delivery.dart';
 import '../../../core/network/api_exception.dart';
 import '../../../core/providers.dart';
 import '../../../features/auth/data/auth_repository.dart';
 import '../domain/auth_input.dart';
-import '../../public_services/presentation/official_information_page.dart';
 
 class SignInPage extends ConsumerStatefulWidget {
   const SignInPage({super.key});
@@ -95,60 +92,58 @@ class _SignInPageState extends ConsumerState<SignInPage> {
         borderRadius: BorderRadius.circular(26),
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(24),
+          height: 260,
           decoration: const BoxDecoration(
             color: Color(0xFF0B2A40),
           ),
           child: Stack(
+            fit: StackFit.expand,
             children: [
-              Positioned(
-                top: -80,
-                right: -60,
-                child: Container(
-                  width: 220,
-                  height: 220,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: const Color(0xFF1FAD77).withValues(alpha: 0.18),
+              Image.asset(
+                'assets/branding/warehouse-hero.jpg',
+                fit: BoxFit.cover,
+                errorBuilder: (_, _, _) => const SizedBox.shrink(),
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      const Color(0xFF0B2A40).withValues(alpha: 0.3),
+                      const Color(0xFF0B2A40).withValues(alpha: 0.85),
+                    ],
                   ),
                 ),
               ),
-              Positioned(
-                bottom: -100,
-                left: -40,
-                child: Container(
-                  width: 180,
-                  height: 180,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: const Color(0xFF0F3D5E).withValues(alpha: 0.5),
-                  ),
+              const Positioned(
+                left: 24,
+                right: 24,
+                bottom: 24,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Ship, source, and track\ngoods from China to Africa',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        height: 1.2,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      'Get a China warehouse address, source products, book sea or air cargo, and track shipments from China to Africa with Sahajomy.',
+                      style: TextStyle(
+                        color: Color(0xFFD1DEE6),
+                        fontSize: 13,
+                        height: 1.5,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SahajomyBrandMark(size: 44, showShadow: false),
-                  const SizedBox(height: 20),
-                  const Text(
-                    'Ship, source, and track\ngoods from China to Africa',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      height: 1.2,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    'Get a China warehouse address, source products, book sea or air cargo, and track shipments from China to Africa with Sahajomy.',
-                    style: TextStyle(
-                      color: Color(0xFFD1DEE6),
-                      fontSize: 14,
-                      height: 1.55,
-                    ),
-                  ),
-                ],
               ),
             ],
           ),
@@ -221,13 +216,6 @@ class _SignInPageState extends ConsumerState<SignInPage> {
       TextButton(
         onPressed: _isSubmitting ? null : () => context.push('/register'),
         child: const Text('Create an account'),
-      ),
-      const SahajomyLegalLinks(),
-      const SizedBox(height: 8),
-      Text(
-        '\u00a9 ${DateTime.now().year} Sahajomy. All rights reserved.',
-        textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 11, color: appMuted),
       ),
     ],
   );

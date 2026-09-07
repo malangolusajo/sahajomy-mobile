@@ -58,6 +58,7 @@ flutter:
   assets:
     - assets/branding/sahajomy-logo.svg
     - assets/branding/sahajomy-app-icon.png
+    - assets/branding/warehouse-hero.jpg
 
 flutter_native_splash:
   color: "#060707"

@@ -9,7 +9,6 @@ import '../../../core/ui/core_flow_ui.dart';
 import '../domain/otp_delivery.dart';
 import '../data/auth_repository.dart';
 import '../domain/auth_input.dart';
-import '../../public_services/presentation/official_information_page.dart';
 
 class RegistrationPage extends ConsumerStatefulWidget {
   const RegistrationPage({super.key});
@@ -168,7 +167,6 @@ class _RegistrationPageState extends ConsumerState<RegistrationPage> {
         child: Text(_isSubmitting ? 'Sending code…' : 'Send verification code'),
       ),
       const SizedBox(height: 14),
-      const SahajomyLegalLinks(),
       TextButton(
         onPressed: _isSubmitting ? null : () => context.go('/sign-in'),
         child: const Text('Already have an account? Sign in'),

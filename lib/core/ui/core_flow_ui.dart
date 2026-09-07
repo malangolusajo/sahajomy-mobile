@@ -103,7 +103,7 @@ class CoreFlowPage extends StatelessWidget {
               ? MediaQuery.textScalerOf(context).scale(20) * 2 + 24
               : 64,
           titleSpacing: 6,
-          centerTitle: false,
+          centerTitle: !canGoBack,
           automaticallyImplyLeading: false,
           leadingWidth: canGoBack ? 64 : 20,
           leading: canGoBack
