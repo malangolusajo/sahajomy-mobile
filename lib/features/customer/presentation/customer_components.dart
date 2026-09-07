@@ -15,6 +15,8 @@ class CustomerScaffold extends StatelessWidget {
     this.bottomNavigationBar,
     this.backgroundColor,
     this.padding,
+    this.eyebrow = 'CUSTOMER',
+    this.notificationRoute = '/customer/notifications',
   });
 
   final String title;
@@ -25,6 +27,8 @@ class CustomerScaffold extends StatelessWidget {
   final Widget? bottomNavigationBar;
   final Color? backgroundColor;
   final EdgeInsets? padding;
+  final String eyebrow;
+  final String notificationRoute;
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -42,9 +46,9 @@ class CustomerScaffold extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text(
-            'CUSTOMER',
-            style: TextStyle(
+          Text(
+            eyebrow,
+            style: const TextStyle(
               color: brandCoral,
               fontSize: 10,
               fontWeight: FontWeight.w800,
@@ -69,7 +73,7 @@ class CustomerScaffold extends StatelessWidget {
           [
             IconButton(
               tooltip: 'Notifications',
-              onPressed: () => context.push('/customer/notifications'),
+              onPressed: () => context.push(notificationRoute),
               icon: Stack(
                 clipBehavior: Clip.none,
                 children: [

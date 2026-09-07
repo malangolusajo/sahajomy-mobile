@@ -4,6 +4,7 @@ import '../core/providers.dart';
 import 'cargo_admin/containers/data/cargo_admin_containers_repository.dart';
 import 'cargo_admin/dashboard/data/cargo_admin_dashboard_repository.dart';
 import 'cargo_admin/documents/data/cargo_admin_documents_repository.dart';
+import 'cargo_admin/operations/data/cargo_operations_repository.dart';
 import 'cargo_admin/warehouse_automation/data/warehouse_automation_repository.dart';
 import 'booking/data/guided_booking_repository.dart';
 import 'customer/air_cargo/data/customer_air_cargo_repository.dart';
@@ -48,6 +49,10 @@ final warehouseAutomationRepositoryProvider =
       (ref) =>
           WarehouseAutomationRepository(client: ref.watch(apiClientProvider)),
     );
+
+final cargoOperationsRepositoryProvider = Provider<CargoOperationsRepository>(
+  (ref) => CargoOperationsRepository(client: ref.watch(apiClientProvider)),
+);
 
 final customerAirCargoRepositoryProvider = Provider<CustomerAirCargoRepository>(
   (ref) => CustomerAirCargoRepository(client: ref.watch(apiClientProvider)),
