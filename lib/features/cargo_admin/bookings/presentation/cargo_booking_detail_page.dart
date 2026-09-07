@@ -53,8 +53,8 @@ class _CargoBookingDetailPageState extends ConsumerState<CargoBookingDetailPage>
           children: [
             CustomerHeroCard(
               eyebrow: 'Sea cargo',
-              title: b['reference'] ?? b['id'] ?? 'SAH-XXXX',
-              subtitle: '${b['customer_name'] ?? 'Customer'} · ${b['carton_count'] ?? b['cbm_reserved'] ?? 0} ${(b['cargo_mode'] ?? 'sea') == 'air' ? 'kg' : 'cartons'}',
+              title: b['shipping_mark'] ?? b['id'] ?? 'SAH-XXXX',
+              subtitle: '${b['customer_display_name'] ?? b['customer_name'] ?? 'Customer'} · ${b['carton_count'] ?? b['cbm_booked'] ?? 0} ${(b['cargo_type'] ?? 'sea') == 'air' ? 'kg' : 'cartons'}',
             ),
             const SizedBox(height: 20),
             _panel([
@@ -62,7 +62,7 @@ class _CargoBookingDetailPageState extends ConsumerState<CargoBookingDetailPage>
               const Divider(height: 1, indent: 60),
               _row('PM', 'Payment status', paymentStatus.toString().replaceAll('_', ' '), appMuted),
               const Divider(height: 1, indent: 60),
-              _row('CB', 'CBM booked', '${b['cbm_reserved'] ?? 0}', appMuted),
+              _row('CB', 'CBM booked', '${b['cbm_booked'] ?? 0}', appMuted),
               const Divider(height: 1, indent: 60),
               _row('LC', 'Logistics charge', '${b['currency'] ?? 'TZS'} ${b['logistics_charge'] ?? 0}', appMuted),
             ]),

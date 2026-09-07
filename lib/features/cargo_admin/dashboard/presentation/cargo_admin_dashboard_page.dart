@@ -60,7 +60,7 @@ class _CargoAdminDashboardPageState
               ),
               _Metric(
                 label: 'Bookings',
-                value: dashboard['total_reservations'],
+                value: dashboard['total_sea_bookings'],
               ),
               _Metric(
                 label: 'Pending payments',
@@ -95,7 +95,7 @@ class _CargoAdminDashboardPageState
               leading: const Icon(Icons.inventory_2_outlined),
               title: const Text('Booked capacity'),
               subtitle: Text(
-                '${dashboard['total_reserved_cbm'] ?? 0} CBM booked across your containers.',
+                '${dashboard['total_booked_cbm'] ?? 0} CBM booked across your containers.',
               ),
             ),
           ),

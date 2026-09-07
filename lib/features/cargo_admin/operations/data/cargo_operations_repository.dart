@@ -15,19 +15,34 @@ class CargoOperationsRepository {
   Future<List<Map<String, dynamic>>> notifications() =>
       client.getList('cargo_admin/notifications');
 
-  // ── Reservations (bookings) ────────────────────────────
+  // ── Sea bookings (backend term; UI labels them 'Bookings') ──
   Future<List<Map<String, dynamic>>> listReservations({
     String? status,
     String? containerId,
-  }) {
+  }) async {
     final params = <String, String>{};
     if (status != null) params['status'] = status;
     if (containerId != null) params['container_id'] = containerId;
-    return client.getList('cargo_admin/reservations', queryParameters: params);
+    final res = await client.getObject(
+      'cargo_admin/sea-bookings',
+      queryParameters: params,
+    );
+    return (res['sea_bookings'] as List<dynamic>? ?? [])
+        .cast<Map<String, dynamic>>();
   }
 
-  Future<Map<String, dynamic>> getReservation(String id) =>
-      client.getObject('cargo_admin/reservations/$id');
+  Future<Map<String, dynamic>> getReservation(String id) async {
+    final res = await client.getObject(
+      'cargo_admin/sea-bookings',
+      queryParameters: {'search': id},
+    );
+    final list = (res['sea_bookings'] as List<dynamic>? ?? [])
+        .cast<Map<String, dynamic>>();
+    return list.firstWhere(
+      (b) => b['id'] == id,
+      orElse: () => list.isNotEmpty ? list.first : <String, dynamic>{},
+    );
+  }
 
   Future<Map<String, dynamic>> updateReservationStatus(
     String id, {
@@ -35,31 +50,31 @@ class CargoOperationsRepository {
     String? reason,
   }) =>
       client.patch<Map<String, dynamic>>(
-        'cargo_admin/reservations/$id/status',
+        'cargo_admin/sea-bookings/$id/status',
         data: {'goods_status': goodsStatus, if (reason != null) 'reason': reason},
       );
 
   Future<Map<String, dynamic>> holdGoods(String id, {required String reason}) =>
       client.post<Map<String, dynamic>>(
-        'cargo_admin/reservations/$id/hold',
+        'cargo_admin/sea-bookings/$id/hold',
         data: {'hold_reason': reason},
       );
 
   Future<Map<String, dynamic>> releaseGoods(String id, {String? reason}) =>
       client.post<Map<String, dynamic>>(
-        'cargo_admin/reservations/$id/release',
+        'cargo_admin/sea-bookings/$id/release',
         data: {if (reason != null) 'reason': reason},
       );
 
   Future<Map<String, dynamic>> collectGoods(String id, {String? reason}) =>
       client.post<Map<String, dynamic>>(
-        'cargo_admin/reservations/$id/collect',
+        'cargo_admin/sea-bookings/$id/collect',
         data: {if (reason != null) 'reason': reason},
       );
 
   Future<Map<String, dynamic>> confirmPayment(String id, {String? reason}) =>
       client.post<Map<String, dynamic>>(
-        'cargo_admin/reservations/$id/confirm-payment',
+        'cargo_admin/sea-bookings/$id/confirm-payment',
         data: {if (reason != null) 'reason': reason},
       );
 
@@ -124,7 +139,7 @@ class CargoOperationsRepository {
       );
 
   Future<List<Map<String, dynamic>>> containerReservations(String id) =>
-      client.getList('cargo_admin/containers/$id/reservations');
+      client.getList('cargo_admin/containers/$id/sea-bookings');
 
   Future<Map<String, dynamic>> departContainer(String id) =>
       client.post<Map<String, dynamic>>('cargo_admin/containers/$id/depart', data: {});
@@ -153,7 +168,7 @@ class CargoOperationsRepository {
     bool sendToCustomer = true,
   }) =>
       client.post<Map<String, dynamic>>(
-        'cargo_admin/reservations/$reservationId/generate-invoice',
+        'cargo_admin/sea-bookings/$reservationId/generate-invoice',
         data: {
           if (notes != null) 'notes': notes,
           if (dueDate != null) 'due_date': dueDate.toIso8601String(),
@@ -168,7 +183,7 @@ class CargoOperationsRepository {
     String? paymentReference,
   }) =>
       client.post<Map<String, dynamic>>(
-        'cargo_admin/reservations/$reservationId/generate-receipt',
+        'cargo_admin/sea-bookings/$reservationId/generate-receipt',
         data: {
           if (notes != null) 'notes': notes,
           if (paymentReference != null) 'payment_reference': paymentReference,
@@ -176,10 +191,10 @@ class CargoOperationsRepository {
       );
 
   Future<List<Map<String, dynamic>>> reservationInvoices(String id) =>
-      client.getList('cargo_admin/reservations/$id/invoices');
+      client.getList('cargo_admin/sea-bookings/$id/invoices');
 
   Future<List<Map<String, dynamic>>> reservationReceipts(String id) =>
-      client.getList('cargo_admin/reservations/$id/receipts');
+      client.getList('cargo_admin/sea-bookings/$id/receipts');
 
   // ── Air departure schedules ────────────────────────────
   Future<List<Map<String, dynamic>>> listAirSchedules() =>
@@ -203,8 +218,13 @@ class CargoOperationsRepository {
   Future<List<Map<String, dynamic>>> listAirBookings() =>
       client.getList('cargo_admin/express-air-cargo/bookings');
 
-  Future<Map<String, dynamic>> getAirBooking(String id) =>
-      client.getObject('cargo_admin/express-air-cargo/$id');
+  Future<Map<String, dynamic>> getAirBooking(String id) async {
+    final list = await listAirBookings();
+    return list.firstWhere(
+      (b) => b['id'] == id,
+      orElse: () => list.isNotEmpty ? list.first : <String, dynamic>{},
+    );
+  }
 
   Future<Map<String, dynamic>> updateAirBookingStatus(
     String id, {

@@ -137,7 +137,7 @@ class _CargoContainersPageState extends ConsumerState<CargoContainersPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('${c['reserved_cbm'] ?? 0} / ${c['max_cbm'] ?? 0} CBM filled', style: const TextStyle(color: appMuted, fontSize: 12)),
+                Text('${c['booked_cbm'] ?? 0} / ${c['max_cbm'] ?? 0} CBM filled', style: const TextStyle(color: appMuted, fontSize: 12)),
                 Text('$fill%', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12)),
               ],
             ),

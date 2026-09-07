@@ -136,10 +136,10 @@ class _CargoBookingsPageState extends ConsumerState<CargoBookingsPage> {
   );
 
   Widget _bookingRow(Map<String, dynamic> r, int idx) {
-    final ref = r['reference'] ?? r['id'] ?? 'SAH-XXXX';
-    final customer = r['customer_name'] ?? r['customer']?['name'] ?? 'Customer';
-    final cartons = r['carton_count'] ?? r['cbm_reserved'] ?? '—';
-    final mode = r['cargo_mode'] ?? r['service_type'] ?? 'Sea cargo';
+    final ref = r['shipping_mark'] ?? r['id'] ?? 'SAH-XXXX';
+    final customer = r['customer_display_name'] ?? r['customer_name'] ?? r['customer']?['name'] ?? 'Customer';
+    final cartons = r['carton_count'] ?? r['cbm_booked'] ?? '—';
+    final mode = r['cargo_type'] ?? r['service_type'] ?? 'Sea cargo';
     final status = r['goods_status'] ?? r['status'] ?? 'pending';
     return InkWell(
       onTap: () => context.push('/cargo/bookings/${r['id']}'),

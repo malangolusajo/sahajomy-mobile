@@ -54,7 +54,7 @@ class _CargoContainerDetailPageState extends ConsumerState<CargoContainerDetailP
             Row(children: [
               Expanded(child: _metric('Max CBM', '${c['max_cbm'] ?? 0}')),
               const SizedBox(width: 12),
-              Expanded(child: _metric('Booked', '${c['reserved_cbm'] ?? 0}')),
+              Expanded(child: _metric('Booked', '${c['booked_cbm'] ?? 0}')),
               const SizedBox(width: 12),
               Expanded(child: _metric('Price/CBM', '${c['price_per_cbm'] ?? 0}')),
             ]),
@@ -121,7 +121,7 @@ class _CargoContainerDetailPageState extends ConsumerState<CargoContainerDetailP
       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(r['shipping_mark'] ?? r['id'] ?? 'Booking', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
         const SizedBox(height: 2),
-        Text('${r['cbm_reserved'] ?? 0} CBM · ${r['goods_status'] ?? 'pending'}', style: const TextStyle(color: appMuted, fontSize: 13)),
+        Text('${r['cbm_booked'] ?? 0} CBM · ${r['goods_status'] ?? 'pending'}', style: const TextStyle(color: appMuted, fontSize: 13)),
       ])),
       CustomerStatusPill(label: (r['goods_status'] ?? 'pending').toString().replaceAll('_', ' ')),
     ]),

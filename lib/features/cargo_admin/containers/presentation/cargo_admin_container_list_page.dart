@@ -88,7 +88,7 @@ class _ContainerCard extends StatelessWidget {
             LinearProgressIndicator(value: value),
             const SizedBox(height: 6),
             Text(
-              '${container['reserved_cbm'] ?? 0} / ${container['max_cbm'] ?? 0} CBM booked | ${container['available_cbm'] ?? 0} CBM free',
+              '${container['booked_cbm'] ?? 0} / ${container['max_cbm'] ?? 0} CBM booked | ${container['available_cbm'] ?? 0} CBM free',
             ),
           ],
         ),

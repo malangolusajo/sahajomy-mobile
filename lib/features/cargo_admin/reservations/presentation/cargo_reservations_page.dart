@@ -68,9 +68,9 @@ class _CargoReservationsPageState extends ConsumerState<CargoReservationsPage> {
         Container(width: 40, height: 40, alignment: Alignment.center, decoration: BoxDecoration(color: (idx <= 1 ? brandCoral : appMuted).withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)), child: Text('R$idx', style: TextStyle(color: idx <= 1 ? brandCoral : appMuted, fontWeight: FontWeight.w800))),
         const SizedBox(width: 14),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(r['reference'] ?? r['shipping_mark'] ?? 'Booking', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
+          Text(r['shipping_mark'] ?? r['id'] ?? 'Booking', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
           const SizedBox(height: 2),
-          Text('${r['cbm_reserved'] ?? 0} CBM · ${r['goods_status'] ?? 'pending'}', style: const TextStyle(color: appMuted, fontSize: 13)),
+          Text('${r['cbm_booked'] ?? 0} CBM · ${r['goods_status'] ?? 'pending'}', style: const TextStyle(color: appMuted, fontSize: 13)),
         ])),
         CustomerStatusPill(label: (r['goods_status'] ?? r['status'] ?? 'pending').toString().replaceAll('_', ' ')),
       ]),
@@ -109,7 +109,7 @@ class _CargoReservationDetailPageState extends ConsumerState<CargoReservationDet
         return ListView(
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
           children: [
-            CustomerHeroCard(eyebrow: r['cargo_mode'] ?? 'sea cargo', title: r['reference'] ?? r['shipping_mark'] ?? 'Booking', subtitle: '${r['customer_name'] ?? 'Customer'} · ${r['cbm_reserved'] ?? 0} CBM'),
+            CustomerHeroCard(eyebrow: r['cargo_type'] ?? 'Sea Cargo', title: r['shipping_mark'] ?? r['id'] ?? 'Booking', subtitle: '${r['customer_display_name'] ?? 'Customer'} · ${r['cbm_booked'] ?? 0} CBM'),
             const SizedBox(height: 20),
             _panel([
               _kv('Goods status', (r['goods_status'] ?? 'pending').toString().replaceAll('_', ' ')),
@@ -118,7 +118,7 @@ class _CargoReservationDetailPageState extends ConsumerState<CargoReservationDet
               const Divider(),
               _kv('Logistics charge', '${r['currency'] ?? 'TZS'} ${r['logistics_charge'] ?? 0}'),
               const Divider(),
-              _kv('CBM booked', '${r['cbm_reserved'] ?? 0}'),
+              _kv('CBM booked', '${r['cbm_booked'] ?? 0}'),
             ]),
             const SizedBox(height: 24),
             FilledButton.icon(onPressed: () => context.push('/cargo/reservations/${widget.reservationId}/packing-list'), icon: const Icon(Icons.list_alt), label: const Text('Packing list')),
