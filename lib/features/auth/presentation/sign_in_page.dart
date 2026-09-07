@@ -87,7 +87,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
   @override
   Widget build(BuildContext context) => CoreFlowPage(
     title: 'Welcome',
-    onBack: () => context.go('/welcome'),
+    canGoBack: false,
     children: [
       const CoreHero(
         eyebrow: 'SAHAJOMY',

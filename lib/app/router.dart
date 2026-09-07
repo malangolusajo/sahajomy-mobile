@@ -16,7 +16,6 @@ import '../features/workspaces/presentation/branch_selection_page.dart';
 import '../features/workspaces/presentation/checking_workspace_page.dart';
 import '../features/auth/presentation/registration_page.dart';
 import '../features/auth/presentation/sign_in_page.dart';
-import '../features/auth/presentation/welcome_page.dart';
 import '../features/cargo_admin/presentation/cargo_admin_shell.dart';
 import '../features/cargo_admin/bookings/presentation/cargo_booking_detail_page.dart';
 import '../features/cargo_admin/containers/presentation/cargo_containers_page.dart';
@@ -183,7 +182,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/welcome',
-        builder: (context, state) => const WelcomePage(),
+        redirect: (context, state) => '/sign-in',
       ),
       GoRoute(
         path: '/sign-in',
