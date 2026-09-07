@@ -9,7 +9,7 @@ const { chromium } = requireFromFrontend("playwright");
 
 const files = [
   "customer-search-container.html",
-  "customer-reserve-cbm.html",
+  "customer-book-cbm.html",
   "customer-booking-confirmation.html",
   "customer-express-air-cargo.html",
   "agent-containers.html",

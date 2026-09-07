@@ -18,7 +18,7 @@ foreach ($line in Get-Content -LiteralPath $inventoryPath) {
 $extraRoutes = [ordered]@{
   '/screens' = $null
   '/customer/notifications' = 'customer-notifications.html'
-  '/customer/reservations' = 'customer-reservations.html'
+  '/customer/reservations' = 'customer-sea-bookings.html'
   '/customer/profile' = 'customer-profile.html'
   '/customer/documents' = 'customer-documents.html'
   '/customer/track-shipment' = 'customer-shipment-tracking.html'

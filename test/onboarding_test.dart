@@ -44,12 +44,24 @@ void main() {
     await tester.drag(find.byType(PageView), const Offset(-350, 0));
     await tester.pumpAndSettle();
     expect(
-      find.text('No more wondering where your shipment is.'),
+      find.text('Know what’s happening without chasing updates.'),
+      findsOneWidget,
+    );
+    expect(find.text('Documents & packing lists'), findsOneWidget);
+    expect(find.text('Status alerts'), findsOneWidget);
+    expect(find.text('SAHAJOMY'), findsNothing);
+    expect(tester.takeException(), isNull);
+
+    await tester.drag(find.byType(PageView), const Offset(-350, 0));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('Your parcels are ready. Pickup stays simple.'),
       findsOneWidget,
     );
     expect(find.text('Warehouse parcels'), findsOneWidget);
-    expect(find.text('Documents & packing lists'), findsOneWidget);
-    expect(find.text('Status alerts'), findsOneWidget);
+    expect(find.text('Multi-parcel requests'), findsOneWidget);
+    expect(find.text('Secure QR & PIN'), findsOneWidget);
+    expect(find.text('Get started'), findsOneWidget);
     expect(find.text('SAHAJOMY'), findsNothing);
     expect(tester.takeException(), isNull);
   });

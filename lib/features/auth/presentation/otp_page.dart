@@ -68,12 +68,19 @@ class _OtpPageState extends ConsumerState<OtpPage> {
         if (mounted) context.go('/sign-in');
         return;
       }
-      await ref.read(authRepositoryProvider).sendOtp(phoneNumber: phoneNumber);
+      await ref
+          .read(authRepositoryProvider)
+          .sendOtp(
+            phoneNumber: phoneNumber,
+            email: ref.read(pendingEmailProvider),
+          );
       if (!mounted) return;
       _startResendTimer();
       setState(() => _isResending = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('A new verification code was sent.')),
+        const SnackBar(
+          content: Text('A new verification code was sent to your email.'),
+        ),
       );
     } on ApiException catch (error) {
       if (mounted) {
@@ -95,7 +102,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
   Future<void> _verify() async {
     if (!isValidOtp(_codeController.text.trim())) {
       setState(
-        () => _errorMessage = 'Enter the verification code we sent you.',
+        () => _errorMessage = 'Enter the six-digit code from your email.',
       );
       return;
     }
@@ -131,6 +138,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
       );
       ref.read(pendingDestinationProvider.notifier).state = null;
       ref.read(pendingPhoneNumberProvider.notifier).state = null;
+      ref.read(pendingEmailProvider.notifier).state = null;
       ref.read(pendingMfaChallengeProvider.notifier).state = null;
       ref.invalidate(workspaceProvider);
       ref.invalidate(apiClientProvider);
@@ -161,7 +169,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: const SahajomyScreenHeader(title: 'Verify your number'),
+    appBar: const SahajomyScreenHeader(title: 'Check your email'),
     body: SafeArea(
       top: false,
       child: ListView(
@@ -175,30 +183,19 @@ class _OtpPageState extends ConsumerState<OtpPage> {
               color: const Color(0xFFFFE9E3),
               borderRadius: BorderRadius.circular(18),
             ),
-            child: const Icon(Icons.sms_outlined, color: brandCoral, size: 28),
+            child: const Icon(
+              Icons.email_outlined,
+              color: brandCoral,
+              size: 28,
+            ),
           ),
           const SizedBox(height: 26),
           Text(
-            'Enter verification code',
+            'Enter the code from your email',
             style: Theme.of(context).textTheme.headlineMedium,
           ),
           const SizedBox(height: 10),
-          Text.rich(
-            TextSpan(
-              text: 'We sent a six-digit code to ',
-              children: [
-                TextSpan(
-                  text:
-                      ref.watch(pendingPhoneNumberProvider) ??
-                      'your mobile number',
-                  style: const TextStyle(
-                    color: appInk,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          Text(_deliveryMessage(ref)),
           const SizedBox(height: 30),
           TextField(
             controller: _codeController,
@@ -232,7 +229,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
                     ? 'Sending a new code…'
                     : _resendSeconds > 0
                     ? 'Resend available in 0:${_resendSeconds.toString().padLeft(2, '0')}'
-                    : 'Resend verification code',
+                    : 'Resend code by email',
               ),
             ),
           ),
@@ -270,4 +267,15 @@ class _OtpPageState extends ConsumerState<OtpPage> {
       ),
     ),
   );
+
+  String _deliveryMessage(WidgetRef ref) {
+    final email = ref.watch(pendingEmailProvider);
+    if (email != null && email.isNotEmpty) {
+      return 'We sent a six-digit code to $email.';
+    }
+    final phone = ref.watch(pendingPhoneNumberProvider);
+    return phone == null
+        ? 'We sent a six-digit code to your registered email.'
+        : 'We sent a six-digit code to the email address linked to $phone.';
+  }
 }

@@ -1,0 +1,1882 @@
+[
+  {
+    "screen": "Add a batch product",
+    "preview": "agent-add-product.html",
+    "role": "Sourcing Agent",
+    "routes": [],
+    "implementation": "AgentAddProductPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Agizisha orders",
+    "preview": "agent-agizisha-orders.html",
+    "role": "Sourcing Agent",
+    "routes": [
+      "/agent/agizisha-orders"
+    ],
+    "implementation": "AgentAgizishaOrdersPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "sourcing_agent/agizisha-orders"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "August electronics batch",
+    "preview": "agent-batch-details.html",
+    "role": "Sourcing Agent",
+    "routes": [
+      "/agent/batches/:batchId"
+    ],
+    "implementation": "AgentBatchDetailsPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Batch financials",
+    "preview": "agent-batch-financials.html",
+    "role": "Sourcing Agent",
+    "routes": [
+      "/agent/batches/:batchId/financials"
+    ],
+    "implementation": "AgentBatchFinancialsPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Sourcing batches",
+    "preview": "agent-batches.html",
+    "role": "Sourcing Agent",
+    "routes": [
+      "/agent/batches"
+    ],
+    "implementation": "AgentBatchesPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Container details",
+    "preview": "agent-container-detail.html",
+    "role": "Sourcing Agent",
+    "routes": [
+      "/agent/containers/:containerId"
+    ],
+    "implementation": "AgentContainerDetailPreviewPage",
+    "category": "D \u2014 PLACEHOLDER / FUTURE",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Book container space",
+    "preview": "agent-containers.html",
+    "role": "Sourcing Agent",
+    "routes": [
+      "/agent/containers"
+    ],
+    "implementation": "AgentContainersPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "sourcing_agent/containers"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Open a sourcing batch",
+    "preview": "agent-create-batch.html",
+    "role": "Sourcing Agent",
+    "routes": [
+      "/agent/batches/new"
+    ],
+    "implementation": "AgentCreateBatchPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Create packing list",
+    "preview": "agent-create-packing-list.html",
+    "role": "Sourcing Agent",
+    "routes": [
+      "/agent/batches/:batchId/packing-lists/new"
+    ],
+    "implementation": "AgentCreatePackingListPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Your sourcing desk",
+    "preview": "agent-dashboard.html",
+    "role": "Sourcing Agent",
+    "routes": [
+      "/agent/dashboard"
+    ],
+    "implementation": "AgentDashboardPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Express Air Cargo",
+    "preview": "agent-express-air-cargo.html",
+    "role": "Sourcing Agent",
+    "routes": [
+      "/agent/express-air-cargo"
+    ],
+    "implementation": "AgentExpressAirCargoPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "sourcing_agent/express-air-cargo/bookings"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Financials",
+    "preview": "agent-financials.html",
+    "role": "Sourcing Agent",
+    "routes": [
+      "/agent/financials"
+    ],
+    "implementation": "AgentFinancialsPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "sourcing_agent/financials"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Generate customer orders",
+    "preview": "agent-generate-orders.html",
+    "role": "Sourcing Agent",
+    "routes": [],
+    "implementation": "AgentGenerateOrdersPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Batch activity",
+    "preview": "agent-notifications.html",
+    "role": "Sourcing Agent",
+    "routes": [],
+    "implementation": "AgentNotificationsPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Order details",
+    "preview": "agent-order-detail.html",
+    "role": "Sourcing Agent",
+    "routes": [
+      "/agent/orders/:orderId"
+    ],
+    "implementation": "AgentOrderDetailPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Packing list details",
+    "preview": "agent-packing-list-detail.html",
+    "role": "Sourcing Agent",
+    "routes": [
+      "/agent/packing-lists/:packingListId"
+    ],
+    "implementation": "AgentPackingListDetailPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Packing lists",
+    "preview": "agent-packing-lists.html",
+    "role": "Sourcing Agent",
+    "routes": [
+      "/agent/packing-lists"
+    ],
+    "implementation": "AgentPackingListsPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Approval pending",
+    "preview": "agent-pending-approval.html",
+    "role": "Sourcing Agent",
+    "routes": [
+      "/agent/pending-approval"
+    ],
+    "implementation": "AgentPendingApprovalPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Product management",
+    "preview": "agent-product-management.html",
+    "role": "Sourcing Agent",
+    "routes": [],
+    "implementation": "AgentProductManagementPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "My bookings",
+    "preview": "agent-reservations.html",
+    "role": "Sourcing Agent",
+    "routes": [],
+    "implementation": "AgentReservationsPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "sourcing_agent/sea-bookings"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Public storefront",
+    "preview": "agent-storefront.html",
+    "role": "Sourcing Agent",
+    "routes": [
+      "/agent/agizisha-storefront"
+    ],
+    "implementation": "AgentStorefrontPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "sourcing_agent/public-profile"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Track shipments",
+    "preview": "agent-track-shipment.html",
+    "role": "Sourcing Agent",
+    "routes": [
+      "/agent/track-shipments"
+    ],
+    "implementation": "AgentTrackShipmentPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "tracking/agent/shipment_orders"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Container management",
+    "preview": "cargo-admin-container-management.html",
+    "role": "Cargo Admin",
+    "routes": [
+      "/cargo/containers/new",
+      "/cargo/containers"
+    ],
+    "implementation": "CargoAdminContainerManagementPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Customer management",
+    "preview": "cargo-admin-customer-management.html",
+    "role": "Cargo Admin",
+    "routes": [],
+    "implementation": "CargoAdminCustomerManagementPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "cargo_admin/customers"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Today\u2019s operations",
+    "preview": "cargo-admin-dashboard.html",
+    "role": "Cargo Admin",
+    "routes": [
+      "/cargo/dashboard"
+    ],
+    "implementation": "CargoAdminDashboardPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Cargo documentation",
+    "preview": "cargo-admin-documentation-workspace.html",
+    "role": "Cargo Admin",
+    "routes": [
+      "/cargo/documentationworkspace"
+    ],
+    "implementation": "CargoAdminDocumentationWorkspacePreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Express Air Cargo",
+    "preview": "cargo-admin-express-air-cargo.html",
+    "role": "Cargo Admin",
+    "routes": [
+      "/cargo/express-air-cargo"
+    ],
+    "implementation": "CargoAdminExpressAirCargoPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "cargo_admin/express-air-cargo/bookings"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Full-container requests",
+    "preview": "cargo-admin-fcl-requests.html",
+    "role": "Cargo Admin",
+    "routes": [
+      "/cargo/fcl-requests"
+    ],
+    "implementation": "CargoAdminFclRequestsPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "cargo_admin/fcl-requests"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Manual cargo intake",
+    "preview": "cargo-admin-manual-intake.html",
+    "role": "Cargo Admin",
+    "routes": [],
+    "implementation": "CargoAdminManualIntakePreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Operational alerts",
+    "preview": "cargo-admin-notifications.html",
+    "role": "Cargo Admin",
+    "routes": [],
+    "implementation": "CargoAdminNotificationsPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "cargo_admin/notifications"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Consolidated packing lists",
+    "preview": "cargo-admin-packing-lists.html",
+    "role": "Cargo Admin",
+    "routes": [],
+    "implementation": "CargoAdminPackingListsPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Receipts and invoices",
+    "preview": "cargo-admin-receipts.html",
+    "role": "Cargo Admin",
+    "routes": [
+      "/cargo/receipts"
+    ],
+    "implementation": "CargoAdminReceiptsPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Bookings",
+    "preview": "cargo-admin-reservations.html",
+    "role": "Cargo Admin",
+    "routes": [],
+    "implementation": "CargoAdminReservationsPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "cargo_admin/sea-bookings"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Shipment orders",
+    "preview": "cargo-admin-shipment-orders.html",
+    "role": "Cargo Admin",
+    "routes": [
+      "/cargo/shipment-orders"
+    ],
+    "implementation": "CargoAdminShipmentOrdersPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "cargo_admin/shipment-orders"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Track a shipment",
+    "preview": "cargo-admin-track-shipment.html",
+    "role": "Cargo Admin",
+    "routes": [
+      "/cargo/track-shipments"
+    ],
+    "implementation": "CargoAdminTrackShipmentPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "tracking/admin/shipment_orders"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Warehouse automation",
+    "preview": "cargo-admin-warehouse-automation.html",
+    "role": "Cargo Admin",
+    "routes": [],
+    "implementation": "CargoAdminWarehouseAutomationPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Manage warehouses",
+    "preview": "cargo-admin-warehouses.html",
+    "role": "Cargo Admin",
+    "routes": [
+      "/cargo/warehouses"
+    ],
+    "implementation": "CargoAdminWarehousesPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "cargo_admin/warehouses"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Agizisha",
+    "preview": "customer-agizisha.html",
+    "role": "Customer",
+    "routes": [
+      "/customer/agizisha"
+    ],
+    "implementation": "CustomerAgizishaPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Space booked",
+    "preview": "customer-booking-confirmation.html",
+    "role": "Customer",
+    "routes": [],
+    "implementation": "CustomerBookingConfirmationPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "My China addresses",
+    "preview": "customer-china-addresses.html",
+    "role": "Customer",
+    "routes": [
+      "/customer/china-addresses"
+    ],
+    "implementation": "CustomerChinaAddressesPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Collection code",
+    "preview": "customer-collection-code.html",
+    "role": "Customer",
+    "routes": [],
+    "implementation": "CustomerCollectionCodePreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "customer/sea-bookings"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Dar es Salaam bound",
+    "preview": "customer-container-details.html",
+    "role": "Customer",
+    "routes": [],
+    "implementation": "CustomerContainerDetailsPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Good morning, Amina",
+    "preview": "customer-dashboard.html",
+    "role": "Customer",
+    "routes": [
+      "/customer/dashboard"
+    ],
+    "implementation": "CustomerDashboardPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Shipping documents",
+    "preview": "customer-documents.html",
+    "role": "Customer",
+    "routes": [
+      "/customer/documents"
+    ],
+    "implementation": "CustomerDocumentsPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Express Air Cargo",
+    "preview": "customer-express-air-cargo.html",
+    "role": "Customer",
+    "routes": [
+      "/customer/express-air-cargo"
+    ],
+    "implementation": "CustomerExpressAirCargoPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Welcome back",
+    "preview": "customer-login.html",
+    "role": "Customer",
+    "routes": [
+      "/login"
+    ],
+    "implementation": "CustomerLoginPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Updates for you",
+    "preview": "customer-notifications.html",
+    "role": "Customer",
+    "routes": [
+      "/customer/notifications"
+    ],
+    "implementation": "CustomerNotificationsPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Order #SO-10482",
+    "preview": "customer-order-details.html",
+    "role": "Customer",
+    "routes": [
+      "/customer/orders/:orderId"
+    ],
+    "implementation": "CustomerOrderDetailsPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "customer/orders"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Your orders",
+    "preview": "customer-orders.html",
+    "role": "Customer",
+    "routes": [
+      "/customer/orders"
+    ],
+    "implementation": "CustomerOrdersPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Enter verification code",
+    "preview": "customer-otp.html",
+    "role": "Customer",
+    "routes": [],
+    "implementation": "CustomerOtpPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Container packing list",
+    "preview": "customer-packing-list.html",
+    "role": "Customer",
+    "routes": [],
+    "implementation": "CustomerPackingListPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Amina Mussa",
+    "preview": "customer-profile.html",
+    "role": "Customer",
+    "routes": [
+      "/customer/profile"
+    ],
+    "implementation": "CustomerProfilePreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Start shipping with confidence",
+    "preview": "customer-register.html",
+    "role": "Customer",
+    "routes": [],
+    "implementation": "CustomerRegisterPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Booking details",
+    "preview": "customer-reservation-detail.html",
+    "role": "Customer",
+    "routes": [],
+    "implementation": "CustomerReservationDetailPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "My bookings",
+    "preview": "customer-reservations.html",
+    "role": "Customer",
+    "routes": [
+      "/customer/reservations"
+    ],
+    "implementation": "CustomerReservationsPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Book your CBM",
+    "preview": "customer-reserve-cbm.html",
+    "role": "Customer",
+    "routes": [],
+    "implementation": "CustomerReserveCbmPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Find container space",
+    "preview": "customer-search-container.html",
+    "role": "Customer",
+    "routes": [
+      "/customer/containers"
+    ],
+    "implementation": "CustomerSearchContainerPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Shipment order",
+    "preview": "customer-shipment-order-detail.html",
+    "role": "Customer",
+    "routes": [],
+    "implementation": "CustomerShipmentOrderDetailPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Shipment progress",
+    "preview": "customer-shipment-tracking.html",
+    "role": "Customer",
+    "routes": [
+      "/customer/track-shipments",
+      "/customer/track-shipment"
+    ],
+    "implementation": "CustomerShipmentTrackingPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Welcome to easier shipping",
+    "preview": "customer-splash.html",
+    "role": "Customer",
+    "routes": [],
+    "implementation": "CustomerSplashPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "My warehouse parcels",
+    "preview": "customer-warehouse-parcels.html",
+    "role": "Customer",
+    "routes": [
+      "/customer/warehouse-access/:token"
+    ],
+    "implementation": "CustomerWarehouseParcelsPreviewPage",
+    "category": "D \u2014 PLACEHOLDER / FUTURE",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "About Sahajomy",
+    "preview": "public-about.html",
+    "role": "Public",
+    "routes": [
+      "/about"
+    ],
+    "implementation": "PublicAboutPreviewPage",
+    "category": "C \u2014 PRESENTATIONAL",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Accessibility",
+    "preview": "public-accessibility.html",
+    "role": "Public",
+    "routes": [
+      "/accessibility"
+    ],
+    "implementation": "PublicAccessibilityPreviewPage",
+    "category": "D \u2014 PLACEHOLDER / FUTURE",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Agent storefront",
+    "preview": "public-agizisha-agent-storefront.html",
+    "role": "Public",
+    "routes": [
+      "/agizisha/agents/:handle"
+    ],
+    "implementation": "PublicAgizishaAgentStorefrontPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "public/agizisha/agents"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Agizisha marketplace",
+    "preview": "public-agizisha-catalogue.html",
+    "role": "Public",
+    "routes": [
+      "/agizisha"
+    ],
+    "implementation": "PublicAgizishaCataloguePreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "public/agizisha/products"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Product details",
+    "preview": "public-agizisha-product-detail.html",
+    "role": "Public",
+    "routes": [
+      "/agizisha/product/:id"
+    ],
+    "implementation": "PublicAgizishaProductDetailPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "public/agizisha/products"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Express Air Cargo",
+    "preview": "public-air-cargo.html",
+    "role": "Public",
+    "routes": [
+      "/air-cargo"
+    ],
+    "implementation": "PublicAirCargoPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "public/air-departure-schedules"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Contact Sahajomy",
+    "preview": "public-contact.html",
+    "role": "Public",
+    "routes": [
+      "/contact"
+    ],
+    "implementation": "PublicContactPreviewPage",
+    "category": "C \u2014 PRESENTATIONAL",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Available containers",
+    "preview": "public-containers.html",
+    "role": "Public",
+    "routes": [
+      "/public/containers"
+    ],
+    "implementation": "PublicContainersPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Cookie information",
+    "preview": "public-cookies.html",
+    "role": "Public",
+    "routes": [
+      "/cookies"
+    ],
+    "implementation": "PublicCookiesPreviewPage",
+    "category": "D \u2014 PLACEHOLDER / FUTURE",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Frequently asked questions",
+    "preview": "public-faq.html",
+    "role": "Public",
+    "routes": [
+      "/faq"
+    ],
+    "implementation": "PublicFaqPreviewPage",
+    "category": "C \u2014 PRESENTATIONAL",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Request an FCL quote",
+    "preview": "public-fcl-quote-request.html",
+    "role": "Public",
+    "routes": [
+      "/fcl-quote-request"
+    ],
+    "implementation": "PublicFclQuoteRequestPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "fcl-quote-request"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Share feedback",
+    "preview": "public-feedback.html",
+    "role": "Public",
+    "routes": [
+      "/feedback"
+    ],
+    "implementation": "PublicFeedbackPreviewPage",
+    "category": "D \u2014 PLACEHOLDER / FUTURE",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "How it works",
+    "preview": "public-how-it-works.html",
+    "role": "Public",
+    "routes": [
+      "/how-it-works"
+    ],
+    "implementation": "PublicHowItWorksPreviewPage",
+    "category": "C \u2014 PRESENTATIONAL",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Source, ship, and track",
+    "preview": "public-landing.html",
+    "role": "Public",
+    "routes": [
+      "/"
+    ],
+    "implementation": "PublicLandingPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "public/platform-stats"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Legal information",
+    "preview": "public-legal.html",
+    "role": "Public",
+    "routes": [
+      "/legal"
+    ],
+    "implementation": "PublicLegalPreviewPage",
+    "category": "D \u2014 PLACEHOLDER / FUTURE",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Pricing",
+    "preview": "public-pricing.html",
+    "role": "Public",
+    "routes": [
+      "/pricing"
+    ],
+    "implementation": "PublicPricingPreviewPage",
+    "category": "C \u2014 PRESENTATIONAL",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Privacy policy",
+    "preview": "public-privacy.html",
+    "role": "Public",
+    "routes": [
+      "/privacy"
+    ],
+    "implementation": "PublicPrivacyPreviewPage",
+    "category": "C \u2014 PRESENTATIONAL",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Verify a receipt",
+    "preview": "public-receipt-verification.html",
+    "role": "Public",
+    "routes": [
+      "/verify-receipt"
+    ],
+    "implementation": "PublicReceiptVerificationPreviewPage",
+    "category": "D \u2014 PLACEHOLDER / FUTURE",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Shared sourcing batch",
+    "preview": "public-shared-batch.html",
+    "role": "Public",
+    "routes": [
+      "/shared/:token"
+    ],
+    "implementation": "PublicSharedBatchPreviewPage",
+    "category": "D \u2014 PLACEHOLDER / FUTURE",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Sitemap",
+    "preview": "public-sitemap.html",
+    "role": "Public",
+    "routes": [
+      "/sitemap"
+    ],
+    "implementation": "PublicSitemapPreviewPage",
+    "category": "D \u2014 PLACEHOLDER / FUTURE",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Become a sourcing agent",
+    "preview": "public-sourcing-agent-registration.html",
+    "role": "Public",
+    "routes": [
+      "/sourcing-agent/register"
+    ],
+    "implementation": "PublicSourcingAgentRegistrationPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "public/sourcing-agents/register"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Support tickets",
+    "preview": "public-support-tickets.html",
+    "role": "Public",
+    "routes": [
+      "/support/tickets"
+    ],
+    "implementation": "PublicSupportTicketsPreviewPage",
+    "category": "D \u2014 PLACEHOLDER / FUTURE",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Support centre",
+    "preview": "public-support.html",
+    "role": "Public",
+    "routes": [
+      "/support"
+    ],
+    "implementation": "PublicSupportPreviewPage",
+    "category": "D \u2014 PLACEHOLDER / FUTURE",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Terms of service",
+    "preview": "public-terms.html",
+    "role": "Public",
+    "routes": [
+      "/terms"
+    ],
+    "implementation": "PublicTermsPreviewPage",
+    "category": "C \u2014 PRESENTATIONAL",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Warehouse details",
+    "preview": "public-warehouse-detail.html",
+    "role": "Public",
+    "routes": [
+      "/warehouses/:warehouseSlug"
+    ],
+    "implementation": "PublicWarehouseDetailPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "cargo_admin/public/warehouses/search"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Warehouses",
+    "preview": "public-warehouses.html",
+    "role": "Public",
+    "routes": [
+      "/warehouses"
+    ],
+    "implementation": "PublicWarehousesPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "cargo_admin/public/warehouses/search"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Air shipping label",
+    "preview": "shared-air-shipping-label.html",
+    "role": "Shared",
+    "routes": [
+      "/label/air/:bookingId"
+    ],
+    "implementation": "SharedAirShippingLabelPreviewPage",
+    "category": "D \u2014 PLACEHOLDER / FUTURE",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Sourcing product",
+    "preview": "shared-product-detail.html",
+    "role": "Shared",
+    "routes": [
+      "/product/:productId"
+    ],
+    "implementation": "SharedProductDetailPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "public/agizisha/products"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Sea shipping label",
+    "preview": "shared-sea-shipping-label.html",
+    "role": "Shared",
+    "routes": [
+      "/label/sea/:seaBookingId"
+    ],
+    "implementation": "SharedSeaShippingLabelPreviewPage",
+    "category": "D \u2014 PLACEHOLDER / FUTURE",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Pending approvals",
+    "preview": "super-admin-approvals.html",
+    "role": "Super Admin",
+    "routes": [
+      "/admin/pending-approvals"
+    ],
+    "implementation": "SuperAdminApprovalsPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "super_admin/users/pending"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Commission settings",
+    "preview": "super-admin-commission.html",
+    "role": "Super Admin",
+    "routes": [
+      "/admin/commission"
+    ],
+    "implementation": "SuperAdminCommissionPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "super_admin/commission"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Platform overview",
+    "preview": "super-admin-dashboard.html",
+    "role": "Super Admin",
+    "routes": [
+      "/admin/dashboard"
+    ],
+    "implementation": "SuperAdminDashboardPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Goods classification",
+    "preview": "super-admin-goods-classification.html",
+    "role": "Super Admin",
+    "routes": [
+      "/admin/goods"
+    ],
+    "implementation": "SuperAdminGoodsClassificationPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "super_admin/goods/categories"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Governance alerts",
+    "preview": "super-admin-notifications.html",
+    "role": "Super Admin",
+    "routes": [],
+    "implementation": "SuperAdminNotificationsPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "super_admin/notifications"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Operators",
+    "preview": "super-admin-operators.html",
+    "role": "Super Admin",
+    "routes": [
+      "/admin/operators"
+    ],
+    "implementation": "SuperAdminOperatorsPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "super_admin/operators"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Platform activity",
+    "preview": "super-admin-platform-activity.html",
+    "role": "Super Admin",
+    "routes": [
+      "/admin/audit-logs"
+    ],
+    "implementation": "SuperAdminPlatformActivityPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Platform bookings",
+    "preview": "super-admin-reservations.html",
+    "role": "Super Admin",
+    "routes": [
+      "/admin/reservations"
+    ],
+    "implementation": "SuperAdminReservationsPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "super_admin/sea-bookings"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Platform settings",
+    "preview": "super-admin-settings.html",
+    "role": "Super Admin",
+    "routes": [],
+    "implementation": "SuperAdminSettingsPreviewPage",
+    "category": "D \u2014 PLACEHOLDER / FUTURE",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Sourcing agents",
+    "preview": "super-admin-sourcing-agents.html",
+    "role": "Super Admin",
+    "routes": [
+      "/admin/sourcing-agents"
+    ],
+    "implementation": "SuperAdminSourcingAgentsPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "super_admin/sourcing-agents"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Track shipments",
+    "preview": "super-admin-track-shipment.html",
+    "role": "Super Admin",
+    "routes": [
+      "/admin/track-shipments"
+    ],
+    "implementation": "SuperAdminTrackShipmentPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "tracking/admin/shipment_orders"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Amina Mussa",
+    "preview": "super-admin-user-details.html",
+    "role": "Super Admin",
+    "routes": [
+      "/admin/users/:userId"
+    ],
+    "implementation": "SuperAdminUserDetailsPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "User management",
+    "preview": "super-admin-user-management.html",
+    "role": "Super Admin",
+    "routes": [
+      "/admin/users"
+    ],
+    "implementation": "SuperAdminUserManagementPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Automation entitlements",
+    "preview": "super-admin-warehouse-automation.html",
+    "role": "Super Admin",
+    "routes": [],
+    "implementation": "SuperAdminWarehouseAutomationPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "My China addresses",
+    "preview": "agent-china-addresses.html",
+    "role": "Sourcing Agent",
+    "routes": [
+      "/agent/china-addresses"
+    ],
+    "implementation": "AgentChinaAddressesPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "sourcing_agent/china-addresses"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "My sea bookings",
+    "preview": "agent-sea-bookings.html",
+    "role": "Sourcing Agent",
+    "routes": [
+      "/agent/sea-bookings"
+    ],
+    "implementation": "AgentSeaBookingsPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "sourcing_agent/sea-bookings"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Billing and usage",
+    "preview": "cargo-admin-billing-usage.html",
+    "role": "Cargo Admin",
+    "routes": [
+      "/cargo/settings/billing"
+    ],
+    "implementation": "CargoAdminBillingUsagePreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "subscriptions/current"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Customers and contacts",
+    "preview": "cargo-admin-documentation-customers.html",
+    "role": "Cargo Admin",
+    "routes": [],
+    "implementation": "CargoAdminDocumentationCustomersPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Financial analytics",
+    "preview": "cargo-admin-financial-analytics.html",
+    "role": "Cargo Admin",
+    "routes": [
+      "/cargo/finance"
+    ],
+    "implementation": "CargoAdminFinancialAnalyticsPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "cargo/finance/dashboard"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Approval pending",
+    "preview": "cargo-admin-pending-approval.html",
+    "role": "Cargo Admin",
+    "routes": [
+      "/cargo/pending-approval"
+    ],
+    "implementation": "CargoAdminPendingApprovalPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "auth/me"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Sea bookings",
+    "preview": "cargo-admin-sea-bookings.html",
+    "role": "Cargo Admin",
+    "routes": [
+      "/cargo/sea-bookings"
+    ],
+    "implementation": "CargoAdminSeaBookingsPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "cargo_admin/sea-bookings"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Staff and branches",
+    "preview": "cargo-admin-staff-branches.html",
+    "role": "Cargo Admin",
+    "routes": [
+      "/cargo/settings/staff-branches"
+    ],
+    "implementation": "CargoAdminStaffBranchesPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "workspaces"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Sea booking details",
+    "preview": "customer-sea-booking-detail.html",
+    "role": "Customer",
+    "routes": [
+      "/customer/sea-bookings/:seaBookingId"
+    ],
+    "implementation": "CustomerSeaBookingDetailPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "customer/sea-bookings"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "My sea bookings",
+    "preview": "customer-sea-bookings.html",
+    "role": "Customer",
+    "routes": [
+      "/customer/sea-bookings"
+    ],
+    "implementation": "CustomerSeaBookingsPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "customer/sea-bookings"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Air cargo across Africa",
+    "preview": "public-air-cargo-africa.html",
+    "role": "Public",
+    "routes": [
+      "/air-cargo-africa"
+    ],
+    "implementation": "PublicAirCargoAfricaPreviewPage",
+    "category": "C \u2014 PRESENTATIONAL",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Register a cargo company",
+    "preview": "public-cargo-company-registration.html",
+    "role": "Public",
+    "routes": [
+      "/cargo-operator/register"
+    ],
+    "implementation": "PublicCargoCompanyRegistrationPreviewPage",
+    "category": "D \u2014 PLACEHOLDER / FUTURE",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "China sourcing for Africa",
+    "preview": "public-china-sourcing-africa.html",
+    "role": "Public",
+    "routes": [
+      "/china-sourcing-africa"
+    ],
+    "implementation": "PublicChinaSourcingAfricaPreviewPage",
+    "category": "C \u2014 PRESENTATIONAL",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Sea freight across Africa",
+    "preview": "public-sea-freight-africa.html",
+    "role": "Public",
+    "routes": [
+      "/sea-freight-africa"
+    ],
+    "implementation": "PublicSeaFreightAfricaPreviewPage",
+    "category": "C \u2014 PRESENTATIONAL",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Cargo company invitation",
+    "preview": "public-staff-invitation.html",
+    "role": "Public",
+    "routes": [
+      "/staff-invitation"
+    ],
+    "implementation": "PublicStaffInvitationPreviewPage",
+    "category": "D \u2014 PLACEHOLDER / FUTURE",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Switch workspace",
+    "preview": "shared-workspace-selection.html",
+    "role": "Shared",
+    "routes": [
+      "/account/workspaces"
+    ],
+    "implementation": "SharedWorkspaceSelectionPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Platform bookings",
+    "preview": "super-admin-bookings.html",
+    "role": "Super Admin",
+    "routes": [
+      "/admin/bookings"
+    ],
+    "implementation": "SuperAdminBookingsPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "super_admin/sea-bookings"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Cargo companies",
+    "preview": "super-admin-companies.html",
+    "role": "Super Admin",
+    "routes": [
+      "/admin/companies"
+    ],
+    "implementation": "SuperAdminCompaniesPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "super_admin/companies"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Cargo company details",
+    "preview": "super-admin-company-detail.html",
+    "role": "Super Admin",
+    "routes": [
+      "/admin/companies/:companyId"
+    ],
+    "implementation": "SuperAdminCompanyDetailPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "super_admin/companies"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Cargo administrator",
+    "preview": "super-admin-operator-detail.html",
+    "role": "Super Admin",
+    "routes": [
+      "/admin/operators/:operatorId"
+    ],
+    "implementation": "SuperAdminOperatorDetailPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "super_admin/operators"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "Subscriptions and costs",
+    "preview": "super-admin-subscriptions.html",
+    "role": "Super Admin",
+    "routes": [
+      "/admin/subscriptions"
+    ],
+    "implementation": "SuperAdminSubscriptionsPreviewPage",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending",
+    "endpoint": [
+      "super_admin/subscriptions/overview"
+    ],
+    "source": "lib/features/reference/presentation/dedicated_preview_pages.dart"
+  },
+  {
+    "screen": "MfaPage",
+    "source": "lib\\features\\auth\\presentation\\mfa_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "OtpPage",
+    "source": "lib\\features\\auth\\presentation\\otp_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "RegistrationPage",
+    "source": "lib\\features\\auth\\presentation\\registration_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "SignInPage",
+    "source": "lib\\features\\auth\\presentation\\sign_in_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "WelcomePage",
+    "source": "lib\\features\\auth\\presentation\\welcome_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "GuidedSeaBookingPage",
+    "source": "lib\\features\\booking\\presentation\\sea_booking_flow.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "CargoAdminShell",
+    "source": "lib\\features\\cargo_admin\\presentation\\cargo_admin_shell.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "_CargoAdminMorePage",
+    "source": "lib\\features\\cargo_admin\\presentation\\cargo_admin_shell.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "CargoAdminContainerListPage",
+    "source": "lib\\features\\cargo_admin\\containers\\presentation\\cargo_admin_container_list_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "CargoAdminDashboardPage",
+    "source": "lib\\features\\cargo_admin\\dashboard\\presentation\\cargo_admin_dashboard_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "CargoAdminDocumentationWorkspacePage",
+    "source": "lib\\features\\cargo_admin\\documents\\presentation\\cargo_admin_documentation_workspace_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "CargoAdminPackingListsPage",
+    "source": "lib\\features\\cargo_admin\\documents\\presentation\\cargo_admin_documentation_workspace_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "CargoAdminReceiptsPage",
+    "source": "lib\\features\\cargo_admin\\documents\\presentation\\cargo_admin_documentation_workspace_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "CargoAdminCustomerRecordsPage",
+    "source": "lib\\features\\cargo_admin\\documents\\presentation\\cargo_admin_documentation_workspace_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "CargoAdminManualIntakePage",
+    "source": "lib\\features\\cargo_admin\\documents\\presentation\\cargo_admin_documentation_workspace_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "CargoAdminWarehouseAutomationPage",
+    "source": "lib\\features\\cargo_admin\\warehouse_automation\\presentation\\cargo_admin_warehouse_automation_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "_BarcodeScannerPage",
+    "source": "lib\\features\\cargo_admin\\warehouse_automation\\presentation\\cargo_admin_warehouse_automation_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "AirCargoBookingListPage",
+    "source": "lib\\features\\customer\\air_cargo\\presentation\\air_cargo_booking_list_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "CreateAirCargoBookingPage",
+    "source": "lib\\features\\customer\\air_cargo\\presentation\\create_air_cargo_booking_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "ChinaAddressListPage",
+    "source": "lib\\features\\customer\\china_addresses\\presentation\\china_address_list_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "ContainerDetailPage",
+    "source": "lib\\features\\customer\\containers\\presentation\\container_detail_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "ContainerListPage",
+    "source": "lib\\features\\customer\\containers\\presentation\\container_list_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "CustomerShell",
+    "source": "lib\\features\\customer\\dashboard\\presentation\\customer_shell.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "CustomerHomePage",
+    "source": "lib\\features\\customer\\dashboard\\presentation\\customer_shell.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "CustomerDocumentsPage",
+    "source": "lib\\features\\customer\\documents\\presentation\\customer_documents_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "CustomerMorePage",
+    "source": "lib\\features\\customer\\more\\presentation\\customer_more_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "CustomerNotificationsPage",
+    "source": "lib\\features\\customer\\notifications\\presentation\\customer_notifications_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "CustomerOrderListPage",
+    "source": "lib\\features\\customer\\orders\\presentation\\customer_order_list_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "CustomerPackingListPage",
+    "source": "lib\\features\\customer\\packing_lists\\presentation\\customer_packing_list_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "CustomerProfilePage",
+    "source": "lib\\features\\customer\\profile\\presentation\\customer_profile_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "BookingConfirmationPage",
+    "source": "lib\\features\\customer\\reservations\\presentation\\booking_confirmation_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "BookingDetailPage",
+    "source": "lib\\features\\customer\\reservations\\presentation\\booking_detail_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "BookingListPage",
+    "source": "lib\\features\\customer\\reservations\\presentation\\booking_list_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "BookContainerPage",
+    "source": "lib\\features\\customer\\reservations\\presentation\\book_container_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "ShipmentListPage",
+    "source": "lib\\features\\customer\\shipments\\presentation\\shipment_list_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "ShipmentTrackingPage",
+    "source": "lib\\features\\customer\\tracking\\presentation\\shipment_tracking_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "CollectionCodePage",
+    "source": "lib\\features\\customer\\warehouse_access\\presentation\\collection_code_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "CustomerWarehouseParcelsPage",
+    "source": "lib\\features\\customer\\warehouse_access\\presentation\\customer_warehouse_parcels_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "OnboardingPage",
+    "source": "lib\\features\\onboarding\\presentation\\onboarding_page.dart",
+    "category": "C \u2014 LOCKED"
+  },
+  {
+    "screen": "SplashPage",
+    "source": "lib\\features\\onboarding\\presentation\\splash_page.dart",
+    "category": "C \u2014 LOCKED"
+  },
+  {
+    "screen": "OfficialInformationPage",
+    "source": "lib\\features\\public_services\\presentation\\official_information_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "PublicContainersPage",
+    "source": "lib\\features\\public_services\\presentation\\public_containers_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "SourcingAgentShell",
+    "source": "lib\\features\\sourcing_agent\\presentation\\sourcing_agent_shell.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "_SourcingAgentMorePage",
+    "source": "lib\\features\\sourcing_agent\\presentation\\sourcing_agent_shell.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "SourcingAgentBatchDetailPage",
+    "source": "lib\\features\\sourcing_agent\\batches\\presentation\\sourcing_agent_batch_detail_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "SourcingAgentBatchListPage",
+    "source": "lib\\features\\sourcing_agent\\batches\\presentation\\sourcing_agent_batch_list_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "SourcingAgentCreateBatchPage",
+    "source": "lib\\features\\sourcing_agent\\batches\\presentation\\sourcing_agent_batch_workflow_pages.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "SourcingAgentAddProductPage",
+    "source": "lib\\features\\sourcing_agent\\batches\\presentation\\sourcing_agent_batch_workflow_pages.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "SourcingAgentGenerateOrdersPage",
+    "source": "lib\\features\\sourcing_agent\\batches\\presentation\\sourcing_agent_batch_workflow_pages.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "SourcingAgentBatchFinancialsPage",
+    "source": "lib\\features\\sourcing_agent\\batches\\presentation\\sourcing_agent_batch_workflow_pages.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "SourcingAgentPackingListCreatePage",
+    "source": "lib\\features\\sourcing_agent\\batches\\presentation\\sourcing_agent_batch_workflow_pages.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "SourcingAgentPackingListListPage",
+    "source": "lib\\features\\sourcing_agent\\batches\\presentation\\sourcing_agent_batch_workflow_pages.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "SourcingAgentPackingListDetailPage",
+    "source": "lib\\features\\sourcing_agent\\batches\\presentation\\sourcing_agent_batch_workflow_pages.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "SourcingAgentOrderDetailPage",
+    "source": "lib\\features\\sourcing_agent\\batches\\presentation\\sourcing_agent_batch_workflow_pages.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "SourcingAgentDashboardPage",
+    "source": "lib\\features\\sourcing_agent\\dashboard\\presentation\\sourcing_agent_dashboard_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "SourcingAgentNotificationsPage",
+    "source": "lib\\features\\sourcing_agent\\notifications\\presentation\\sourcing_agent_notifications_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "SourcingAgentProductManagementPage",
+    "source": "lib\\features\\sourcing_agent\\products\\presentation\\sourcing_agent_product_management_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "SuperAdminShell",
+    "source": "lib\\features\\super_admin\\presentation\\super_admin_shell.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "_SuperAdminMorePage",
+    "source": "lib\\features\\super_admin\\presentation\\super_admin_shell.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "SuperAdminPlatformActivityPage",
+    "source": "lib\\features\\super_admin\\activity\\presentation\\super_admin_platform_activity_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "SuperAdminDashboardPage",
+    "source": "lib\\features\\super_admin\\dashboard\\presentation\\super_admin_dashboard_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "SuperAdminUserListPage",
+    "source": "lib\\features\\super_admin\\users\\presentation\\super_admin_user_list_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "SuperAdminWarehouseAutomationPage",
+    "source": "lib\\features\\super_admin\\warehouse_automation\\presentation\\super_admin_warehouse_automation_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "WorkspaceSelectionPage",
+    "source": "lib\\features\\workspaces\\presentation\\workspace_selection_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "FeatureMenuPage",
+    "source": "lib\\shared\\presentation\\feature_menu_page.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  },
+  {
+    "screen": "RoleShell",
+    "source": "lib\\shared\\presentation\\role_shell.dart",
+    "category": "B \u2014 PARTIALLY FUNCTIONAL / verification pending"
+  }
+]

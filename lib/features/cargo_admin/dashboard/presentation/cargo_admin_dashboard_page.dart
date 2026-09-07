@@ -59,7 +59,7 @@ class _CargoAdminDashboardPageState
                 value: dashboard['active_containers'],
               ),
               _Metric(
-                label: 'Reservations',
+                label: 'Bookings',
                 value: dashboard['total_reservations'],
               ),
               _Metric(
@@ -93,9 +93,9 @@ class _CargoAdminDashboardPageState
           Card(
             child: ListTile(
               leading: const Icon(Icons.inventory_2_outlined),
-              title: const Text('Reserved capacity'),
+              title: const Text('Booked capacity'),
               subtitle: Text(
-                '${dashboard['total_reserved_cbm'] ?? 0} CBM reserved across your containers.',
+                '${dashboard['total_reserved_cbm'] ?? 0} CBM booked across your containers.',
               ),
             ),
           ),

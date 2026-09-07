@@ -9,6 +9,7 @@ import '../../../core/network/api_exception.dart';
 import '../../../core/providers.dart';
 import '../../../features/auth/data/auth_repository.dart';
 import '../domain/auth_input.dart';
+import '../../public_services/presentation/official_information_page.dart';
 
 class SignInPage extends ConsumerStatefulWidget {
   const SignInPage({super.key});
@@ -30,7 +31,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
   }
 
   Future<void> _sendOtp() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (_isSubmitting || !_formKey.currentState!.validate()) return;
     setState(() {
       _isSubmitting = true;
       _errorMessage = null;
@@ -41,6 +42,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
       await authRepository.sendOtp(phoneNumber: phone);
       if (!mounted) return;
       ref.read(pendingPhoneNumberProvider.notifier).state = phone;
+      ref.read(pendingEmailProvider.notifier).state = null;
       context.go('/otp');
     } on ApiException catch (error) {
       if (mounted) setState(() => _errorMessage = error.message);
@@ -67,74 +69,71 @@ class _SignInPageState extends ConsumerState<SignInPage> {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
           children: [
-            const SahajomyBrandMark(size: 58),
+            const Align(alignment: Alignment.centerLeft, child: SahajomyBrandMark(size: 58)),
             const SizedBox(height: 28),
             Text(
-              'Welcome to Sahajomy',
+              'Your shipping account',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
             const SizedBox(height: 10),
             const Text(
-              'Enter your mobile number. We’ll send a one-time code to verify your account securely.',
+              'Enter the mobile number linked to your account. We\'ll email a one-time verification code to your registered email address.',
             ),
             const SizedBox(height: 30),
-            Container(
-              padding: const EdgeInsets.all(18),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: appBorder),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Mobile number',
-                    style: TextStyle(
-                      color: appInk,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  TextFormField(
-                    controller: _phoneController,
-                    keyboardType: TextInputType.phone,
-                    textInputAction: TextInputAction.done,
-                    autofillHints: const [AutofillHints.telephoneNumber],
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'[0-9+ ()-]')),
-                      LengthLimitingTextInputFormatter(24),
-                    ],
-                    decoration: const InputDecoration(
-                      hintText: '+255 7XX XXX XXX',
-                      prefixIcon: Icon(Icons.phone_rounded),
-                    ),
-                    validator: (value) =>
-                        value == null || !isValidPhoneNumber(value)
-                        ? 'Enter a valid mobile number.'
-                        : null,
-                    onFieldSubmitted: (_) => _sendOtp(),
-                  ),
-                  const SizedBox(height: 12),
-                  const Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(
-                        Icons.lock_outline_rounded,
-                        size: 17,
-                        color: brandTeal,
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(18),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Mobile number',
+                      style: TextStyle(
+                        color: appInk,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
                       ),
-                      SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'Your account is protected with one-time verification codes.',
-                          style: TextStyle(fontSize: 12, height: 1.4),
+                    ),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      controller: _phoneController,
+                      keyboardType: TextInputType.phone,
+                      textInputAction: TextInputAction.done,
+                      autofillHints: const [AutofillHints.telephoneNumber],
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'[0-9+ ()-]')),
+                        LengthLimitingTextInputFormatter(24),
+                      ],
+                      decoration: const InputDecoration(
+                        hintText: '+255 7XX XXX XXX',
+                        prefixIcon: Icon(Icons.phone_rounded),
+                      ),
+                      validator: (value) =>
+                          value == null || !isValidPhoneNumber(value)
+                              ? 'Enter a valid mobile number.'
+                              : null,
+                      onFieldSubmitted: (_) => _sendOtp(),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.lock_outline_rounded,
+                          size: 17,
+                          color: brandTeal,
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Verification codes are sent to your registered email.',
+                            style: TextStyle(fontSize: 12, height: 1.4, color: appMuted),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
             if (_errorMessage != null) ...[
@@ -142,13 +141,13 @@ class _SignInPageState extends ConsumerState<SignInPage> {
               Container(
                 padding: const EdgeInsets.all(13),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFFFF1F0),
+                  color: appErrorLight,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   _errorMessage!,
                   style: const TextStyle(
-                    color: Color(0xFFB42318),
+                    color: appError,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -165,40 +164,17 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                         color: Colors.white,
                       ),
                     )
-                  : const Text('Send verification code'),
+                  : const Text('Email me a verification code'),
             ),
-            const SizedBox(height: 22),
-            const Text(
-              'New to Sahajomy? Your account will be created securely after mobile verification.',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 12, height: 1.5),
+            const SizedBox(height: 14),
+            Center(
+              child: TextButton(
+                onPressed: () => context.push('/register'),
+                child: const Text('New to Sahajomy? Create an account'),
+              ),
             ),
             const SizedBox(height: 8),
-            Wrap(
-              alignment: WrapAlignment.center,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: [
-                const Text('By continuing, you agree to our '),
-                TextButton(
-                  onPressed: () => context.push('/terms'),
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 2),
-                    minimumSize: const Size(0, 40),
-                  ),
-                  child: const Text('Terms'),
-                ),
-                const Text(' and '),
-                TextButton(
-                  onPressed: () => context.push('/privacy'),
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 2),
-                    minimumSize: const Size(0, 40),
-                  ),
-                  child: const Text('Privacy Policy'),
-                ),
-                const Text('.'),
-              ],
-            ),
+            const SahajomyLegalLinks(),
           ],
         ),
       ),

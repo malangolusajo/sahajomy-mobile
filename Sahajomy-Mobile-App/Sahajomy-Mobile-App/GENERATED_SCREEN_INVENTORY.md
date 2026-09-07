@@ -79,7 +79,6 @@ Generated from `scripts/generate_current_previews.mjs`. Every non-redirect route
 | Super Admin | `/admin/operators` | [super-admin-operators.html](html-previews/super-admin-operators.html) |
 | Super Admin | `/admin/operators/:operatorId` | [super-admin-operator-detail.html](html-previews/super-admin-operator-detail.html) |
 | Super Admin | `/admin/goods` | [super-admin-goods-classification.html](html-previews/super-admin-goods-classification.html) |
-| Super Admin | `/admin/reservations` | [super-admin-reservations.html](html-previews/super-admin-reservations.html) |
 | Super Admin | `/admin/commission` | [super-admin-commission.html](html-previews/super-admin-commission.html) |
 | Super Admin | `/admin/track-shipments` | [super-admin-track-shipment.html](html-previews/super-admin-track-shipment.html) |
 | Super Admin | `/admin/companies` | [super-admin-companies.html](html-previews/super-admin-companies.html) |
@@ -93,7 +92,7 @@ Generated from `scripts/generate_current_previews.mjs`. Every non-redirect route
 |---|---|---|---|
 | Public | `/login` | [customer-login.html](html-previews/customer-login.html) | Registration and OTP states are also previewed by customer-register.html and customer-otp.html. MFA is specified in the Flutter contract. |
 | Customer | `/customer/dashboard` | [customer-dashboard.html](html-previews/customer-dashboard.html) |  |
-| Customer | `/customer/containers` | [customer-search-container.html](html-previews/customer-search-container.html) | Container detail, reservation, and confirmation have supplementary previews. |
+| Customer | `/customer/containers` | [customer-search-container.html](html-previews/customer-search-container.html) | Container detail, booking, and confirmation have supplementary previews. |
 | Customer | `/customer/orders` | [customer-orders.html](html-previews/customer-orders.html) |  |
 | Customer | `/customer/orders/:orderId` | [customer-order-details.html](html-previews/customer-order-details.html) |  |
 | Customer | `/customer/track-shipments` | [customer-shipment-tracking.html](html-previews/customer-shipment-tracking.html) |  |

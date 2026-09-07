@@ -29,7 +29,7 @@ class WelcomePage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SahajomyWordmark(markSize: 42),
+                const SahajomyBrandMark(size: 56),
                 const Spacer(flex: 3),
                 Container(
                   padding: const EdgeInsets.symmetric(

@@ -1,0 +1,80 @@
+[
+  {
+    "method": "GET",
+    "url": "https://sahajomy.co.tz/",
+    "status": 200,
+    "shape": "HTML / non-JSON",
+    "authentication": "none"
+  },
+  {
+    "method": "GET",
+    "url": "https://sahajomy.co.tz/privacy",
+    "status": 200,
+    "shape": "HTML / non-JSON",
+    "authentication": "none"
+  },
+  {
+    "method": "GET",
+    "url": "https://sahajomy.co.tz/terms",
+    "status": 200,
+    "shape": "HTML / non-JSON",
+    "authentication": "none"
+  },
+  {
+    "method": "GET",
+    "url": "https://sahajomy.co.tz/api/v1/public/containers",
+    "status": 200,
+    "shape": "list[4]",
+    "authentication": "none"
+  },
+  {
+    "method": "GET",
+    "url": "https://sahajomy.co.tz/api/v1/public/agizisha/agents",
+    "status": 422,
+    "shape": [
+      "success",
+      "message",
+      "detail",
+      "error_code",
+      "reference_id",
+      "timestamp"
+    ],
+    "authentication": "none"
+  },
+  {
+    "method": "GET",
+    "url": "https://sahajomy.co.tz/api/v1/public/agizisha/products",
+    "status": 200,
+    "shape": [
+      "products",
+      "matched_agents",
+      "empty_reason"
+    ],
+    "authentication": "none"
+  },
+  {
+    "method": "GET",
+    "url": "https://sahajomy.co.tz/api/v1/public/platform-stats",
+    "status": 200,
+    "shape": [
+      "containers",
+      "operators",
+      "cbm"
+    ],
+    "authentication": "none"
+  },
+  {
+    "method": "GET",
+    "url": "https://sahajomy.co.tz/api/v1/auth/me",
+    "status": 401,
+    "shape": [
+      "success",
+      "message",
+      "detail",
+      "error_code",
+      "reference_id",
+      "timestamp"
+    ],
+    "authentication": "none"
+  }
+]

@@ -1,4 +1,4 @@
-# Current Platform Audit — 2 September 2026
+# Current Platform Audit — 7 September 2026
 
 ## Source of truth reviewed
 
@@ -9,9 +9,10 @@
 - FastAPI router registration and regenerated OpenAPI contract
 - Focused backend/frontend tests for the current features
 
-The Flutter handoff is reconciled with platform commit `6dc84cc`. The generated
-API contract now contains 342 paths, 389 operations, and 163 schemas. The visual
-pack has 125 HTML previews and maps every current non-redirect React route.
+The Flutter handoff is reconciled with the source tree packaged on 7 September
+2026. The generated API contract now contains 342 paths, 389 operations, and
+163 schemas. The visual pack has 120 HTML previews and maps every current
+non-redirect React route.
 
 ## Changes now represented in mobile
 
@@ -38,7 +39,7 @@ pack has 125 HTML previews and maps every current non-redirect React route.
 ### Current route model
 
 - Sea cargo uses Customer, Sourcing Agent, and Cargo Admin Sea Bookings routes,
-  replacing stale reservation-page names in the original prototype.
+  replacing stale legacy page names in the original prototype.
 - The Cargo Documentation Workspace has four unique destinations: Packing Lists,
   Manual Cargo Intake, Customers & Contacts, and Warehouse Automation.
 - Warehouse Automation's canonical UI route is inside Documentation Workspace.
@@ -99,4 +100,3 @@ pack has 125 HTML previews and maps every current non-redirect React route.
   authoritative.
 - Do not create one universal status enum; preserve domain-specific states and an
   unknown-value fallback.
-

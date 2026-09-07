@@ -8,7 +8,7 @@ mkdirSync(output, { recursive: true });
 
 const previews = [
   { file: "customer-search-container", role: "Customer", mode: "sea", initialStep: 1 },
-  { file: "customer-reserve-cbm", role: "Customer", mode: "sea", initialStep: 2 },
+  { file: "customer-book-cbm", role: "Customer", mode: "sea", initialStep: 2 },
   { file: "customer-booking-confirmation", role: "Customer", mode: "sea", initialStep: 3 },
   { file: "customer-express-air-cargo", role: "Customer", mode: "air", initialStep: 1 },
   { file: "agent-containers", role: "Sourcing Agent", mode: "sea", initialStep: 1 },
@@ -51,8 +51,7 @@ const serviceRows = (mode) => (mode === "sea" ? seaServices : airServices)
 
 const seaFields = (role) => `
   <div class="fieldGrid">
-    ${role === "Sourcing Agent" ? `<label class="field full"><span>Closed batch <i>Optional</i></span><select><option>No batch — direct booking</option><option>August electronics batch</option></select></label>` : ""}
-    <label class="field"><span>CBM to reserve</span><input type="number" inputmode="decimal" value="1.25" /></label>
+${role === "Sourcing Agent" ? `    <label class="field full"><span>Closed batch <i>Optional</i></span><select><option>No batch — direct booking</option><option>August electronics batch</option></select></label>\n` : ""}    <label class="field"><span>CBM to book</span><input type="number" inputmode="decimal" value="1.25" /></label>
     <label class="field"><span>Cartons</span><input type="number" value="4" /></label>
     <label class="field full"><span>Goods type</span><select><option>Electronics and accessories</option><option>Clothing and textiles</option><option>Household items</option></select></label>
   </div>

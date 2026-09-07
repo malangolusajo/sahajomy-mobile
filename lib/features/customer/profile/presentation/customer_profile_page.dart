@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../../public_services/presentation/official_information_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/auth/session_store.dart';
@@ -101,20 +103,21 @@ class _CustomerProfilePageState extends ConsumerState<CustomerProfilePage> {
             ),
             const SizedBox(height: 24),
             _ProfileField(
-              label: 'Personal details',
+              label: 'Mobile number',
               value: profile['phone_number'],
             ),
-            _ProfileField(label: 'Business details', value: profile['role']),
+            _ProfileField(label: 'Account role', value: profile['role']),
             _ProfileField(
-              label: 'Saved addresses',
-              value: profile['address'] ?? 'Manage delivery addresses',
+              label: 'Address',
+              value: profile['address'] ?? 'Not provided',
             ),
             _ProfileField(
-              label: 'Security and privacy',
+              label: 'Account verification',
               value: profile['is_verified'] == true ? 'Verified' : 'Pending',
             ),
             const SizedBox(height: 12),
-            FilledButton(onPressed: () {}, child: const Text('Edit profile')),
+            FilledButton(onPressed: () => context.push('/customer/china-addresses'), child: const Text('Manage China warehouse addresses')),
+            const SahajomyLegalLinks(),
           ],
         );
       },

@@ -7,7 +7,7 @@ class CustomerTrackingRepository {
 
   Future<List<Map<String, dynamic>>> listEvents() async {
     final results = await Future.wait([
-      client.getList('tracking/customer/reservations'),
+      client.getList('tracking/customer/sea-bookings'),
       client.getList('tracking/customer/bookings'),
       client.getList('tracking/customer/shipment_orders'),
     ]);

@@ -4,9 +4,9 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/ui/sahajomy_ui.dart';
 
 class BookingConfirmationPage extends StatelessWidget {
-  const BookingConfirmationPage({required this.reservation, super.key});
+  const BookingConfirmationPage({required this.booking, super.key});
 
-  final Map<String, dynamic> reservation;
+  final Map<String, dynamic> booking;
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -17,10 +17,7 @@ class BookingConfirmationPage extends StatelessWidget {
     body: ListView(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
       children: [
-        Text(
-          'Space reserved',
-          style: Theme.of(context).textTheme.headlineMedium,
-        ),
+        Text('Space booked', style: Theme.of(context).textTheme.headlineMedium),
         const SizedBox(height: 4),
         const Text(
           'Your request has been received. We will notify you once your booking is confirmed.',
@@ -36,12 +33,12 @@ class BookingConfirmationPage extends StatelessWidget {
               ),
               const SizedBox(height: 28),
               Text(
-                'Space reserved',
+                'Space booked',
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
               const SizedBox(height: 12),
               Text(
-                'Reservation #${reservation['reservation_number'] ?? reservation['id'] ?? ''} is under review. We will send an update when it is confirmed.',
+                'Booking #${booking['booking_number'] ?? booking['id'] ?? ''} is under review. We will send an update when it is confirmed.',
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 28),
@@ -53,7 +50,7 @@ class BookingConfirmationPage extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Text(
-                  'Next departure\n${reservation['route'] ?? 'Shanghai to Dar es Salaam'}${reservation['departure_date'] == null ? '' : ' · ${reservation['departure_date']}'}',
+                  'Next departure\n${booking['route'] ?? 'Shanghai to Dar es Salaam'}${booking['departure_date'] == null ? '' : ' · ${booking['departure_date']}'}',
                   style: const TextStyle(
                     fontWeight: FontWeight.w700,
                     height: 1.6,

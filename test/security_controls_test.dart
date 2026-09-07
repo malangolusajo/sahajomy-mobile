@@ -3,6 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:sahajomy_mobile/core/auth/session.dart';
 import 'package:sahajomy_mobile/core/network/interceptors/logging_interceptor.dart';
 import 'package:sahajomy_mobile/core/security/app_link_guard.dart';
+import 'package:sahajomy_mobile/core/storage/secure_storage.dart';
 import 'package:sahajomy_mobile/features/auth/domain/auth_input.dart';
 import 'package:sahajomy_mobile/core/storage/token_storage.dart';
 import 'package:sahajomy_mobile/core/workspaces/workspace_provider.dart';
@@ -102,4 +103,18 @@ void main() {
     expect(workspace.revision, greaterThan(oldRevision));
     expect(workspace.state.hasCompany, isFalse);
   });
+
+  test(
+    'a redesigned onboarding version is shown once after an update',
+    () async {
+      FlutterSecureStorage.setMockInitialValues({
+        SecureStorage.onboardingCompletedKey: 'true',
+      });
+      final storage = TokenStorage();
+
+      expect(await storage.getOnboardingCompleted(), isFalse);
+      await storage.setOnboardingCompleted();
+      expect(await storage.getOnboardingCompleted(), isTrue);
+    },
+  );
 }

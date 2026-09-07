@@ -1,78 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sahajomy_mobile/features/repository_providers.dart';
-
-import '../data/customer_shipments_repository.dart';
-
-class ShipmentListPage extends ConsumerStatefulWidget {
+import '../../../reference/presentation/live_workflow_page.dart';
+class ShipmentListPage extends StatelessWidget {
   const ShipmentListPage({super.key});
   @override
-  ConsumerState<ShipmentListPage> createState() => _ShipmentListPageState();
-}
-
-class _ShipmentListPageState extends ConsumerState<ShipmentListPage> {
-  CustomerShipmentsRepository get _repository =>
-      ref.read(customerShipmentsRepositoryProvider);
-  late Future<List<Map<String, dynamic>>> _shipments = Future.microtask(
-    () => _repository.listShipmentOrders(),
+  Widget build(BuildContext context) => const LiveWorkflowPage(
+    role: 'Customer', title: 'My shipments', endpoint: 'customer/shipment-orders/',
+    description: 'Track cargo references, delivery status and shipment details.',
+    embedded: true,
   );
-
-  void _retry() =>
-      setState(() => _shipments = _repository.listShipmentOrders());
-
-  @override
-  Widget build(BuildContext context) =>
-      FutureBuilder<List<Map<String, dynamic>>>(
-        future: _shipments,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.error_outline, size: 44),
-                    const SizedBox(height: 12),
-                    const Text('Unable to load shipments.'),
-                    const SizedBox(height: 12),
-                    OutlinedButton(
-                      onPressed: _retry,
-                      child: const Text('Try again'),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }
-          final shipments = snapshot.data ?? [];
-          if (shipments.isEmpty) {
-            return const Center(child: Text('No shipment orders yet.'));
-          }
-          return ListView.separated(
-            padding: const EdgeInsets.all(20),
-            itemCount: shipments.length,
-            separatorBuilder: (_, _) => const SizedBox(height: 10),
-            itemBuilder: (_, index) {
-              final shipment = shipments[index];
-              final reference =
-                  shipment['order_number'] ?? shipment['id'] ?? 'Shipment';
-              final status = shipment['status'] ?? 'Pending';
-              return Card(
-                child: ListTile(
-                  title: Text(
-                    '$reference',
-                    style: const TextStyle(fontWeight: FontWeight.w800),
-                  ),
-                  subtitle: Text('$status'),
-                  trailing: const Icon(Icons.chevron_right),
-                ),
-              );
-            },
-          );
-        },
-      );
 }

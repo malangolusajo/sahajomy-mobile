@@ -50,7 +50,7 @@ const staticPages = [
 ];
 for (const [file, route, title, summary] of staticPages) add(file, route, "Public", title, summary, "Continue", ["Current information", "Related service guidance", "Contact and support"]);
 
-add("public-containers", "/public/containers", "Public", "Available containers", "Browse open container capacity before signing in to reserve.", "Browse routes", ["Origin and destination", "Available CBM", "Departure schedule"]);
+add("public-containers", "/public/containers", "Public", "Available containers", "Browse open container capacity before signing in to book.", "Browse routes", ["Origin and destination", "Available CBM", "Departure schedule"]);
 add("public-fcl-quote-request", "/fcl-quote-request", "Public", "Request an FCL quote", "Send full-container requirements to a Cargo Admin for review.", "Submit quote request", ["Route and container size", "Cargo description", "Contact details and consent"]);
 add("public-sourcing-agent-registration", "/sourcing-agent/register", "Public", "Become a sourcing agent", "Apply to join Sahajomy as a sourcing operator.", "Start application", ["Identity and contact", "Sourcing experience", "Approval and verification"]);
 add("public-cargo-company-registration", "/cargo-operator/register", "Public", "Register a cargo company", "Apply with the complete company profile, operational coverage, services, capabilities, currencies, experience, and logo.", "Submit company application", ["Company and owner identity", "China origins and African destinations", "Services, capabilities, currencies, and experience"]);
@@ -78,15 +78,15 @@ add("agent-packing-list-detail", "/agent/packing-lists/:packingListId", "Sourcin
 add("agent-express-air-cargo", "/agent/express-air-cargo", "Sourcing Agent", "Express Air Cargo", "Book air cargo for sourced goods and manage labels.", "Create air booking", ["Warehouse address", "Cargo and customer", "Booking status and label"]);
 add("agent-china-addresses", "/agent/china-addresses", "Sourcing Agent", "My China addresses", "Reuse provider- and warehouse-specific forwarding addresses and shipping marks.", "Open address", ["Provider and cargo mode", "Current warehouse address", "Reusable shipping mark"]);
 add("agent-financials", "/agent/financials", "Sourcing Agent", "Financials", "Review receipts, invoices, open documents, and payment status.", "Open documents", ["Revenue and payment", "Receipts", "Invoices"]);
-add("agent-containers", "/agent/containers", "Sourcing Agent", "Book container space", "Browse available routes and reserve CBM for agent cargo.", "Find container", ["Available routes", "Capacity and price", "Reserve for batch or direct cargo"]);
-add("agent-container-detail", "/agent/containers/:containerId", "Sourcing Agent", "Container details", "Review route, capacity, schedule, and reservation action.", "Reserve CBM", ["Route and schedule", "Available capacity", "Price and currency"]);
+add("agent-containers", "/agent/containers", "Sourcing Agent", "Book container space", "Browse available routes and book CBM for agent cargo.", "Find container", ["Available routes", "Capacity and price", "Book for batch or direct cargo"]);
+add("agent-container-detail", "/agent/containers/:containerId", "Sourcing Agent", "Container details", "Review route, capacity, schedule, and booking action.", "Book CBM", ["Route and schedule", "Available capacity", "Price and currency"]);
 add("agent-sea-bookings", "/agent/sea-bookings", "Sourcing Agent", "My sea bookings", "Track sea bookings, payment, documents, and goods state.", "Open booking", ["Pending payment", "Confirmed booking", "Arrival and collection"]);
 add("agent-track-shipment", "/agent/track-shipments", "Sourcing Agent", "Track shipments", "Search sourcing, sea, and air references in one operational view.", "Track reference", ["Enter tracking number", "Current stage", "Movement timeline"]);
 
 add("cargo-admin-warehouses", "/cargo/warehouses", "Cargo Admin", "Manage warehouses", "Create and maintain forwarding warehouses and supported cargo modes.", "Create warehouse", ["Warehouse address", "Sea, air, or both", "Contact and coordinates"]);
 add("cargo-admin-pending-approval", "/cargo/pending-approval", "Cargo Admin", "Approval pending", "Show company review status and safe account actions until Sahajomy activates cargo operations.", "Refresh approval", ["Application status", "Company profile summary", "Support and sign out"]);
 add("cargo-admin-sea-bookings", "/cargo/sea-bookings", "Cargo Admin", "Sea bookings", "Manage payment, holds, release, documents, and collection.", "Open next action", ["Pending bookings", "Payment confirmation", "Hold, release, and collect"]);
-add("cargo-admin-receipts", "/cargo/receipts", "Cargo Admin", "Receipts and invoices", "Search financial documents and download authoritative PDFs.", "Search documents", ["Recent receipts", "Invoices by reservation", "Void and share controls"]);
+add("cargo-admin-receipts", "/cargo/receipts", "Cargo Admin", "Receipts and invoices", "Search financial documents and download authoritative PDFs.", "Search documents", ["Recent receipts", "Invoices by booking", "Void and share controls"]);
 add("cargo-admin-documentation-workspace", "/cargo/documentationworkspace", "Cargo Admin", "Cargo documentation", "One workspace for packing lists, manual intake, and customer records.", "Open packing lists", ["Customs packing lists", "Manual cargo intake", "Cargo customers"]);
 add("cargo-admin-manual-intake", "/cargo/documentationworkspace/manual-cargo-intake", "Cargo Admin", "Manual cargo intake", "Register warehouse goods without a prior booking. This remains available in every automation mode.", "New cargo intake", ["Customer and warehouse", "Goods, cartons, dimensions", "Rates, receipt, and packing list"]);
 add("cargo-admin-documentation-customers", "/cargo/documentationworkspace/customers", "Cargo Admin", "Customers and contacts", "Maintain company-scoped customer records used by cargo intake and documentation.", "Add customer", ["Customer identity and reference", "Contact and shipping details", "Related intake and documents"]);
@@ -100,7 +100,6 @@ add("super-admin-sourcing-agents", "/admin/sourcing-agents", "Super Admin", "Sou
 add("super-admin-operators", "/admin/operators", "Super Admin", "Operators", "Review Cargo Admin and operational account access.", "Open operator", ["Cargo Admin accounts", "Verification and status", "Role and access controls"]);
 add("super-admin-operator-detail", "/admin/operators/:operatorId", "Super Admin", "Cargo administrator", "Review an operator account, company relationship, status, profile, and governance actions.", "Review administrator", ["Identity and company", "Services and verification", "Status and audited actions"]);
 add("super-admin-goods-classification", "/admin/goods", "Super Admin", "Goods classification", "Manage categories, goods types, and dynamic attribute templates.", "Add goods type", ["Categories", "Goods types", "Attribute templates"]);
-add("super-admin-reservations", "/admin/reservations", "Super Admin", "Platform reservations", "Audit reservations across operators without bypassing operational ownership.", "Search reservations", ["Customer and operator", "Payment state", "Goods and collection state"]);
 add("super-admin-commission", "/admin/commission", "Super Admin", "Commission settings", "Review current commission configuration and immutable history.", "Update commission", ["Current rate", "Effective configuration", "Change history"]);
 add("super-admin-track-shipment", "/admin/track-shipments", "Super Admin", "Track shipments", "Search platform shipment references for support and governance.", "Track reference", ["Search all modes", "Current status", "Operator and timeline"]);
 add("super-admin-companies", "/admin/companies", "Super Admin", "Cargo companies", "Register companies with the same complete information as the public application, then search and govern company records.", "Register cargo company", ["Company profile and owner", "Coverage, services, capabilities, and currencies", "Status and company access"]);
@@ -120,7 +119,7 @@ const navByRole = {
 const existingRouteMappings = [
   ["Public", "/login", "customer-login.html", "Registration and OTP states are also previewed by customer-register.html and customer-otp.html. MFA is specified in the Flutter contract."],
   ["Customer", "/customer/dashboard", "customer-dashboard.html", ""],
-  ["Customer", "/customer/containers", "customer-search-container.html", "Container detail, reservation, and confirmation have supplementary previews."],
+  ["Customer", "/customer/containers", "customer-search-container.html", "Container detail, booking, and confirmation have supplementary previews."],
   ["Customer", "/customer/orders", "customer-orders.html", ""],
   ["Customer", "/customer/orders/:orderId", "customer-order-details.html", ""],
   ["Customer", "/customer/track-shipments", "customer-shipment-tracking.html", ""],

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'router.dart';
-import 'theme.dart';
+import 'operational_theme.dart';
 
 void runSahajomyApp() => runApp(const ProviderScope(child: SahajomyApp()));
 
@@ -15,7 +15,7 @@ class SahajomyApp extends ConsumerWidget {
     return MaterialApp.router(
       title: 'Sahajomy',
       debugShowCheckedModeBanner: false,
-      theme: sahajomyTheme,
+      theme: operationalTheme,
       routerConfig: router,
     );
   }

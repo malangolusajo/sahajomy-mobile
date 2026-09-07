@@ -13,6 +13,7 @@ final pendingDestinationProvider = StateProvider<String?>((ref) => null);
 
 /// PII and MFA material stay in memory and are cleared after authentication.
 final pendingPhoneNumberProvider = StateProvider<String?>((ref) => null);
+final pendingEmailProvider = StateProvider<String?>((ref) => null);
 final pendingMfaChallengeProvider = StateProvider<MfaChallenge?>((ref) => null);
 
 final sessionStoreProvider = Provider<SessionStore>((ref) {

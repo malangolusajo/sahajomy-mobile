@@ -9,6 +9,7 @@ import '../../public_services/presentation/public_containers_page.dart';
 import 'live_workflow_page.dart';
 import 'api_form_page.dart';
 import '../../auth/presentation/sign_in_page.dart';
+import '../../auth/presentation/registration_page.dart';
 import '../../auth/presentation/welcome_page.dart';
 import '../../sourcing_agent/batches/presentation/sourcing_agent_batch_list_page.dart';
 import '../../sourcing_agent/batches/presentation/sourcing_agent_batch_workflow_pages.dart';
@@ -28,7 +29,8 @@ import '../../customer/notifications/presentation/customer_notifications_page.da
 import '../../customer/orders/presentation/customer_order_list_page.dart';
 import '../../customer/packing_lists/presentation/customer_packing_list_page.dart';
 import '../../customer/profile/presentation/customer_profile_page.dart';
-import '../../customer/reservations/presentation/reservation_list_page.dart';
+import '../../customer/reservations/presentation/booking_list_page.dart';
+import '../../customer/reservations/presentation/booking_detail_page.dart';
 import '../../customer/shipments/presentation/shipment_list_page.dart';
 import '../../customer/tracking/presentation/shipment_tracking_page.dart';
 import '../../super_admin/activity/presentation/super_admin_platform_activity_page.dart';
@@ -59,7 +61,6 @@ Widget dedicatedPreviewPageFor(
   'agent-packing-lists.html' => const AgentPackingListsPreviewPage(),
   'agent-pending-approval.html' => const AgentPendingApprovalPreviewPage(),
   'agent-product-management.html' => const AgentProductManagementPreviewPage(),
-  'agent-reservations.html' => const AgentReservationsPreviewPage(),
   'agent-storefront.html' => const AgentStorefrontPreviewPage(),
   'agent-track-shipment.html' => const AgentTrackShipmentPreviewPage(),
   'cargo-admin-container-management.html' =>
@@ -77,7 +78,6 @@ Widget dedicatedPreviewPageFor(
     const CargoAdminNotificationsPreviewPage(),
   'cargo-admin-packing-lists.html' => const CargoAdminPackingListsPreviewPage(),
   'cargo-admin-receipts.html' => const CargoAdminReceiptsPreviewPage(),
-  'cargo-admin-reservations.html' => const CargoAdminReservationsPreviewPage(),
   'cargo-admin-shipment-orders.html' =>
     const CargoAdminShipmentOrdersPreviewPage(),
   'cargo-admin-track-shipment.html' =>
@@ -104,10 +104,7 @@ Widget dedicatedPreviewPageFor(
   'customer-packing-list.html' => const CustomerPackingListPreviewPage(),
   'customer-profile.html' => const CustomerProfilePreviewPage(),
   'customer-register.html' => const CustomerRegisterPreviewPage(),
-  'customer-reservation-detail.html' =>
-    const CustomerReservationDetailPreviewPage(),
-  'customer-reservations.html' => const CustomerReservationsPreviewPage(),
-  'customer-reserve-cbm.html' => const CustomerReserveCbmPreviewPage(),
+  'customer-book-cbm.html' => const CustomerReserveCbmPreviewPage(),
   'customer-search-container.html' =>
     const CustomerSearchContainerPreviewPage(),
   'customer-shipment-order-detail.html' =>
@@ -161,7 +158,6 @@ Widget dedicatedPreviewPageFor(
   'super-admin-operators.html' => const SuperAdminOperatorsPreviewPage(),
   'super-admin-platform-activity.html' =>
     const SuperAdminPlatformActivityPreviewPage(),
-  'super-admin-reservations.html' => const SuperAdminReservationsPreviewPage(),
   'super-admin-settings.html' => const SuperAdminSettingsPreviewPage(),
   'super-admin-sourcing-agents.html' =>
     const SuperAdminSourcingAgentsPreviewPage(),
@@ -369,9 +365,9 @@ class AgentReservationsPreviewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => LiveWorkflowPage(
-    role: nativeScreenSpecFor('agent-reservations.html').role,
-    title: nativeScreenSpecFor('agent-reservations.html').title,
-    endpoint: 'sourcing_agent/reservations',
+    role: nativeScreenSpecFor('agent-sea-bookings.html').role,
+    title: nativeScreenSpecFor('agent-sea-bookings.html').title,
+    endpoint: 'sourcing_agent/sea-bookings',
   );
 }
 
@@ -489,9 +485,9 @@ class CargoAdminReservationsPreviewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => LiveWorkflowPage(
-    role: nativeScreenSpecFor('cargo-admin-reservations.html').role,
-    title: nativeScreenSpecFor('cargo-admin-reservations.html').title,
-    endpoint: 'cargo_admin/reservations',
+    role: nativeScreenSpecFor('cargo-admin-sea-bookings.html').role,
+    title: nativeScreenSpecFor('cargo-admin-sea-bookings.html').title,
+    endpoint: 'cargo_admin/sea-bookings',
   );
 }
 
@@ -564,7 +560,7 @@ class CustomerCollectionCodePreviewPage extends StatelessWidget {
   Widget build(BuildContext context) => LiveWorkflowPage(
     role: nativeScreenSpecFor('customer-collection-code.html').role,
     title: nativeScreenSpecFor('customer-collection-code.html').title,
-    endpoint: 'customer/reservations',
+    endpoint: 'customer/sea-bookings',
   );
 }
 
@@ -653,21 +649,21 @@ class CustomerRegisterPreviewPage extends StatelessWidget {
   const CustomerRegisterPreviewPage({super.key});
 
   @override
-  Widget build(BuildContext context) => const SignInPage();
+  Widget build(BuildContext context) => const RegistrationPage();
 }
 
 class CustomerReservationDetailPreviewPage extends StatelessWidget {
   const CustomerReservationDetailPreviewPage({super.key});
 
   @override
-  Widget build(BuildContext context) => const ReservationListPage();
+  Widget build(BuildContext context) => const BookingDetailPage(bookingId: 'preview');
 }
 
 class CustomerReservationsPreviewPage extends StatelessWidget {
   const CustomerReservationsPreviewPage({super.key});
 
   @override
-  Widget build(BuildContext context) => const ReservationListPage();
+  Widget build(BuildContext context) => const BookingListPage();
 }
 
 class CustomerReserveCbmPreviewPage extends StatelessWidget {
@@ -1110,9 +1106,9 @@ class SuperAdminReservationsPreviewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => LiveWorkflowPage(
-    role: nativeScreenSpecFor('super-admin-reservations.html').role,
-    title: nativeScreenSpecFor('super-admin-reservations.html').title,
-    endpoint: 'super_admin/reservations',
+    role: nativeScreenSpecFor('super-admin-bookings.html').role,
+    title: nativeScreenSpecFor('super-admin-bookings.html').title,
+    endpoint: 'super_admin/sea-bookings',
   );
 }
 
@@ -1199,7 +1195,7 @@ class CargoAdminBillingUsagePreviewPage extends StatelessWidget {
   Widget build(BuildContext context) => LiveWorkflowPage(
     role: nativeScreenSpecFor('cargo-admin-billing-usage.html').role,
     title: nativeScreenSpecFor('cargo-admin-billing-usage.html').title,
-    endpoint: 'cargo_admin/billing/usage',
+    endpoint: 'subscriptions/current',
   );
 }
 
@@ -1217,7 +1213,7 @@ class CargoAdminFinancialAnalyticsPreviewPage extends StatelessWidget {
   Widget build(BuildContext context) => LiveWorkflowPage(
     role: nativeScreenSpecFor('cargo-admin-financial-analytics.html').role,
     title: nativeScreenSpecFor('cargo-admin-financial-analytics.html').title,
-    endpoint: 'cargo_admin/financial/analytics',
+    endpoint: 'cargo/finance/dashboard',
   );
 }
 
@@ -1228,7 +1224,7 @@ class CargoAdminPendingApprovalPreviewPage extends StatelessWidget {
   Widget build(BuildContext context) => LiveWorkflowPage(
     role: nativeScreenSpecFor('cargo-admin-pending-approval.html').role,
     title: nativeScreenSpecFor('cargo-admin-pending-approval.html').title,
-    endpoint: 'cargo_admin/approval-status',
+    endpoint: 'auth/me',
   );
 }
 
@@ -1337,7 +1333,7 @@ class SuperAdminBookingsPreviewPage extends StatelessWidget {
   Widget build(BuildContext context) => LiveWorkflowPage(
     role: nativeScreenSpecFor('super-admin-bookings.html').role,
     title: nativeScreenSpecFor('super-admin-bookings.html').title,
-    endpoint: 'super_admin/bookings',
+    endpoint: 'super_admin/sea-bookings',
   );
 }
 
@@ -1381,6 +1377,6 @@ class SuperAdminSubscriptionsPreviewPage extends StatelessWidget {
   Widget build(BuildContext context) => LiveWorkflowPage(
     role: nativeScreenSpecFor('super-admin-subscriptions.html').role,
     title: nativeScreenSpecFor('super-admin-subscriptions.html').title,
-    endpoint: 'super_admin/subscriptions',
+    endpoint: 'super_admin/subscriptions/overview',
   );
 }

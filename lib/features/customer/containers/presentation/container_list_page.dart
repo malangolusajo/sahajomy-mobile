@@ -13,6 +13,7 @@ class ContainerListPage extends ConsumerStatefulWidget {
 }
 
 class _ContainerListPageState extends ConsumerState<ContainerListPage> {
+  String _query = '';
   CustomerContainersRepository get _repository =>
       ref.read(customerContainersRepositoryProvider);
   late Future<List<Map<String, dynamic>>> _items = Future.microtask(
@@ -50,24 +51,21 @@ class _ContainerListPageState extends ConsumerState<ContainerListPage> {
               ),
               const SizedBox(height: 6),
               const Text(
-                'Search available sailings and reserve the volume your business needs.',
+                'Search available sailings and book the volume your business needs.',
               ),
               const SizedBox(height: 20),
-              const TextField(
-                decoration: InputDecoration(
+              TextField(
+                onChanged: (value) => setState(() => _query = value.trim().toLowerCase()),
+                decoration: const InputDecoration(
                   prefixIcon: Icon(Icons.search_rounded),
                   hintText: 'Origin, destination, or container',
                 ),
               ),
               const SizedBox(height: 16),
-              for (final item in items) ...[
-                _ContainerRow(item: item, onReserved: _retry),
+              for (final item in items.where((item) => '${item['origin']} ${item['destination']} ${item['operator']} ${item['container_size']}'.toLowerCase().contains(_query))) ...[
+                _ContainerRow(item: item, onBooked: _retry),
                 const SizedBox(height: 12),
               ],
-              FilledButton(
-                onPressed: () {},
-                child: const Text('Search containers'),
-              ),
             ],
           );
         },
@@ -75,9 +73,9 @@ class _ContainerListPageState extends ConsumerState<ContainerListPage> {
 }
 
 class _ContainerRow extends StatelessWidget {
-  const _ContainerRow({required this.item, required this.onReserved});
+  const _ContainerRow({required this.item, required this.onBooked});
   final Map<String, dynamic> item;
-  final VoidCallback onReserved;
+  final VoidCallback onBooked;
   @override
   Widget build(BuildContext context) {
     final available =
@@ -103,7 +101,7 @@ class _ContainerRow extends StatelessWidget {
                     builder: (_) => ContainerDetailPage(container: item),
                   ),
                 );
-                if (created == true) onReserved();
+                if (created == true) onBooked();
               },
       ),
     );

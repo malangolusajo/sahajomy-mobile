@@ -1,6 +1,6 @@
 # Flutter Implementation Plan
 
-Reconciled with the Sahajomy platform on **2 September 2026**. This is an implementation plan, not a second product specification. FastAPI at `/api/v1` and its RBAC, validation, pricing, payment, collection, workspace, and status rules remain authoritative. The complete contract is in `../../docs/flutter-handoff`; read `00_CURRENT_RELEASE_CONTRACT.md` first.
+Reconciled with the Sahajomy platform on **7 September 2026**. This is an implementation plan, not a second product specification. FastAPI at `/api/v1` and its RBAC, validation, pricing, payment, collection, workspace, and status rules remain authoritative. The complete contract is in `../../docs/flutter-handoff`; read `00_CURRENT_RELEASE_CONTRACT.md` first.
 
 ## Proposed architecture
 
@@ -62,14 +62,14 @@ Notifications remain reachable from every top app bar and may show an unread bad
 | Capability | API family | Mobile behavior |
 |---|---|---|
 | Auth/profile | `/auth/*` | OTP, refresh, logout, current user, profile image |
-| Customer shipping | `/customer/*` | Containers, reservations, shipment orders, tracking, Express Air Cargo, China addresses |
+| Customer shipping | `/customer/*` | Containers, bookings, shipment orders, tracking, Express Air Cargo, China addresses |
 | Public commerce | `/public/agizisha/*`, `/public/*` shared/product/receipt routes | Catalogue, product detail, storefront, shared batch, receipt verification |
-| Cargo operations | `/cargo_admin/*` | Warehouses, containers, reservations, finance documents, shipment orders, tracking, FCL and air operations |
+| Cargo operations | `/cargo_admin/*` | Warehouses, containers, bookings, finance documents, shipment orders, tracking, FCL and air operations |
 | Cargo documentation | `/cargo_admin/customers`, `/manual-cargo-intakes`, `/customs-packing-lists` | Shared customer and receipt records; preserve manual intake |
 | Warehouse automation | `/cargo_admin/warehouse-automation/*` | Entitlement, QR rotation/revocation, scan match/confirm, readiness, verification/handover |
 | Customer warehouse access | `/customer/warehouse-access/*` | Own parcels only, multi-select collection request, short-lived QR/PIN |
 | Sourcing workflow | `/sourcing_agent/*` | Batches, products, Agizisha orders, packing lists, financials, bookings and tracking |
-| Governance | `/super_admin/*` | Users, roles, approvals, goods, commission, reservations, audit and analytics |
+| Governance | `/super_admin/*` | Users, roles, approvals, goods, commission, bookings, audit and analytics |
 | Automation control | `/super_admin/warehouse-automation/*` | Per-Cargo-Admin premium entitlement |
 | Notifications | `/notifications/*` plus role feeds | List, read one/all, and reconnect WebSocket safely |
 
@@ -128,7 +128,7 @@ For 1,000+ operators, keep only the recommendation subset in the initial widget 
 ## Delivery order
 
 1. App shell, theme, networking, secure OTP/MFA, refresh, workspace-aware router, staff invitation links, tenant headers, app links
-2. Customer containers/reservations/tracking, Agizisha, Express Air Cargo, China addresses
+2. Customer containers/bookings/tracking, Agizisha, Express Air Cargo, China addresses
 3. Cargo Company operations, permissions, sea bookings, four-part documentation, finance, staff/branches, billing, and manual workflows
 4. Sourcing Agent batches, Agizisha orders, documents and financials
 5. Super Admin governance

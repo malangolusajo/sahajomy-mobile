@@ -1,231 +1,59 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sahajomy_mobile/features/repository_providers.dart';
-
+import '../../../../app/theme.dart';
+import '../../../../core/ui/logistics_ui.dart';
 import '../../../../core/ui/sahajomy_ui.dart';
-import '../data/customer_tracking_repository.dart';
+import '../../../repository_providers.dart';
 
 class ShipmentTrackingPage extends ConsumerStatefulWidget {
-  const ShipmentTrackingPage({super.key});
-
+  const ShipmentTrackingPage({this.entityId, super.key});
+  final String? entityId;
   @override
-  ConsumerState<ShipmentTrackingPage> createState() =>
-      _ShipmentTrackingPageState();
+  ConsumerState<ShipmentTrackingPage> createState() => _TrackingState();
 }
-
-class _ShipmentTrackingPageState extends ConsumerState<ShipmentTrackingPage> {
-  CustomerTrackingRepository get _repository =>
-      ref.read(customerTrackingRepositoryProvider);
-  late Future<List<Map<String, dynamic>>> _events = Future.microtask(
-    () => _repository.listEvents(),
-  );
-
-  void _retry() => setState(() => _events = _repository.listEvents());
-
+class _TrackingState extends ConsumerState<ShipmentTrackingPage> {
+  late Future<List<Map<String, dynamic>>> _events;
+  String _search = '';
+  @override
+  void initState() { super.initState(); _events = _load(); }
+  Future<List<Map<String, dynamic>>> _load() => ref.read(customerTrackingRepositoryProvider).listEvents();
+  Future<void> _reload() async {
+    final next = _load(); setState(() => _events = next);
+    try { await next; } catch (_) {}
+  }
   @override
   Widget build(BuildContext context) => Scaffold(
-    appBar: const SahajomyScreenHeader(
-      role: 'Customer',
-      title: 'Track shipment',
-    ),
-    body: FutureBuilder<List<Map<String, dynamic>>>(
-      future: _events,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (snapshot.hasError) {
-          return _TrackingMessage(
-            message: 'We could not load your tracking updates.',
-            actionLabel: 'Try again',
-            onAction: _retry,
-          );
-        }
-        final events = snapshot.data ?? [];
-        if (events.isEmpty) {
-          return const _TrackingMessage(
-            message: 'Tracking updates will appear here once your cargo starts moving.',
-          );
-        }
-        final first = events.first;
-        final progress = first['progress'];
-        final progressValue = progress is num
-            ? progress.clamp(0, 100) / 100
-            : .6;
-        return ListView(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
-          children: [
-            Text(
-              'Shipment progress',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            const SizedBox(height: 6),
-            const Text(
-              'Follow your container from departure to delivery with the latest logistics updates.',
-            ),
-            const SizedBox(height: 20),
-            _ShipmentBanner(event: first, progress: progressValue),
-            const SizedBox(height: 20),
-            for (final event in events) _TrackingEventCard(event: event),
-            const SizedBox(height: 20),
-            FilledButton(
-              onPressed: () {},
-              child: const Text('View shipment details'),
-            ),
-          ],
-        );
-      },
-    ),
-  );
-}
-
-class _TrackingEventCard extends StatelessWidget {
-  const _TrackingEventCard({required this.event});
-
-  final Map<String, dynamic> event;
-
-  @override
-  Widget build(BuildContext context) {
-    final stage =
-        event['stage_label'] as String? ??
-        event['event_type'] as String? ??
-        'Tracking update';
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 18),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const CircleAvatar(
-            radius: 14,
-            backgroundColor: Color(0xFFFFEEE9),
-            child: Icon(Icons.circle, size: 10, color: Color(0xFFE85A3A)),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  stage,
-                  style: const TextStyle(fontWeight: FontWeight.w800),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  event['description'] as String? ??
-                      _formatTimestamp(event['timestamp'] as String?),
-                  style: const TextStyle(fontSize: 12),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _formatTimestamp(String? value) {
-    if (value == null || value.isEmpty) return 'Recent';
-    final parsed = DateTime.tryParse(value);
-    if (parsed == null) return value;
-    return '${parsed.year}-${parsed.month.toString().padLeft(2, '0')}-${parsed.day.toString().padLeft(2, '0')}';
-  }
-}
-
-class _ShipmentBanner extends StatelessWidget {
-  const _ShipmentBanner({required this.event, required this.progress});
-  final Map<String, dynamic> event;
-  final double progress;
-
-  @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.all(20),
-    decoration: BoxDecoration(
-      color: const Color(0xFF0F3D5E),
-      borderRadius: BorderRadius.circular(16),
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'CONTAINER',
-          style: TextStyle(
-            color: Color(0xFFBFDBFE),
-            fontSize: 12,
-            fontWeight: FontWeight.w800,
-            letterSpacing: 1,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          '${event['display_reference'] ?? 'Sahajomy shipment'}',
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
-        const SizedBox(height: 18),
-        const Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Origin',
-              style: TextStyle(color: Colors.white70, fontSize: 12),
-            ),
-            Text(
-              'In transit',
-              style: TextStyle(
-                color: Color(0xFFFFB5A4),
-                fontSize: 12,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            Text(
-              'Destination',
-              style: TextStyle(color: Colors.white70, fontSize: 12),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        LinearProgressIndicator(
-          value: progress,
-          minHeight: 6,
-          borderRadius: BorderRadius.circular(10),
-          backgroundColor: Colors.white24,
-          color: const Color(0xFFFF6B4A),
-        ),
-      ],
-    ),
-  );
-}
-
-class _TrackingMessage extends StatelessWidget {
-  const _TrackingMessage({
-    required this.message,
-    this.actionLabel,
-    this.onAction,
-  });
-
-  final String message;
-  final String? actionLabel;
-  final VoidCallback? onAction;
-
-  @override
-  Widget build(BuildContext context) => Center(
-    child: Padding(
-      padding: const EdgeInsets.all(32),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.route_outlined, size: 44),
-          const SizedBox(height: 14),
-          Text(message, textAlign: TextAlign.center),
-          if (onAction != null) ...[
-            const SizedBox(height: 16),
-            OutlinedButton(onPressed: onAction, child: Text(actionLabel!)),
-          ],
-        ],
-      ),
-    ),
+    appBar: const SahajomyScreenHeader(title: 'Shipment tracking'),
+    body: FutureBuilder<List<Map<String, dynamic>>>(future: _events, builder: (context, snapshot) {
+      if (snapshot.connectionState != ConnectionState.done) return const Center(child: CircularProgressIndicator());
+      if (snapshot.hasError) return SahajomyMessageState(icon: Icons.cloud_off_outlined, message: logisticsError(snapshot.error, 'shipment updates'), actionLabel: 'Reload tracking', onAction: _reload);
+      final events = (snapshot.data ?? []).where((e) => (widget.entityId == null || '${e['entity_id']}' == widget.entityId) && '${e['description']} ${e['display_reference']} ${e['event_type']}'.toLowerCase().contains(_search.toLowerCase())).toList();
+      return RefreshIndicator(onRefresh: _reload, child: ListView.builder(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(24), itemCount: events.length + 1,
+        itemBuilder: (context, index) {
+          if (index == 0) return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const LogisticsIntro(eyebrow: 'Shipment visibility', title: 'Follow your cargo', description: 'Latest warehouse and freight updates, as reported by your cargo provider.'),
+            TextField(onChanged: (value) => setState(() => _search = value), decoration: const InputDecoration(labelText: 'Search shipment updates', prefixIcon: Icon(Icons.search))),
+            const SizedBox(height: 24),
+            if (events.isEmpty) const SahajomyMessageState(icon: Icons.route_outlined, message: 'No shipment updates match this view. Warehouse and shipping events will appear as they are recorded.'),
+          ]);
+          final event = events[index - 1];
+          return IntrinsicHeight(child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            SizedBox(width: 26, child: Column(children: [
+              const Icon(Icons.check_circle_outline_rounded, color: brandTeal, size: 22),
+              if (index < events.length) const Expanded(child: VerticalDivider(color: appBorder, thickness: 2)),
+            ])),
+            const SizedBox(width: 14),
+            Expanded(child: Padding(padding: const EdgeInsets.only(bottom: 28), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(sahajomyTitleCase('${event['stage_label'] ?? event['event_type'] ?? 'Shipment update'}'), style: Theme.of(context).textTheme.titleMedium),
+              if (event['display_reference'] != null) Text('${event['display_reference']}', style: const TextStyle(fontWeight: FontWeight.w700)),
+              if (event['description'] != null) ...[const SizedBox(height: 6), Text('${event['description']}')],
+              const SizedBox(height: 8), Text(logisticsDate(event['timestamp']), style: Theme.of(context).textTheme.bodySmall),
+            ]))),
+          ]));
+        },
+      ));
+    }),
   );
 }

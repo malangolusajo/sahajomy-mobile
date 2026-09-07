@@ -91,7 +91,7 @@ class _SourcingAgentMorePage extends StatelessWidget {
       ),
       FeatureMenuEntry(
         title: 'Sea bookings',
-        subtitle: 'Track sea freight reservations.',
+        subtitle: 'Track sea freight bookings.',
         icon: Icons.directions_boat_outlined,
         route: '/agent/sea-bookings',
       ),
@@ -109,15 +109,15 @@ class _SourcingAgentMorePage extends StatelessWidget {
       ),
       FeatureMenuEntry(
         title: 'Containers',
-        subtitle: 'Browse and reserve available capacity.',
+        subtitle: 'Browse and book available capacity.',
         icon: Icons.inventory_2_outlined,
         route: '/agent/containers',
       ),
       FeatureMenuEntry(
-        title: 'Reservations',
-        subtitle: 'Review active space reservations.',
+        title: 'Bookings',
+        subtitle: 'Review active space bookings.',
         icon: Icons.event_available_outlined,
-        route: '/reference/agent-reservations',
+        route: '/agent/sea-bookings',
       ),
       FeatureMenuEntry(
         title: 'Tracking',

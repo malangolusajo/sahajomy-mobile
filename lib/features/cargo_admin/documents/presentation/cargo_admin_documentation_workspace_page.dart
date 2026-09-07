@@ -617,8 +617,7 @@ class _CargoAdminManualIntakePageState
                     controller: _bookingController,
                     decoration: const InputDecoration(
                       labelText: 'Linked booking UUID',
-                      helperText:
-                          'Optional confirmed reservation or air-booking link.',
+                      helperText: 'Optional confirmed sea or air booking link.',
                     ),
                   ),
                 ],

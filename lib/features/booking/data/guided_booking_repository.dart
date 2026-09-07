@@ -17,20 +17,18 @@ class GuidedBookingRepository {
         : 'sourcing_agent/containers';
     final response = await client.get<Object>(
       endpoint,
-      queryParameters: {
-        'page': page,
-        'page_size': 20,
-        if (search != null && search.trim().isNotEmpty) 'search': search.trim(),
-      },
     );
     return _records(response);
   }
 
   Future<Map<String, dynamic>> prepareSeaAddress({
     required String containerId,
+    required String destinationCity,
+    required String destinationCountry,
   }) => client.post<Map<String, dynamic>>(
     'forwarding/prepare-address',
-    data: {'cargo_mode': 'sea', 'container_id': containerId},
+    data: {'cargo_mode': 'sea', 'container_id': containerId,
+      'destination_city': destinationCity, 'destination_country': destinationCountry},
   );
 
   Future<Map<String, dynamic>> confirmSeaBooking({
@@ -39,7 +37,7 @@ class GuidedBookingRepository {
   }) {
     final endpoint = account == BookingAccount.customer
         ? 'customer/sea-bookings'
-        : 'sourcing_agent/containers/reserve-cbm';
+        : 'sourcing_agent/containers/book-cbm';
     return client.post<Map<String, dynamic>>(endpoint, data: payload);
   }
 

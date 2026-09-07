@@ -45,7 +45,7 @@ class _ChinaAddressListPageState extends ConsumerState<ChinaAddressListPage> {
         final addresses = snapshot.data ?? [];
         if (addresses.isEmpty) {
           return const _MessageState(
-            message: 'Your China delivery addresses will appear here when you reserve sea or air cargo.',
+            message: 'Your China delivery addresses will appear here when you book sea or air cargo.',
           );
         }
         return ListView(

@@ -27,7 +27,7 @@ const nativeScreenSpecs = <NativeScreenSpec>[
   NativeScreenSpec(
     fileName: 'agent-batch-details.html',
     role: 'Sourcing Agent',
-    title: 'August electronics batch',
+    title: 'Sourcing batch details',
   ),
   NativeScreenSpec(
     fileName: 'agent-batch-financials.html',
@@ -110,11 +110,6 @@ const nativeScreenSpecs = <NativeScreenSpec>[
     title: 'Product management',
   ),
   NativeScreenSpec(
-    fileName: 'agent-reservations.html',
-    role: 'Sourcing Agent',
-    title: 'My reservations',
-  ),
-  NativeScreenSpec(
     fileName: 'agent-storefront.html',
     role: 'Sourcing Agent',
     title: 'Public storefront',
@@ -175,11 +170,6 @@ const nativeScreenSpecs = <NativeScreenSpec>[
     title: 'Receipts and invoices',
   ),
   NativeScreenSpec(
-    fileName: 'cargo-admin-reservations.html',
-    role: 'Cargo Admin',
-    title: 'Reservations',
-  ),
-  NativeScreenSpec(
     fileName: 'cargo-admin-shipment-orders.html',
     role: 'Cargo Admin',
     title: 'Shipment orders',
@@ -207,7 +197,7 @@ const nativeScreenSpecs = <NativeScreenSpec>[
   NativeScreenSpec(
     fileName: 'customer-booking-confirmation.html',
     role: 'Customer',
-    title: 'Space reserved',
+    title: 'Space booked',
   ),
   NativeScreenSpec(
     fileName: 'customer-china-addresses.html',
@@ -280,19 +270,9 @@ const nativeScreenSpecs = <NativeScreenSpec>[
     title: 'Start shipping with confidence',
   ),
   NativeScreenSpec(
-    fileName: 'customer-reservation-detail.html',
+    fileName: 'customer-book-cbm.html',
     role: 'Customer',
-    title: 'Reservation details',
-  ),
-  NativeScreenSpec(
-    fileName: 'customer-reservations.html',
-    role: 'Customer',
-    title: 'My reservations',
-  ),
-  NativeScreenSpec(
-    fileName: 'customer-reserve-cbm.html',
-    role: 'Customer',
-    title: 'Reserve your CBM',
+    title: 'Book your CBM',
   ),
   NativeScreenSpec(
     fileName: 'customer-search-container.html',
@@ -498,11 +478,6 @@ const nativeScreenSpecs = <NativeScreenSpec>[
     fileName: 'super-admin-platform-activity.html',
     role: 'Super Admin',
     title: 'Platform activity',
-  ),
-  NativeScreenSpec(
-    fileName: 'super-admin-reservations.html',
-    role: 'Super Admin',
-    title: 'Platform reservations',
   ),
   NativeScreenSpec(
     fileName: 'super-admin-settings.html',

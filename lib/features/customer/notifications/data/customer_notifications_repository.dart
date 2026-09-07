@@ -15,5 +15,5 @@ class CustomerNotificationsRepository {
       client.put('customer/notifications/mark-all-read');
 
   Future<void> deleteNotification(String notificationId) =>
-      client.delete('customer/notifications/$notificationId');
+      client.delete('notifications/$notificationId');
 }

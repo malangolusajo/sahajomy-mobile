@@ -51,9 +51,9 @@ class _CustomerMorePageState extends ConsumerState<CustomerMorePage> {
       const SizedBox(height: 20),
       _MenuItem(
         icon: Icons.event_available_outlined,
-        title: 'Reservations',
-        subtitle: 'View your container space reservations.',
-        onTap: () => context.push('/customer/reservations'),
+        title: 'Bookings',
+        subtitle: 'View your container-space bookings.',
+        onTap: () => context.push('/customer/bookings'),
       ),
       _MenuItem(
         icon: Icons.inventory_2_outlined,

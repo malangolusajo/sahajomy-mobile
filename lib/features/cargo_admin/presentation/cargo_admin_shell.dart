@@ -29,7 +29,8 @@ class _CargoAdminShellState extends State<CargoAdminShell> {
         LiveWorkflowPage(
           role: 'Cargo Admin',
           title: 'Bookings',
-          endpoint: 'cargo_admin/reservations',
+          endpoint: 'cargo_admin/sea-bookings',
+          embedded: true,
         ),
         CargoAdminContainerListPage(),
         CargoAdminReceiptsPage(),

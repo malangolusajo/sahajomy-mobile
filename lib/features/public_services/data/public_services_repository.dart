@@ -8,8 +8,10 @@ class PublicServicesRepository {
   Future<List<Map<String, dynamic>>> listContainers() =>
       client.getList('public/containers', options: ApiClient.publicOptions());
 
-  Future<List<Map<String, dynamic>>> listMarketplaceProducts() => client
-      .getList('public/agizisha/products', options: ApiClient.publicOptions());
+  Future<List<Map<String, dynamic>>> listMarketplaceProducts() async {
+    final response = await client.getObject('public/agizisha/products', options: ApiClient.publicOptions());
+    return (response['products'] as List? ?? const []).whereType<Map>().map((item) => Map<String, dynamic>.from(item)).toList();
+  }
 
   Future<List<Map<String, dynamic>>> listMarketplaceAgents() => client.getList(
     'public/agizisha/agents',

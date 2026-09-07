@@ -9,13 +9,17 @@ Both Customer and Sourcing Agent flows must use the same mutation boundary:
 1. Fetch services: Sea uses `/customer/containers` or `/sourcing_agent/containers`; Air uses `/forwarding/air-services`.
 2. When an operator is selected, call `POST /forwarding/prepare-address` with the cargo mode and the selected `container_id` or `cargo_admin_id`/`warehouse_id` pair.
 3. Keep the prepared address in memory and advance to cargo details. Customer Sea Review should use its shipping mark and route full-address management to My China Addresses instead of duplicating the saved address.
-4. **Continue to review** is local state only. It validates the draft and performs no reservation/booking POST.
+4. **Continue to review** is local state only. It validates the draft and performs no booking POST.
 5. **Confirm booking** performs the final mutation:
    - Customer Sea: `POST /customer/sea-bookings`
-   - Sourcing Agent Sea: `POST /sourcing_agent/containers/reserve-cbm` or the selected closed-batch reserve endpoint
+   - Sourcing Agent Sea: `POST /sourcing_agent/containers/book-cbm` or `POST /sourcing_agent/batches/{batch_id}/book-cbm`
    - Customer Air: `POST /customer/express-air-cargo/book`
    - Sourcing Agent Air: `POST /sourcing_agent/express-air-cargo/book`
 6. Replace draft values with authoritative returned identifiers, pricing, status, and address data on success.
+
+Current OpenAPI request schemas use `CreateSeaBookingRequest` for Customer Sea
+and `BookCBMRequest` for both Sourcing Agent Sea endpoints. Do not generate or
+retain clients with the removed legacy request-schema names.
 
 Never retry the final POST automatically. Preserve the reviewed draft after an ambiguous timeout and require the app to reconcile booking lists before allowing another confirmation.
 
@@ -49,7 +53,7 @@ identity.
 
 1. `POST /cargo_admin/warehouse-automation/intake/match`
    - request: `warehouse_id`, `scan_text`
-   - response: confidence, duplicate flag, extracted values, suggested Cargo Customer and optional reservation/air-booking linkage
+   - response: confidence, duplicate flag, extracted values, suggested Cargo Customer and optional sea/air booking linkage
 2. Staff reviews and edits all values.
 3. `POST /cargo_admin/warehouse-automation/intake/confirm`
    - requires warehouse/customer UUIDs, cargo type, item name/description, carton count and non-negative weight
@@ -58,6 +62,10 @@ identity.
 4. Update release eligibility with `PATCH /cargo_admin/warehouse-automation/intakes/{intake_id}/collection-readiness`.
 
 The mobile client must never silently confirm medium/low-confidence suggestions.
+
+Container consolidated-packing-list responses expose
+`container.fill_from_booked_percentage`; clients must not expect the removed
+legacy fill-percentage property.
 
 ## Device-based warehouse operations
 

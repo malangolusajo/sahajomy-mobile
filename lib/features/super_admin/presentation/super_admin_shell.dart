@@ -117,8 +117,8 @@ class _SuperAdminMorePage extends StatelessWidget {
         route: '/reference/super-admin-warehouse-automation',
       ),
       FeatureMenuEntry(
-        title: 'Reservations',
-        subtitle: 'Review platform reservation activity.',
+        title: 'Bookings',
+        subtitle: 'Review platform booking activity.',
         icon: Icons.event_available_outlined,
         route: '/admin/reservations',
       ),

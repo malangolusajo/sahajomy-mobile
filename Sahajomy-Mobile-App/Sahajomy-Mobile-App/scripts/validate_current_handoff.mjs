@@ -39,8 +39,8 @@ for (const preview of previewLinks) {
 }
 
 const previews = readdirSync(previewRoot).filter((name) => name.endsWith(".html"));
-if (previews.length !== 125) {
-  errors.push(`Expected 125 HTML previews, found ${previews.length}`);
+if (previews.length !== 120) {
+  errors.push(`Expected 120 HTML previews, found ${previews.length}`);
 }
 
 const openapi = JSON.parse(
@@ -73,4 +73,3 @@ if (errors.length) {
     `Handoff valid: ${new Set(currentRoutes).size} current routes, ${previews.length} previews, ${operations} API operations.`
   );
 }
-

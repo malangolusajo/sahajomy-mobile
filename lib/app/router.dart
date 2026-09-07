@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -9,6 +10,7 @@ import '../core/security/app_link_guard.dart';
 import '../features/auth/data/auth_repository.dart';
 import '../features/auth/presentation/mfa_page.dart';
 import '../features/auth/presentation/otp_page.dart';
+import '../features/auth/presentation/registration_page.dart';
 import '../features/auth/presentation/sign_in_page.dart';
 import '../features/auth/presentation/welcome_page.dart';
 import '../features/cargo_admin/presentation/cargo_admin_shell.dart';
@@ -21,9 +23,14 @@ import '../features/onboarding/presentation/splash_page.dart';
 import '../features/reference/presentation/dedicated_preview_pages.dart';
 import '../features/reference/presentation/native_reference_screen.dart';
 import '../features/reference/presentation/native_screen_specs.dart';
+import '../features/reference/presentation/record_detail_page.dart';
+import '../features/customer/reservations/presentation/booking_detail_page.dart';
+import '../features/customer/reservations/presentation/booking_list_page.dart';
+import '../features/customer/shipments/presentation/shipment_list_page.dart';
 import '../features/sourcing_agent/presentation/sourcing_agent_shell.dart';
 import '../features/super_admin/presentation/super_admin_shell.dart';
 import 'app_route_aliases.dart';
+import 'theme.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final sessionStore = ref.watch(sessionStoreProvider);
@@ -42,6 +49,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       final isAuthRoute =
           location == '/sign-in' ||
           location == '/login' ||
+          location == '/register' ||
           location == '/otp' ||
           location == '/mfa' ||
           location == '/onboarding';
@@ -94,10 +102,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
-      GoRoute(path: '/splash', builder: (context, state) => const SplashPage()),
+      GoRoute(path: '/splash', builder: (context, state) => Theme(data: sahajomyTheme, child: const SplashPage())),
       GoRoute(
         path: '/onboarding',
-        builder: (context, state) => const OnboardingPage(),
+        builder: (context, state) => Theme(data: sahajomyTheme, child: const OnboardingPage()),
       ),
       GoRoute(
         path: '/welcome',
@@ -106,6 +114,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/sign-in',
         builder: (context, state) => const SignInPage(),
+      ),
+      GoRoute(
+        path: '/register',
+        builder: (context, state) => const RegistrationPage(),
       ),
       GoRoute(path: '/otp', builder: (context, state) => const OtpPage()),
       GoRoute(path: '/mfa', builder: (context, state) => const MfaPage()),
@@ -144,10 +156,29 @@ final routerProvider = Provider<GoRouter>((ref) {
           initialContainerId: state.uri.queryParameters['container_id'],
         ),
       ),
+      GoRoute(path: '/customer/shipments', builder: (_, _) => Scaffold(appBar: AppBar(title: const Text('My shipments')), body: const ShipmentListPage())),
       for (final entry in appRouteAliases.entries)
         GoRoute(
           path: entry.key,
           builder: (context, state) {
+            if (entry.value == 'customer-sea-bookings.html' || entry.value == 'customer-reservations.html') {
+              return Scaffold(appBar: AppBar(title: const Text('Sea freight bookings')), body: const BookingListPage());
+            }
+            final bookingId = state.pathParameters['seaBookingId'];
+            if (entry.value == 'customer-sea-booking-detail.html' && bookingId != null) {
+              return BookingDetailPage(bookingId: bookingId);
+            }
+            final detail = switch (entry.key) {
+              '/customer/shipment-orders/:shipmentOrderId' => ('Shipment details', 'customer/shipment-orders/${Uri.encodeComponent(state.pathParameters['shipmentOrderId']!)}'),
+              '/admin/companies/:companyId' => ('Cargo company', 'super_admin/companies/${Uri.encodeComponent(state.pathParameters['companyId']!)}'),
+              '/agizisha/product/:id' => ('Product details', 'public/agizisha/products/${Uri.encodeComponent(state.pathParameters['id']!)}'),
+              '/product/:productId' => ('Product details', 'public/agizisha/products/${Uri.encodeComponent(state.pathParameters['productId']!)}'),
+              '/agizisha/agents/:handle' => ('Sourcing agent', 'public/agizisha/agents/${Uri.encodeComponent(state.pathParameters['handle']!)}'),
+              '/shared/:token' => ('Shared sourcing batch', 'public/batch/${Uri.encodeComponent(state.pathParameters['token']!)}'),
+              '/agent/packing-lists/:packingListId' => ('Packing list', 'sourcing_agent/packing-lists/${Uri.encodeComponent(state.pathParameters['packingListId']!)}'),
+              _ => null,
+            };
+            if (detail != null) return RecordDetailPage(title: detail.$1, endpoint: detail.$2);
             if (entry.value == 'customer-warehouse-parcels.html') {
               return CustomerWarehouseParcelsPage(
                 opaqueToken: state.pathParameters['token'] ?? '',

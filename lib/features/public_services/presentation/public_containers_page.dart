@@ -69,7 +69,7 @@ class _PublicContainersPageState extends ConsumerState<PublicContainersPage> {
                 ),
                 onTap: () => ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Sign in to reserve container space.'),
+                    content: Text('Sign in to book container space.'),
                   ),
                 ),
               ),

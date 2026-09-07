@@ -40,22 +40,7 @@ class SahajomyWordmark extends StatelessWidget {
   final double markSize;
 
   @override
-  Widget build(BuildContext context) => Row(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      SahajomyBrandMark(size: markSize, showShadow: false),
-      const SizedBox(width: 10),
-      Text(
-        'SAHAJOMY',
-        style: TextStyle(
-          color: light ? Colors.white : brandNavy,
-          fontSize: 16,
-          fontWeight: FontWeight.w900,
-          letterSpacing: 1.8,
-        ),
-      ),
-    ],
-  );
+  Widget build(BuildContext context) => SahajomyBrandMark(size: markSize, showShadow: false);
 }
 
 class SahajomyScreenHeader extends StatelessWidget
@@ -79,7 +64,7 @@ class SahajomyScreenHeader extends StatelessWidget
   @override
   Widget build(BuildContext context) => AppBar(
     automaticallyImplyLeading: false,
-    leading: showBack
+    leading: showBack && Navigator.of(context).canPop()
         ? IconButton(
             onPressed: () => Navigator.maybePop(context),
             icon: const Icon(Icons.chevron_left_rounded, size: 30),
@@ -107,14 +92,14 @@ class SahajomyScreenHeader extends StatelessWidget
         ),
       ],
     ),
-    centerTitle: true,
+    centerTitle: false,
     actions: onNotificationTap == null
         ? null
         : [
             IconButton(
               tooltip: 'Notifications',
               onPressed: onNotificationTap,
-              icon: const Badge(child: Icon(Icons.notifications_none_rounded)),
+              icon: const Icon(Icons.notifications_none_rounded),
             ),
           ],
   );
@@ -159,14 +144,14 @@ class SahajomyWorkspaceHeader extends StatelessWidget
         ),
       ],
     ),
-    centerTitle: true,
+    centerTitle: false,
     actions: onNotificationTap == null
         ? null
         : [
             IconButton(
               tooltip: 'Notifications',
               onPressed: onNotificationTap,
-              icon: const Badge(child: Icon(Icons.notifications_none_rounded)),
+              icon: const Icon(Icons.notifications_none_rounded),
             ),
           ],
   );
@@ -174,7 +159,7 @@ class SahajomyWorkspaceHeader extends StatelessWidget
 
 String? _professionalRoleLabel(String? role) => switch (role) {
   null || '' => null,
-  'Customer' => 'MY SAHAJOMY',
+  'Customer' => 'MY ACCOUNT',
   'Public' || 'Shared' => 'SAHAJOMY',
   'Cargo Admin' => 'CARGO OPERATIONS',
   'Sourcing Agent' => 'SOURCING WORKSPACE',
@@ -195,47 +180,12 @@ class SahajomyPreviewNavigation extends StatelessWidget {
   final List<SahajomyNavigationDestination> destinations;
 
   @override
-  Widget build(BuildContext context) => Container(
-    height: 72,
-    decoration: const BoxDecoration(
-      color: Colors.white,
-      border: Border(top: BorderSide(color: Color(0xFFE2E8F0))),
-    ),
-    padding: const EdgeInsets.fromLTRB(12, 7, 12, 13),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: List.generate(destinations.length, (index) {
-        final destination = destinations[index];
-        final selected = index == selectedIndex;
-        final color = selected ? brandCoral : const Color(0xFF94A3B8);
-        return Expanded(
-          child: Semantics(
-            selected: selected,
-            button: true,
-            label: destination.label,
-            child: InkWell(
-              onTap: () => onSelected(index),
-              borderRadius: BorderRadius.circular(8),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(destination.icon, color: color, size: 20),
-                  const SizedBox(height: 2),
-                  Text(
-                    destination.label,
-                    style: TextStyle(
-                      color: color,
-                      fontSize: 10,
-                      fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      }),
-    ),
+  Widget build(BuildContext context) => NavigationBar(
+    selectedIndex: selectedIndex,
+    onDestinationSelected: onSelected,
+    destinations: [for (final destination in destinations)
+      NavigationDestination(icon: Icon(destination.icon), label: destination.label),
+    ],
   );
 }
 
@@ -329,21 +279,20 @@ class SahajomyStatusPill extends StatelessWidget {
   final String label;
 
   @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-    decoration: BoxDecoration(
-      color: const Color(0xFFFFEEE9),
-      borderRadius: BorderRadius.circular(999),
-    ),
-    child: Text(
-      label,
-      style: const TextStyle(
-        color: Color(0xFFE85A3A),
-        fontSize: 10,
-        fontWeight: FontWeight.w800,
-      ),
-    ),
-  );
+  Widget build(BuildContext context) {
+    final status = label.trim().toLowerCase().replaceAll(' ', '_');
+    final color = switch (status) {
+      'paid' || 'completed' || 'collected' || 'delivered' || 'active' || 'approved' => const Color(0xFF08705F),
+      'pending' || 'nearly_full' || 'awaiting_payment' || 'on_hold' => const Color(0xFF8F5308),
+      'cancelled' || 'rejected' || 'failed' || 'expired' || 'overdue' => appError,
+      _ => brandNavy,
+    };
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(color: color.withValues(alpha: .09), borderRadius: BorderRadius.circular(999)),
+      child: Text(sahajomyTitleCase(label), style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.w700)),
+    );
+  }
 }
 
 class SahajomySectionCard extends StatelessWidget {

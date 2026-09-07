@@ -12,7 +12,7 @@ import 'customer/containers/data/customer_containers_repository.dart';
 import 'customer/dashboard/data/customer_dashboard_repository.dart';
 import 'customer/notifications/data/customer_notifications_repository.dart';
 import 'customer/orders/data/customer_orders_repository.dart';
-import 'customer/reservations/data/customer_reservations_repository.dart';
+import 'customer/reservations/data/customer_booking_repository.dart';
 import 'customer/shipments/data/customer_shipments_repository.dart';
 import 'customer/tracking/data/customer_tracking_repository.dart';
 import 'customer/warehouse_access/data/customer_warehouse_access_repository.dart';
@@ -84,10 +84,10 @@ final customerOrdersRepositoryProvider = Provider<CustomerOrdersRepository>(
   (ref) => CustomerOrdersRepository(client: ref.watch(apiClientProvider)),
 );
 
-final customerReservationsRepositoryProvider =
-    Provider<CustomerReservationsRepository>(
+final customerBookingRepositoryProvider =
+    Provider<CustomerBookingRepository>(
       (ref) =>
-          CustomerReservationsRepository(client: ref.watch(apiClientProvider)),
+          CustomerBookingRepository(client: ref.watch(apiClientProvider)),
     );
 
 final customerShipmentsRepositoryProvider =

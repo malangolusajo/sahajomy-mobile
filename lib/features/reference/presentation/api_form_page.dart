@@ -60,7 +60,7 @@ class _ApiFormPageState extends ConsumerState<ApiFormPage> {
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (_submitting || !_formKey.currentState!.validate()) return;
     setState(() => _submitting = true);
     try {
       final strings = {
@@ -105,7 +105,7 @@ class _ApiFormPageState extends ConsumerState<ApiFormPage> {
         children: [
           Text(widget.title, style: Theme.of(context).textTheme.headlineMedium),
           const SizedBox(height: 6),
-          const Text('Complete the required details and submit them securely.'),
+          Text('Provide the details for ${widget.title.toLowerCase()}. Fields marked * are required.'),
           const SizedBox(height: 20),
           for (final field in widget.fields) ...[
             TextFormField(
@@ -126,7 +126,7 @@ class _ApiFormPageState extends ConsumerState<ApiFormPage> {
                 if (field.numeric &&
                     value != null &&
                     value.isNotEmpty &&
-                    num.tryParse(value) == null) {
+                  (num.tryParse(value) == null || !num.parse(value).isFinite)) {
                   return 'Enter a valid number.';
                 }
                 return null;
@@ -137,7 +137,7 @@ class _ApiFormPageState extends ConsumerState<ApiFormPage> {
           const SizedBox(height: 8),
           FilledButton(
             onPressed: _submitting ? null : _submit,
-            child: Text(_submitting ? 'Submitting...' : 'Submit'),
+            child: Text(_submitting ? 'Saving details…' : widget.title),
           ),
         ],
       ),

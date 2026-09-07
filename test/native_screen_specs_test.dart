@@ -16,10 +16,10 @@ import 'package:sahajomy_mobile/features/reference/presentation/native_screen_sp
 
 void main() {
   test('registers every approved mobile screen', () {
-    expect(nativeScreenSpecs, hasLength(125));
+    expect(nativeScreenSpecs, hasLength(120));
     expect(
       nativeScreenSpecs.map((screen) => screen.routeName).toSet(),
-      hasLength(125),
+      hasLength(120),
     );
   });
 
@@ -44,7 +44,7 @@ void main() {
         .map((spec) => dedicatedPreviewPageFor(spec).runtimeType)
         .toSet();
 
-    expect(pageTypes, hasLength(125));
+    expect(pageTypes, hasLength(120));
   });
 
   testWidgets('builds every approved screen as native Flutter UI', (

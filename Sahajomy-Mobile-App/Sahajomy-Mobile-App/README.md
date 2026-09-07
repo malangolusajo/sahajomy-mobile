@@ -1,19 +1,18 @@
 # Sahajomy Mobile App Prototype
 
-Last reconciled with the web platform and FastAPI backend: **2 September 2026**
-at commit `6dc84cc`.
+Last reconciled with the web platform and FastAPI backend: **7 September 2026**.
 
 This folder is the approval and implementation-handoff package for Sahajomy's Android-first mobile app. It remains deliberately pre-Flutter: HTML previews are used to review flows and visual direction before native implementation starts.
 
 ## What is included
 
-- `html-previews/` — 125 standalone, browser-ready mobile screens covering every current public, shared, Customer, Cargo Admin, Sourcing Agent, and Super Admin route, plus supporting flow states.
+- `html-previews/` — 120 standalone, browser-ready mobile screens covering every current public, shared, Customer, Cargo Admin, Sourcing Agent, and Super Admin route, plus supporting flow states.
 - `design-system/` — touch, typography, color, layout, scanner, QR, status, and accessibility rules.
 - `flutter-plan/` — current Flutter architecture, navigation, API mapping, authentication, deep-linking, entitlement, and delivery plan.
 - `api-contracts/` — mobile-facing API integration notes. The backend remains the source of truth.
 - `CURRENT_PLATFORM_AUDIT.md` — dated parity review against the current React routes and FastAPI APIs.
 - `GENERATED_SCREEN_INVENTORY.md` — complete current-route-to-preview matrix.
-- `scripts/generate_current_previews.mjs` — reproducible generator for the 62 route previews added during the current-platform reconciliation.
+- `scripts/generate_current_previews.mjs` — reproducible generator for the 79 current-route previews.
 - `assets/` — handoff location for approved production assets.
 
 ## Review locally
@@ -26,10 +25,10 @@ The **Prototype states** controls demonstrate loading, empty, and error treatmen
 
 - **Public — 31 previews:** landing, Agizisha discovery, logistics services, help, legal, warehouses, receipt verification, staff invitation, and company/agent registration.
 - **Shared — 4 previews:** workspace selection, authenticated product detail, and air/sea shipping labels.
-- **Customer — 26 previews:** authentication/MFA handoff, shipping, sea bookings, orders, documents, profile, Agizisha, air cargo, China addresses, warehouse parcel access, and collection QR/PIN.
-- **Cargo Admin — 21 previews:** dashboard, warehouses, containers, sea bookings, receipts, four-part documentation workspace, device-based warehouse operations, finance, staff/branches, billing, air cargo, shipments, FCL, and tracking.
-- **Sourcing Agent — 24 previews:** approval, storefront, Agizisha orders, batches, products, financials, packing lists, sea bookings, China addresses, air cargo, and tracking.
-- **Super Admin — 19 previews:** dashboard, users, agents, cargo administrators, companies, bookings, approvals, goods, commission, audit activity, tracking, subscriptions, and costs.
+- **Customer — 24 previews:** authentication/MFA handoff, shipping, sea bookings, orders, documents, profile, Agizisha, air cargo, China addresses, warehouse parcel access, and collection QR/PIN.
+- **Cargo Admin — 20 previews:** dashboard, warehouses, containers, sea bookings, receipts, four-part documentation workspace, device-based warehouse operations, finance, staff/branches, billing, air cargo, shipments, FCL, and tracking.
+- **Sourcing Agent — 23 previews:** approval, storefront, Agizisha orders, batches, products, financials, packing lists, sea bookings, China addresses, air cargo, and tracking.
+- **Super Admin — 18 previews:** dashboard, users, agents, cargo administrators, companies, bookings, approvals, goods, commission, audit activity, tracking, subscriptions, and costs.
 
 The route matrix maps every current non-redirect React route to a preview and identifies redirect-only routes that intentionally reuse their destination screen. Additional files cover important subflows and UI states that do not have separate web URLs.
 

@@ -1,6 +1,6 @@
 # Sahajomy Mobile Design System
 
-Reconciled **2 September 2026**. This touch-first system carries the current web platform's navy/coral identity into Flutter while favouring flat operational layouts, dividers, and compact status information over card-heavy dashboards.
+Reconciled **7 September 2026**. This touch-first system carries the current web platform's navy/coral identity into Flutter while favouring flat operational layouts, dividers, and compact status information over card-heavy dashboards.
 
 ## Typography
 
@@ -36,7 +36,7 @@ Color never carries status alone; always include a text label and, where helpful
 - 4px base: 4, 8, 12, 16, 20, 24, 32, 40, 48.
 - Standard page gutter: 20px; compact devices may use 16px.
 - Use full-width divided lists for repeated operational rows.
-- Cards are reserved for a single grouped decision, generated QR, or confirmation summary—not every metric.
+- Use cards only for a single grouped decision, generated QR, or confirmation summary—not every metric.
 - Respect Android safe areas, keyboard insets, text scaling, and landscape camera mode.
 
 ## Controls

@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sahajomy_mobile/features/repository_providers.dart';
 
 import '../../../../core/ui/sahajomy_ui.dart';
-import '../../reservations/data/customer_reservations_repository.dart';
-import '../../reservations/presentation/reservation_detail_page.dart';
+import '../../reservations/data/customer_booking_repository.dart';
+import '../../reservations/presentation/booking_detail_page.dart';
 
 class CustomerDocumentsPage extends ConsumerStatefulWidget {
   const CustomerDocumentsPage({super.key});
@@ -15,29 +15,29 @@ class CustomerDocumentsPage extends ConsumerStatefulWidget {
 }
 
 class _CustomerDocumentsPageState extends ConsumerState<CustomerDocumentsPage> {
-  CustomerReservationsRepository get _repository =>
-      ref.read(customerReservationsRepositoryProvider);
+  CustomerBookingRepository get _repository =>
+      ref.read(customerBookingRepositoryProvider);
   late Future<List<_CustomerDocument>> _documents = Future.microtask(
     () => _loadDocuments(),
   );
 
   Future<List<_CustomerDocument>> _loadDocuments() async {
-    final reservations = await _repository.listReservations();
+    final bookings = await _repository.listBookings();
     final details = await Future.wait(
-      reservations.map(
-        (reservation) => _repository.getReservation('${reservation['id']}'),
+      bookings.map(
+        (booking) => _repository.getBooking('${booking['sea_booking_id'] ?? booking['id']}'),
       ),
     );
     return [
-      for (final reservation in details)
+      for (final booking in details)
         for (final entry in <String, String>{
           'invoices': 'Commercial invoice',
           'receipts': 'Payment receipt',
           'packing_lists': 'Packing list',
         }.entries)
-          for (final document in (reservation[entry.key] as List? ?? const []))
+          for (final document in (booking[entry.key] as List? ?? const []))
             _CustomerDocument(
-              reservationId: '${reservation['id']}',
+              bookingId: '${booking['sea_booking_id'] ?? booking['id']}',
               title:
                   '${(document as Map)['name'] ?? (document)['title'] ?? entry.value}',
               subtitle: '${entry.value} · ${document['status'] ?? 'Available'}',
@@ -64,7 +64,7 @@ class _CustomerDocumentsPageState extends ConsumerState<CustomerDocumentsPage> {
               ),
               SizedBox(height: 4),
               Text(
-                'Invoices, receipts, and shipping files available for download.',
+                'Review invoices, receipts and packing lists linked to your cargo bookings.',
               ),
             ],
           ),
@@ -108,12 +108,12 @@ class _CustomerDocumentsPageState extends ConsumerState<CustomerDocumentsPage> {
 
 class _CustomerDocument {
   const _CustomerDocument({
-    required this.reservationId,
+    required this.bookingId,
     required this.title,
     required this.subtitle,
   });
 
-  final String reservationId;
+  final String bookingId;
   final String title;
   final String subtitle;
 }
@@ -138,7 +138,7 @@ class _DocumentCard extends StatelessWidget {
         context,
         MaterialPageRoute(
           builder: (_) =>
-              ReservationDetailPage(reservationId: document.reservationId),
+              BookingDetailPage(bookingId: document.bookingId),
         ),
       ),
     ),

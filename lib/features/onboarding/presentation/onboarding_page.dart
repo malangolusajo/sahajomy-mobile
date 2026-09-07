@@ -35,25 +35,36 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
       scene: _OnboardingScene.ship,
       eyebrow: 'SHIP',
       title: 'Small parcel or full container—it’s your call.',
-      description: 'Compare sea freight and Express Air Cargo, reserve the space you need, and see the details before you book.',
+      description: 'Compare sea freight and Express Air Cargo, book the space you need, and see the details before you confirm.',
       services: [
         _ServiceItem(Icons.directions_boat_outlined, 'Sea freight'),
         _ServiceItem(Icons.flight_takeoff_rounded, 'Express Air Cargo'),
         _ServiceItem(Icons.inventory_2_outlined, 'Containers'),
-        _ServiceItem(Icons.event_available_outlined, 'Space reservations'),
+        _ServiceItem(Icons.event_available_outlined, 'Space bookings'),
       ],
     ),
     _OnboardingData(
       scene: _OnboardingScene.follow,
-      eyebrow: 'TRACK & COLLECT',
-      title: 'No more wondering where your shipment is.',
-      description: 'Follow each milestone, see when parcels reach the warehouse, keep documents close, and collect securely when they’re ready.',
+      eyebrow: 'STAY UPDATED',
+      title: 'Know what’s happening without chasing updates.',
+      description: 'Follow shipment milestones, keep documents and packing lists close, and get the alerts that matter.',
       services: [
+        _ServiceItem(Icons.local_shipping_outlined, 'Your shipments'),
         _ServiceItem(Icons.route_outlined, 'Shipment tracking'),
-        _ServiceItem(Icons.warehouse_outlined, 'Warehouse parcels'),
-        _ServiceItem(Icons.qr_code_2_rounded, 'Secure collection'),
         _ServiceItem(Icons.description_outlined, 'Documents & packing lists'),
         _ServiceItem(Icons.notifications_none_rounded, 'Status alerts'),
+      ],
+    ),
+    _OnboardingData(
+      scene: _OnboardingScene.collect,
+      eyebrow: 'COLLECT',
+      title: 'Your parcels are ready. Pickup stays simple.',
+      description: 'See what has reached the warehouse, request one or several parcels, and collect securely with a short-lived QR code or PIN.',
+      services: [
+        _ServiceItem(Icons.warehouse_outlined, 'Warehouse parcels'),
+        _ServiceItem(Icons.checklist_rounded, 'Multi-parcel requests'),
+        _ServiceItem(Icons.qr_code_2_rounded, 'Secure QR & PIN'),
+        _ServiceItem(Icons.inventory_outlined, 'Collection status'),
       ],
     ),
   ];
@@ -168,7 +179,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   }
 }
 
-enum _OnboardingScene { source, ship, follow }
+enum _OnboardingScene { source, ship, follow, collect }
 
 class _OnboardingData {
   const _OnboardingData({
@@ -304,7 +315,12 @@ class _EditorialScene extends StatelessWidget {
       _OnboardingScene.follow => (
         const Color(0xFFEAF6F3),
         const _TrackingScene(),
-        'A shipment reaching the warehouse ready for secure collection',
+        'Shipment milestones and a useful status update',
+      ),
+      _OnboardingScene.collect => (
+        const Color(0xFFFFF3E8),
+        const _CollectionScene(),
+        'Several ready parcels and a secure collection code',
       ),
     };
 
@@ -734,7 +750,7 @@ class _TrackingScene extends StatelessWidget {
               SizedBox(height: 12),
               _TimelineStep(label: 'China warehouse', complete: true),
               _TimelineStep(label: 'In transit', complete: true),
-              _TimelineStep(label: 'Ready to collect', isLast: true),
+              _TimelineStep(label: 'Destination warehouse', isLast: true),
             ],
           ),
         ),
@@ -761,14 +777,18 @@ class _TrackingScene extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Icon(Icons.warehouse_rounded, color: Colors.white, size: 21),
+                  Icon(
+                    Icons.notifications_active_outlined,
+                    color: Colors.white,
+                    size: 21,
+                  ),
                   Spacer(),
-                  Icon(Icons.qr_code_2_rounded, color: brandCoral, size: 25),
+                  Icon(Icons.route_rounded, color: brandCoral, size: 25),
                 ],
               ),
               SizedBox(height: 13),
               Text(
-                'Ready for collection',
+                'Milestone updated',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 11,
@@ -777,7 +797,7 @@ class _TrackingScene extends StatelessWidget {
               ),
               SizedBox(height: 4),
               Text(
-                'Your secure code is waiting',
+                'Your shipment is in transit',
                 style: TextStyle(color: Color(0xFFBFD6E3), fontSize: 9),
               ),
             ],
@@ -785,6 +805,148 @@ class _TrackingScene extends StatelessWidget {
         ),
       ),
     ],
+  );
+}
+
+class _CollectionScene extends StatelessWidget {
+  const _CollectionScene();
+
+  @override
+  Widget build(BuildContext context) => Stack(
+    children: [
+      Positioned(
+        left: 23,
+        top: 25,
+        bottom: 25,
+        child: Container(
+          width: 202,
+          padding: const EdgeInsets.all(15),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(21),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x140B3857),
+                blurRadius: 20,
+                offset: Offset(0, 10),
+              ),
+            ],
+          ),
+          child: const Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Choose your parcels',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: appInk,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              SizedBox(height: 8),
+              _ParcelChoice(label: 'Kitchen supplies'),
+              SizedBox(height: 7),
+              _ParcelChoice(label: 'Fabric order'),
+              SizedBox(height: 7),
+              _ParcelChoice(label: 'Shop display'),
+            ],
+          ),
+        ),
+      ),
+      Positioned(
+        right: 20,
+        bottom: 30,
+        child: Container(
+          width: 145,
+          padding: const EdgeInsets.all(13),
+          decoration: BoxDecoration(
+            color: brandNavy,
+            borderRadius: BorderRadius.circular(18),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x2E0B3857),
+                blurRadius: 20,
+                offset: Offset(0, 9),
+              ),
+            ],
+          ),
+          child: const Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.qr_code_2_rounded, color: Colors.white, size: 30),
+                  Spacer(),
+                  _PersonAvatar(),
+                ],
+              ),
+              SizedBox(height: 11),
+              Text(
+                'Ready to collect',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              SizedBox(height: 4),
+              Text(
+                'Use your QR code or PIN',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(color: Color(0xFFBFD6E3), fontSize: 9),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ],
+  );
+}
+
+class _ParcelChoice extends StatelessWidget {
+  const _ParcelChoice({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    height: 36,
+    padding: const EdgeInsets.symmetric(horizontal: 9),
+    decoration: BoxDecoration(
+      color: const Color(0xFFF5F7FA),
+      borderRadius: BorderRadius.circular(11),
+    ),
+    child: Row(
+      children: [
+        Container(
+          width: 18,
+          height: 18,
+          decoration: const BoxDecoration(
+            color: brandTeal,
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(Icons.check_rounded, color: Colors.white, size: 12),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              color: appInk,
+              fontSize: 10,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+      ],
+    ),
   );
 }
 

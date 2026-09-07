@@ -9,12 +9,12 @@ class CustomerDashboardRepository {
   Future<CustomerDashboardSummary> loadSummary() async {
     final results = await Future.wait([
       client.getList('customer/shipment-orders'),
-      client.getList('customer/reservations'),
+      client.getList('customer/sea-bookings'),
       client.getList('customer/orders'),
     ]);
     return CustomerDashboardSummary(
       shipments: results[0].length,
-      reservations: results[1].length,
+      bookings: results[1].length,
       orders: results[2].length,
     );
   }

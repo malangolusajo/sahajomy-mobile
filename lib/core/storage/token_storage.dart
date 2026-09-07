@@ -6,6 +6,8 @@ class TokenStorage {
 
   final SecureStorage _storage;
 
+  static const currentOnboardingVersion = '2';
+
   Future<String?> getAccessToken() =>
       _storage.read(SecureStorage.accessTokenKey);
 
@@ -21,7 +23,8 @@ class TokenStorage {
   Future<String?> getUserId() => _storage.read(SecureStorage.userIdKey);
 
   Future<bool> getOnboardingCompleted() async =>
-      await _storage.read(SecureStorage.onboardingCompletedKey) == 'true';
+      await _storage.read(SecureStorage.onboardingVersionKey) ==
+      currentOnboardingVersion;
 
   Future<void> write(String key, String value) => _storage.write(key, value);
 
@@ -54,8 +57,10 @@ class TokenStorage {
     ]);
   }
 
-  Future<void> setOnboardingCompleted() =>
-      _storage.write(SecureStorage.onboardingCompletedKey, 'true');
+  Future<void> setOnboardingCompleted() => _storage.write(
+    SecureStorage.onboardingVersionKey,
+    currentOnboardingVersion,
+  );
 
   Future<void> saveWorkspace({
     required String companyId,
