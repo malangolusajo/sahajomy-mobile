@@ -6,6 +6,7 @@ import '../../../customer/presentation/customer_components.dart';
 import '../../../repository_providers.dart';
 import '../../batches/data/sourcing_agent_batches_repository.dart';
 import '../../batches/presentation/sourcing_agent_batch_workflow_pages.dart';
+import 'sourcing_agent_product_ops_pages.dart';
 
 class SourcingAgentProductManagementPage extends ConsumerStatefulWidget {
   const SourcingAgentProductManagementPage({super.key});
@@ -183,7 +184,7 @@ class _SourcingAgentProductManagementPageState
                               ),
                               itemCount: products.length,
                               itemBuilder: (context, i) =>
-                                  _ProductCard(product: products[i]),
+                                  _ProductCard(product: products[i], batchId: _selectedBatchId!),
                             ),
                           ],
                         );
@@ -216,8 +217,9 @@ class _SourcingAgentProductManagementPageState
 }
 
 class _ProductCard extends StatelessWidget {
-  const _ProductCard({required this.product});
+  const _ProductCard({required this.product, required this.batchId});
   final Map<String, dynamic> product;
+  final String batchId;
 
   @override
   Widget build(BuildContext context) {
@@ -231,7 +233,15 @@ class _ProductCard extends StatelessWidget {
     return InkWell(
       borderRadius: BorderRadius.circular(16),
       onTap: () {
-        // TODO: navigate to edit product page
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => AgentEditProductPage(
+              batchId: batchId,
+              product: product,
+            ),
+          ),
+        );
       },
       child: Container(
         decoration: BoxDecoration(

@@ -75,7 +75,7 @@ class _SourcingAgentMorePage extends StatelessWidget {
         title: 'Products',
         subtitle: 'Add and manage sourcing products.',
         icon: Icons.inventory_outlined,
-        route: '/reference/agent-product-management',
+        route: '/agent/products',
       ),
       FeatureMenuEntry(
         title: 'Packing lists',

@@ -89,4 +89,136 @@ class SourcingAgentBatchesRepository {
           if (status != null) 'status': status,
         },
       );
+
+  // ── Containers & CBM bookings ─────────────────────────
+  Future<List<Map<String, dynamic>>> listAvailableContainers() =>
+      client.getList('sourcing_agent/containers/available');
+
+  Future<Map<String, dynamic>> bookCbm({
+    required String containerId,
+    required double cbmAmount,
+    required String destinationCity,
+    String? destinationCountry,
+  }) =>
+      client.post<Map<String, dynamic>>(
+        'sourcing_agent/containers/book-cbm',
+        data: {
+          'container_id': containerId,
+          'cbm_amount': cbmAmount,
+          'destination_city': destinationCity,
+          if (destinationCountry != null) 'destination_country': destinationCountry,
+        },
+      );
+
+  Future<List<Map<String, dynamic>>> listSeaBookings() =>
+      client.getList('sourcing_agent/sea-bookings');
+
+  // ── Invoices & receipts ───────────────────────────────
+  Future<List<Map<String, dynamic>>> listInvoices() async {
+    final res = await client.getObject('sourcing_agent/invoices');
+    return (res['invoices'] as List? ?? const [])
+        .cast<Map<String, dynamic>>();
+  }
+
+  Future<List<Map<String, dynamic>>> listReceipts() async {
+    final res = await client.getObject('sourcing_agent/receipts');
+    return (res['receipts'] as List? ?? const [])
+        .cast<Map<String, dynamic>>();
+  }
+
+  // ── Financials ────────────────────────────────────────
+  Future<Map<String, dynamic>> getFinancials() =>
+      client.getObject('sourcing_agent/financials');
+
+  Future<Map<String, dynamic>> getBatchFinancials(String batchId) =>
+      client.getObject('sourcing_agent/batches/$batchId/financials');
+
+  // ── Share ─────────────────────────────────────────────
+  Future<Map<String, dynamic>> shareBatch({
+    required String batchId,
+    int? expiresDays,
+    int? maxViews,
+  }) =>
+      client.post<Map<String, dynamic>>(
+        'sourcing_agent/batches/$batchId/share',
+        data: {
+          if (expiresDays != null) 'expires_days': expiresDays,
+          if (maxViews != null) 'max_views': maxViews,
+        },
+      );
+
+  Future<Map<String, dynamic>> shareInvoice(String orderId) =>
+      client.post<Map<String, dynamic>>(
+        'sourcing_agent/orders/$orderId/share-invoice',
+      );
+
+  // ── Orders ────────────────────────────────────────────
+  Future<Map<String, dynamic>> updateOrderPaymentStatus({
+    required String orderId,
+    required String paymentStatus,
+  }) =>
+      client.post<Map<String, dynamic>>(
+        'sourcing_agent/orders/$orderId/update-payment-status',
+        queryParameters: {'payment_status': paymentStatus},
+      );
+
+  // ── Express air cargo ─────────────────────────────────
+  Future<Map<String, dynamic>> getAirCargoOptions() =>
+      client.getObject('sourcing_agent/express-air-cargo/options');
+
+  Future<Map<String, dynamic>> bookAirCargo({
+    required String cargoTypeId,
+    required double weightKg,
+    required DateTime shipmentDate,
+    required String destinationRegion,
+    String destinationCountry = 'Tanzania',
+    int cartonCount = 1,
+    String? cargoDescription,
+    String? airCargoRateId,
+  }) =>
+      client.post<Map<String, dynamic>>(
+        'sourcing_agent/express-air-cargo/book',
+        data: {
+          'cargo_type_id': cargoTypeId,
+          'weight_kg': weightKg,
+          'shipment_date': shipmentDate.toIso8601String(),
+          'destination_region': destinationRegion,
+          'destination_country': destinationCountry,
+          'carton_count': cartonCount,
+          if (cargoDescription != null) 'cargo_description': cargoDescription,
+          if (airCargoRateId != null) 'air_cargo_rate_id': airCargoRateId,
+        },
+      );
+
+  Future<List<Map<String, dynamic>>> listAirBookings() =>
+      client.getList('sourcing_agent/express-air-cargo/bookings');
+
+  Future<Map<String, dynamic>> getAirShippingLabel(String bookingId) =>
+      client.getObject('sourcing_agent/express-air-cargo/$bookingId/shipping-label');
+
+  Future<Map<String, dynamic>> updateAirShippingLabel(
+    String bookingId,
+    Map<String, dynamic> data,
+  ) =>
+      client.patch<Map<String, dynamic>>(
+        'sourcing_agent/express-air-cargo/$bookingId/shipping-label',
+        data: data,
+      );
+
+  // ── Product attributes & instagram ────────────────────
+  Future<Map<String, dynamic>> getAttributeTemplates(String goodsTypeId) =>
+      client.getObject('sourcing_agent/goods/types/$goodsTypeId/attribute-templates');
+
+  Future<Map<String, dynamic>> importInstagramImage({
+    required String batchId,
+    required String instagramUrl,
+    int? imageIndex,
+  }) =>
+      client.post<Map<String, dynamic>>(
+        'sourcing_agent/batches/$batchId/products/import-instagram',
+        data: {
+          'instagram_url': instagramUrl,
+          if (imageIndex != null) 'image_index': imageIndex,
+        },
+      );
 }

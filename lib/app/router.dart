@@ -81,6 +81,11 @@ import '../features/customer/fcl_quote/presentation/fcl_quote_requests_page.dart
 import '../features/customer/fcl_quote/presentation/fcl_quote_detail_page.dart';
 import '../features/customer/fcl_quote/presentation/fcl_quote_cancel_page.dart';
 import '../features/sourcing_agent/presentation/sourcing_agent_shell.dart';
+import '../features/sourcing_agent/products/presentation/sourcing_agent_product_management_page.dart';
+import '../features/sourcing_agent/products/presentation/sourcing_agent_product_ops_pages.dart';
+import '../features/sourcing_agent/batches/presentation/sourcing_agent_documents_cargo_pages.dart';
+import '../features/sourcing_agent/batches/presentation/sourcing_agent_air_cargo_pages.dart';
+import '../features/sourcing_agent/batches/presentation/sourcing_agent_financials_pages.dart';
 import '../features/super_admin/presentation/super_admin_shell.dart';
 import 'app_route_aliases.dart';
 import 'theme.dart';
@@ -342,6 +347,28 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/sourcing-agent',
         builder: (context, state) => const SourcingAgentShell(),
       ),
+      // ── Sourcing agent real pages ──────────────────────────
+      GoRoute(path: '/agent/financials', builder: (context, state) => const AgentFinancialsPage()),
+      GoRoute(path: '/agent/account', builder: (context, state) => const AgentAccountPage()),
+      GoRoute(path: '/agent/verification', builder: (context, state) => const AgentVerificationPage()),
+      GoRoute(path: '/agent/containers', builder: (context, state) => const AgentAvailableContainersPage()),
+      GoRoute(path: '/agent/sea-bookings', builder: (context, state) => const AgentSeaBookingsPage()),
+      GoRoute(path: '/agent/products', builder: (context, state) => const SourcingAgentProductManagementPage()),
+      GoRoute(path: '/agent/invoices', builder: (context, state) => const AgentInvoicesPage()),
+      GoRoute(path: '/agent/receipts', builder: (context, state) => const AgentReceiptsPage()),
+      GoRoute(path: '/agent/express-air-cargo', builder: (context, state) => const AgentAirCargoOptionsPage()),
+      GoRoute(path: '/agent/express-air-cargo/book', builder: (context, state) => const AgentBookAirCargoPage()),
+      GoRoute(path: '/agent/express-air-cargo/:bookingId/label', builder: (context, state) => AgentAirShippingLabelPage(bookingId: state.pathParameters['bookingId'] ?? '')),
+      GoRoute(path: '/agent/express-air-cargo/:bookingId/label/edit', builder: (context, state) => AgentEditShippingLabelPage(bookingId: state.pathParameters['bookingId'] ?? '', label: state.extra as Map<String, dynamic>? ?? {})),
+      GoRoute(path: '/agent/orders/:orderId/payment', builder: (context, state) => AgentUpdatePaymentStatusPage(orderId: state.pathParameters['orderId'] ?? '', customerName: state.uri.queryParameters['customer'] ?? 'Customer')),
+      GoRoute(path: '/agent/orders/:orderId/share-invoice', builder: (context, state) => AgentShareInvoicePage(orderId: state.pathParameters['orderId'] ?? '', invoiceNumber: state.uri.queryParameters['invoice'] ?? 'Invoice')),
+      GoRoute(path: '/agent/containers/:containerId/book-cbm', builder: (context, state) => AgentBookCbmPage(container: state.extra as Map<String, dynamic>? ?? {})),
+      GoRoute(path: '/agent/batches/:batchId/products/:productId/edit', builder: (context, state) => AgentEditProductPage(batchId: state.pathParameters['batchId'] ?? '', product: state.extra as Map<String, dynamic>? ?? {})),
+      GoRoute(path: '/agent/batches/:batchId/products/import-instagram', builder: (context, state) => AgentInstagramImportPage(batchId: state.pathParameters['batchId'] ?? '')),
+      GoRoute(path: '/agent/batches/:batchId/share', builder: (context, state) => AgentShareBatchPage(batchId: state.pathParameters['batchId'] ?? '', batchTitle: state.uri.queryParameters['title'] ?? 'Batch')),
+      GoRoute(path: '/agent/batches/:batchId/publish', builder: (context, state) => AgentPublishPage(batchId: state.pathParameters['batchId'] ?? '')),
+      GoRoute(path: '/agent/goods-types/:id/attributes', builder: (context, state) => AgentDynamicAttributesPage(goodsTypeId: state.pathParameters['id'] ?? '', goodsTypeName: state.uri.queryParameters['name'] ?? 'Goods type')),
+      GoRoute(path: '/agent/products/variants', builder: (context, state) => AgentProductVariantsPage(product: state.extra as Map<String, dynamic>? ?? {})),
       GoRoute(
         path: '/super-admin',
         builder: (context, state) => const SuperAdminShell(),
