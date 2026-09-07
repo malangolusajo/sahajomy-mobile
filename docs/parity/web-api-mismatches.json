@@ -1,0 +1,21 @@
+[
+  {
+    "web_page_component": "ShipmentOrderForm",
+    "role": "Customer",
+    "function": "fetchData",
+    "web_route": "component/subflow",
+    "frontend_file": "pages/customer/components/ShipmentOrderForm.jsx",
+    "api_service_used": "services/api.js",
+    "backend_endpoint": "/customer/air-bookings",
+    "http_method": "GET",
+    "request": "api.get('/customer/air-bookings')         ]);          setAvailableSeaBookings(seaBookingsRes.data);         setAvailableBookings(bookingsRes.data);       } catch (err) {         console.error('Failed to fetch seaBookings/bookings:', err);       }  ",
+    "response": "No registered backend handler matched",
+    "permissions": "unmatched",
+    "current_mobile_equivalent": "none found",
+    "mobile_status": "missing",
+    "required_mobile_screen_action": "Expose fetchData in the mobile ShipmentOrderForm flow",
+    "web_actions": "Cancel",
+    "api_ui_mismatch": "Web call did not match a registered FastAPI operation; review stale path/router composition",
+    "backend_source": ""
+  }
+]
