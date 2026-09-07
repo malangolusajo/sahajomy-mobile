@@ -91,41 +91,67 @@ class _SignInPageState extends ConsumerState<SignInPage> {
     title: 'Sign in',
     canGoBack: false,
     children: [
-      Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [brandNavyDark, brandNavy],
+      ClipRRect(
+        borderRadius: BorderRadius.circular(26),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(24),
+          decoration: const BoxDecoration(
+            color: Color(0xFF0B2A40),
           ),
-          borderRadius: BorderRadius.circular(26),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SahajomyBrandMark(size: 44, showShadow: false),
-            const SizedBox(height: 20),
-            const Text(
-              'Ship, source, and track\ngoods from China to Africa',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-                height: 1.2,
-                fontWeight: FontWeight.w900,
+          child: Stack(
+            children: [
+              Positioned(
+                top: -80,
+                right: -60,
+                child: Container(
+                  width: 220,
+                  height: 220,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: const Color(0xFF1FAD77).withValues(alpha: 0.18),
+                  ),
+                ),
               ),
-            ),
-            const SizedBox(height: 12),
-            const Text(
-              'Get a China warehouse address, source products, book sea or air cargo, and track shipments from China to Africa with Sahajomy.',
-              style: TextStyle(
-                color: Color(0xFFD1DEE6),
-                fontSize: 14,
-                height: 1.55,
+              Positioned(
+                bottom: -100,
+                left: -40,
+                child: Container(
+                  width: 180,
+                  height: 180,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: const Color(0xFF0F3D5E).withValues(alpha: 0.5),
+                  ),
+                ),
               ),
-            ),
-          ],
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SahajomyBrandMark(size: 44, showShadow: false),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Ship, source, and track\ngoods from China to Africa',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      height: 1.2,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Get a China warehouse address, source products, book sea or air cargo, and track shipments from China to Africa with Sahajomy.',
+                    style: TextStyle(
+                      color: Color(0xFFD1DEE6),
+                      fontSize: 14,
+                      height: 1.55,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
       const SizedBox(height: 16),
