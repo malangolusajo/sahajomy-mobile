@@ -52,12 +52,12 @@ class WelcomePage extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  'Ship smarter.\nGrow further.',
+                  'Welcome to Sahajomy',
                   style: Theme.of(context).textTheme.displaySmall,
                 ),
                 const SizedBox(height: 18),
                 const Text(
-                  'Book cargo, follow every milestone, and manage your logistics from one secure workspace.',
+                  'Source, ship, and track your cargo from one secure workspace.',
                   style: TextStyle(fontSize: 17, height: 1.6),
                 ),
                 const SizedBox(height: 30),

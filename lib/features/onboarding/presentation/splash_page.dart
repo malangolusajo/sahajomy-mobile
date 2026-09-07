@@ -101,52 +101,51 @@ class _SplashPageState extends ConsumerState<SplashPage>
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: const Color(0xFF060707),
     body: SafeArea(
-      child: LayoutBuilder(
-        builder: (context, constraints) => SingleChildScrollView(
+      child: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 28),
           child: ConstrainedBox(
-            constraints: BoxConstraints(minHeight: constraints.maxHeight),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 28),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SahajomyBrandMark(size: 104, showShadow: false),
-                  const SizedBox(height: 64),
-                  const Text(
-                    'Ship, source, and track goods\nfrom China to Africa.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Color(0xFFCBD5DF),
-                      fontSize: 13,
-                      height: 1.4,
+            constraints: const BoxConstraints(maxWidth: 420),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SahajomyBrandMark(size: 104, showShadow: false),
+                const SizedBox(height: 64),
+                const Text(
+                  'Ship, source, and track goods\nfrom China to Africa.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color(0xFFCBD5DF),
+                    fontSize: 13,
+                    height: 1.4,
+                  ),
+                ),
+                const SizedBox(height: 22),
+                if (_checking)
+                  const SizedBox(
+                    width: 42,
+                    child: LinearProgressIndicator(
+                      color: Color(0xFFEFBF04),
+                      backgroundColor: Color(0xFF282711),
+                      minHeight: 4,
+                      borderRadius: BorderRadius.all(Radius.circular(4)),
+                      semanticsLabel: 'Starting app',
                     ),
                   ),
-                  const SizedBox(height: 22),
-                  if (_checking)
-                    const SizedBox(
-                      width: 42,
-                      child: LinearProgressIndicator(
-                        color: Color(0xFFEFBF04),
-                        backgroundColor: Color(0xFF282711),
-                        minHeight: 4,
-                        borderRadius: BorderRadius.all(Radius.circular(4)),
-                        semanticsLabel: 'Starting app',
-                      ),
-                    ),
-                  if (_error != null) ...[
-                    Text(
-                      _error!,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                    TextButton(
-                      onPressed: _checking ? null : _continueToApp,
-                      child: const Text('Try again securely'),
-                    ),
-                  ],
-                  const SizedBox(height: 32),
+                if (_error != null) ...[
+                  Text(
+                    _error!,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  TextButton(
+                    onPressed: _checking ? null : _continueToApp,
+                    child: const Text('Try again securely'),
+                  ),
                 ],
-              ),
+                const SizedBox(height: 32),
+              ],
             ),
           ),
         ),

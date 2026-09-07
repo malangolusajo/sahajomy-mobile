@@ -11,6 +11,8 @@ void main() {
     );
 
     expect(find.byType(SahajomyBrandMark), findsOneWidget);
+    expect(find.text('Ship smarter.\nGrow further.'), findsNothing);
+    expect(find.text('Welcome to Sahajomy'), findsOneWidget);
     expect(find.text('Get started'), findsOneWidget);
   });
 }
