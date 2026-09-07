@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sahajomy_mobile/features/repository_providers.dart';
 
+import '../../../../app/theme.dart';
 import '../../../../core/ui/sahajomy_ui.dart';
 import '../data/sourcing_agent_batches_repository.dart';
 
@@ -242,6 +243,12 @@ class _SourcingAgentAddProductPageState
   var _saving = false;
 
   @override
+  void initState() {
+    super.initState();
+    _imageUrlController.addListener(() => setState(() {}));
+  }
+
+  @override
   void dispose() {
     _nameController.dispose();
     _imageUrlController.dispose();
@@ -344,6 +351,7 @@ class _SourcingAgentAddProductPageState
                 keyboardType: TextInputType.url,
                 decoration: const InputDecoration(
                   labelText: 'Product image URL',
+                  helperText: 'Paste a direct image link — preview appears below.',
                 ),
                 validator: (value) =>
                     value == null ||
@@ -351,6 +359,8 @@ class _SourcingAgentAddProductPageState
                     ? 'Enter a valid image URL.'
                     : null,
               ),
+              const SizedBox(height: 16),
+              _ImagePreview(url: _imageUrlController.text.trim()),
               const SizedBox(height: 12),
               Row(
                 children: [
@@ -393,6 +403,76 @@ class _SourcingAgentAddProductPageState
       ),
     ),
   );
+}
+
+class _ImagePreview extends StatelessWidget {
+  const _ImagePreview({required this.url});
+  final String url;
+
+  @override
+  Widget build(BuildContext context) {
+    if (url.isEmpty || Uri.tryParse(url)?.hasAbsolutePath != true) {
+      return Container(
+        height: 200,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: appCanvas,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: appBorder),
+        ),
+        child: const Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.image_outlined, size: 44, color: appMuted),
+              SizedBox(height: 8),
+              Text('Image preview', style: TextStyle(color: appMuted, fontSize: 13)),
+            ],
+          ),
+        ),
+      );
+    }
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: Image.network(
+        url,
+        height: 220,
+        width: double.infinity,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => Container(
+          height: 200,
+          width: double.infinity,
+          color: appCanvas,
+          child: const Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.broken_image_outlined, size: 40, color: appMuted),
+                SizedBox(height: 8),
+                Text('Could not load image', style: TextStyle(color: appMuted, fontSize: 13)),
+              ],
+            ),
+          ),
+        ),
+        loadingBuilder: (context, child, progress) {
+          if (progress == null) return child;
+          return Container(
+            height: 200,
+            color: appCanvas,
+            child: Center(
+              child: CircularProgressIndicator(
+                value: progress.expectedTotalBytes != null
+                    ? progress.cumulativeBytesLoaded /
+                        progress.expectedTotalBytes!
+                    : null,
+                color: brandCoral,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
 }
 
 class SourcingAgentGenerateOrdersPage extends ConsumerStatefulWidget {

@@ -63,4 +63,30 @@ class SourcingAgentBatchesRepository {
 
   Future<Map<String, dynamic>> listGoodsCategories() =>
       client.getObject('sourcing_agent/goods/categories');
+
+  Future<List<Map<String, dynamic>>> listProducts(String batchId) =>
+      client.getList('sourcing_agent/batches/$batchId/products');
+
+  Future<Map<String, dynamic>> updateProduct({
+    required String batchId,
+    required String productId,
+    String? name,
+    String? description,
+    double? pricePerUnit,
+    int? minimumOrderQuantity,
+    String? imageUrl,
+    String? status,
+  }) =>
+      client.patch<Map<String, dynamic>>(
+        'sourcing_agent/batches/$batchId/products/$productId',
+        data: {
+          if (name != null) 'name': name,
+          if (description != null) 'description': description,
+          if (pricePerUnit != null) 'price_per_unit': pricePerUnit,
+          if (minimumOrderQuantity != null)
+            'minimum_order_quantity': minimumOrderQuantity,
+          if (imageUrl != null) 'image_url': imageUrl,
+          if (status != null) 'status': status,
+        },
+      );
 }
