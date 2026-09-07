@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sahajomy_mobile/features/repository_providers.dart';
 
 import '../../../../core/ui/sahajomy_ui.dart';
+import '../../presentation/customer_components.dart';
 import '../../reservations/data/customer_booking_repository.dart';
 
 class CustomerPackingListPage extends ConsumerStatefulWidget {
@@ -25,8 +26,8 @@ class _CustomerPackingListPageState
       setState(() => _bookings = _repository.listBookings());
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: const SahajomyScreenHeader(role: 'Customer', title: 'Packing list'),
+  Widget build(BuildContext context) => CustomerScaffold(
+    title: 'Packing list',
     body: FutureBuilder<List<Map<String, dynamic>>>(
       future: _bookings,
       builder: (context, snapshot) {
@@ -34,7 +35,7 @@ class _CustomerPackingListPageState
           return const Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError) {
-          return SahajomyMessageState(
+          return CustomerEmptyState(
             icon: Icons.error_outline,
             message: 'We could not load your container packing lists.',
             actionLabel: 'Try again',
@@ -43,50 +44,39 @@ class _CustomerPackingListPageState
         }
         final bookings = snapshot.data!;
         if (bookings.isEmpty) {
-          return const SahajomyMessageState(
+          return const CustomerEmptyState(
             icon: Icons.inventory_2_outlined,
-            message:
-                'Packing lists will appear once your shipment is prepared.',
+            message: 'Packing lists will appear once your shipment is prepared.',
           );
         }
-        return ListView.separated(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
-          itemCount: bookings.length + 1,
-          separatorBuilder: (_, _) => const SizedBox(height: 12),
-          itemBuilder: (context, index) {
-            if (index == 0) {
-              return const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Container packing list',
-                    style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800),
+        return ListView(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
+          children: [
+            const CustomerHeroCard(
+              eyebrow: 'Cargo',
+              title: 'Container packing list',
+              subtitle: 'Review the items packed into your shipment before it departs.',
+            ),
+            const SizedBox(height: 24),
+            for (final booking in bookings) ...[
+              Card(
+                child: ListTile(
+                  contentPadding: const EdgeInsets.all(16),
+                  title: Text(
+                    '${booking['container_reference'] ?? booking['container_name'] ?? 'Container'}',
+                    style: const TextStyle(fontWeight: FontWeight.w800),
                   ),
-                  SizedBox(height: 4),
-                  Text(
-                    'Review the items packed into your shipment before it departs.',
+                  subtitle: Text(
+                    'Booking #${booking['booking_reference'] ?? booking['sea_booking_id'] ?? booking['id']} · ${booking['cbm_booked'] ?? 0} CBM',
                   ),
-                  SizedBox(height: 8),
-                ],
-              );
-            }
-            final booking = bookings[index - 1];
-            return Card(
-              child: ListTile(
-                contentPadding: const EdgeInsets.all(16),
-                title: Text(
-                  '${booking['container_reference'] ?? booking['container_name'] ?? 'Container'}',
-                  style: const TextStyle(fontWeight: FontWeight.w800),
-                ),
-                subtitle: Text(
-                  'Booking #${booking['booking_reference'] ?? booking['sea_booking_id'] ?? booking['id']} · ${booking['cbm_booked'] ?? 0} CBM',
-                ),
-                trailing: SahajomyStatusPill(
-                  label: '${booking['goods_status'] ?? 'Status unavailable'}',
+                  trailing: SahajomyStatusPill(
+                    label: '${booking['goods_status'] ?? 'Status unavailable'}',
+                  ),
                 ),
               ),
-            );
-          },
+              const SizedBox(height: 12),
+            ],
+          ],
         );
       },
     ),

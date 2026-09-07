@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/ui/sahajomy_ui.dart';
+import '../../presentation/customer_components.dart';
 import '../../reservations/presentation/book_container_page.dart';
 
 class ContainerDetailPage extends StatelessWidget {
@@ -18,21 +19,17 @@ class ContainerDetailPage extends StatelessWidget {
         container['departure_date'] ??
         container['departure'] ??
         'To be confirmed';
-    return Scaffold(
-      appBar: const SahajomyScreenHeader(
-        role: 'Customer',
-        title: 'Container details',
-      ),
+    return CustomerScaffold(
+      title: 'Container details',
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
         children: [
-          Text(
-            '$destination bound',
-            style: Theme.of(context).textTheme.headlineMedium,
+          CustomerHeroCard(
+            eyebrow: 'Container',
+            title: '$destination bound',
+            subtitle: '$size · $origin to $destination · Departs $departure.',
           ),
-          const SizedBox(height: 6),
-          Text('$size · $origin to $destination · Departs $departure.'),
-          const SizedBox(height: 20),
+          const SizedBox(height: 24),
           Card(
             child: ListTile(
               title: Text(

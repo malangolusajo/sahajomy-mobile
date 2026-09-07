@@ -5,6 +5,7 @@ import 'package:sahajomy_mobile/features/repository_providers.dart';
 import '../../../../core/network/api_exception.dart';
 import '../../../../core/ui/logistics_ui.dart';
 import '../../../../core/ui/sahajomy_ui.dart';
+import '../../presentation/customer_components.dart';
 import '../data/customer_air_cargo_repository.dart';
 
 class CreateAirCargoBookingPage extends ConsumerStatefulWidget {
@@ -119,8 +120,8 @@ class _CreateAirCargoBookingPageState
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: const SahajomyScreenHeader(title: 'Book air cargo'),
+  Widget build(BuildContext context) => CustomerScaffold(
+    title: 'Book air cargo',
     body: FutureBuilder<Map<String, dynamic>>(
       future: _options,
       builder: (context, snapshot) {
@@ -128,11 +129,11 @@ class _CreateAirCargoBookingPageState
           return const Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError) {
-          return Center(
-            child: OutlinedButton(
-              onPressed: () => setState(() => _options = _repository.options()),
-              child: const Text('Try again'),
-            ),
+          return CustomerEmptyState(
+            icon: Icons.error_outline,
+            message: 'We could not load air cargo options.',
+            actionLabel: 'Try again',
+            onAction: () => setState(() => _options = _repository.options()),
           );
         }
         final types = (snapshot.data!['cargo_types'] as List? ?? const [])
@@ -146,9 +147,14 @@ class _CreateAirCargoBookingPageState
         return Form(
           key: _formKey,
           child: ListView(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
             children: [
-              const LogisticsIntro(eyebrow: 'Express Air Cargo', title: 'Arrange your air shipment', description: 'Choose a cargo company and China warehouse, then review your cargo before booking.'),
+              const CustomerHeroCard(
+                eyebrow: 'Express Air Cargo',
+                title: 'Arrange your air shipment',
+                subtitle: 'Choose a cargo company and China warehouse, then review your cargo before booking.',
+              ),
+              const SizedBox(height: 24),
               DropdownButtonFormField<String>(
                 isExpanded: true,
                 initialValue: _service?['warehouse_id']?.toString(),

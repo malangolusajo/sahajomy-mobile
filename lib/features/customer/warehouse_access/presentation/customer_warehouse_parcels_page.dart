@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sahajomy_mobile/features/repository_providers.dart';
 
-import '../../../../core/ui/sahajomy_ui.dart';
+import '../../presentation/customer_components.dart';
 import '../data/customer_warehouse_access_repository.dart';
 import 'collection_code_page.dart';
 
@@ -48,11 +48,8 @@ class _CustomerWarehouseParcelsPageState
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: const SahajomyScreenHeader(
-      role: 'Secure warehouse access',
-      title: 'My parcels',
-    ),
+  Widget build(BuildContext context) => CustomerScaffold(
+    title: 'My parcels',
     bottomNavigationBar: SafeArea(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -77,7 +74,7 @@ class _CustomerWarehouseParcelsPageState
           return const Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError) {
-          return SahajomyMessageState(
+          return CustomerEmptyState(
             icon: Icons.qr_code_scanner_outlined,
             message: 'This warehouse link is unavailable or has expired.',
             actionLabel: 'Try again',
@@ -88,17 +85,14 @@ class _CustomerWarehouseParcelsPageState
         final parcels = (access['parcels'] as List? ?? const [])
             .cast<Map<String, dynamic>>();
         return ListView(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 100),
           children: [
-            Text(
-              '${access['warehouse_name'] ?? access['warehouse'] ?? 'Warehouse'}',
-              style: Theme.of(context).textTheme.headlineMedium,
+            CustomerHeroCard(
+              eyebrow: 'Warehouse',
+              title: '${access['warehouse_name'] ?? access['warehouse'] ?? 'Warehouse'}',
+              subtitle: 'Only parcels linked to your account at this scanned warehouse are shown.',
             ),
-            const SizedBox(height: 4),
-            const Text(
-              'Only parcels linked to your account at this scanned warehouse are shown.',
-            ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             for (final parcel in parcels)
               _ParcelTile(
                 parcel: parcel,

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../app/theme.dart';
 import '../../../core/ui/logistics_ui.dart';
 import '../../../core/ui/sahajomy_ui.dart';
+import '../../customer/presentation/customer_components.dart';
 import '../../repository_providers.dart';
 import '../data/guided_booking_repository.dart';
 import 'components/booking_step_indicator.dart';
@@ -93,17 +94,20 @@ class _SeaReviewBookingPageState extends ConsumerState<SeaReviewBookingPage> {
       return _buildConfirmation();
     }
 
-    return Scaffold(
-      appBar: const SahajomyScreenHeader(
-        role: 'Customer',
-        title: 'Review booking',
-      ),
+    return CustomerScaffold(
+      title: 'Review booking',
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+        padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
         children: [
           const BookingStepIndicator(
             steps: ['Service', 'Cargo details', 'Review'],
             currentStep: 2,
+          ),
+          const SizedBox(height: 24),
+          const CustomerHeroCard(
+            eyebrow: 'Sea freight',
+            title: 'Review booking',
+            subtitle: 'Confirm your sea freight booking details before submitting.',
           ),
           const SizedBox(height: 24),
           BookingSummaryCard(
@@ -142,53 +146,52 @@ class _SeaReviewBookingPageState extends ConsumerState<SeaReviewBookingPage> {
         _booking!['id'] ??
         'Pending';
 
-    return Scaffold(
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
-          children: [
-            const SizedBox(height: 32),
-            const Icon(
-              Icons.check_circle_outline_rounded,
-              size: 72,
-              color: appSuccess,
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'Booking confirmed',
-              style: Theme.of(context).textTheme.headlineMedium,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Your sea freight booking has been created successfully.',
-              style: Theme.of(context).textTheme.bodyLarge,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 32),
-            BookingSummaryCard(
-              entries: {
-                'Booking reference': ref,
-                'Route': widget.routeName,
-                'Volume': '${widget.volume} CBM',
-                'Goods type': widget.goodsType,
-                if (_booking!['logistics_charge'] != null)
-                  'Freight charge': '${_booking!['logistics_charge']} ${_booking!['currency'] ?? ''}',
-                if (_booking!['payment_status'] != null)
-                  'Payment status': sahajomyTitleCase('${_booking!['payment_status']}'),
-              },
-            ),
-            const SizedBox(height: 28),
-            FilledButton(
-              onPressed: () => context.go('/customer/my-bookings'),
-              child: const Text('View my bookings'),
-            ),
-            TextButton(
-              onPressed: () => context.go('/customer'),
-              child: const Text('Back to home'),
-            ),
-          ],
-        ),
+    return CustomerScaffold(
+      title: 'Booking confirmed',
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
+        children: [
+          const SizedBox(height: 32),
+          const Icon(
+            Icons.check_circle_outline_rounded,
+            size: 72,
+            color: appSuccess,
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'Booking confirmed',
+            style: Theme.of(context).textTheme.headlineMedium,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Your sea freight booking has been created successfully.',
+            style: Theme.of(context).textTheme.bodyLarge,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 32),
+          BookingSummaryCard(
+            entries: {
+              'Booking reference': ref,
+              'Route': widget.routeName,
+              'Volume': '${widget.volume} CBM',
+              'Goods type': widget.goodsType,
+              if (_booking!['logistics_charge'] != null)
+                'Freight charge': '${_booking!['logistics_charge']} ${_booking!['currency'] ?? ''}',
+              if (_booking!['payment_status'] != null)
+                'Payment status': sahajomyTitleCase('${_booking!['payment_status']}'),
+            },
+          ),
+          const SizedBox(height: 28),
+          FilledButton(
+            onPressed: () => context.go('/customer/my-bookings'),
+            child: const Text('View my bookings'),
+          ),
+          TextButton(
+            onPressed: () => context.go('/customer'),
+            child: const Text('Back to home'),
+          ),
+        ],
       ),
     );
   }

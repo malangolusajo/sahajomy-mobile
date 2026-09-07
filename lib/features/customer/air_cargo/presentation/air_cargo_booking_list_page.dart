@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sahajomy_mobile/features/repository_providers.dart';
 
-import '../../../../core/ui/sahajomy_ui.dart';
+import '../../presentation/customer_components.dart';
 import '../data/customer_air_cargo_repository.dart';
 import 'create_air_cargo_booking_page.dart';
 
@@ -33,25 +33,17 @@ class _AirCargoBookingListPageState
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: SahajomyScreenHeader(role: 'Customer', title: 'Express Air Cargo'),
+  Widget build(BuildContext context) => CustomerScaffold(
+    title: 'Express Air Cargo',
     body: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Padding(
-          padding: EdgeInsets.fromLTRB(20, 20, 20, 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Express Air Cargo',
-                style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800),
-              ),
-              SizedBox(height: 4),
-              Text(
-                'Book air cargo, upload cargo photos, and review existing bookings.',
-              ),
-            ],
+          padding: EdgeInsets.fromLTRB(20, 12, 20, 12),
+          child: CustomerHeroCard(
+            eyebrow: 'Express Air Cargo',
+            title: 'Air cargo bookings',
+            subtitle: 'Book air cargo, upload cargo photos, and review existing bookings.',
           ),
         ),
         Padding(
@@ -72,7 +64,8 @@ class _AirCargoBookingListPageState
                 return const Center(child: CircularProgressIndicator());
               }
               if (snapshot.hasError) {
-                return _AirCargoMessage(
+                return CustomerEmptyState(
+                  icon: Icons.flight_takeoff_outlined,
                   message: 'We could not load your air cargo bookings.',
                   actionLabel: 'Try again',
                   onAction: _retry,
@@ -80,7 +73,8 @@ class _AirCargoBookingListPageState
               }
               final bookings = snapshot.data ?? [];
               if (bookings.isEmpty) {
-                return const _AirCargoMessage(
+                return const CustomerEmptyState(
+                  icon: Icons.flight_takeoff_outlined,
                   message: 'No Express Air Cargo bookings yet.',
                 );
               }
@@ -130,33 +124,3 @@ class _AirCargoCard extends StatelessWidget {
   }
 }
 
-class _AirCargoMessage extends StatelessWidget {
-  const _AirCargoMessage({
-    required this.message,
-    this.actionLabel,
-    this.onAction,
-  });
-
-  final String message;
-  final String? actionLabel;
-  final VoidCallback? onAction;
-
-  @override
-  Widget build(BuildContext context) => Center(
-    child: Padding(
-      padding: const EdgeInsets.all(32),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.flight_takeoff_outlined, size: 44),
-          const SizedBox(height: 14),
-          Text(message, textAlign: TextAlign.center),
-          if (onAction != null) ...[
-            const SizedBox(height: 16),
-            OutlinedButton(onPressed: onAction, child: Text(actionLabel!)),
-          ],
-        ],
-      ),
-    ),
-  );
-}

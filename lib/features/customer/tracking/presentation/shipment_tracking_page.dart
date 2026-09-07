@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../app/theme.dart';
 import '../../../../core/ui/logistics_ui.dart';
 import '../../../../core/ui/sahajomy_ui.dart';
+import '../../presentation/customer_components.dart';
 import '../../../repository_providers.dart';
 
 class ShipmentTrackingPage extends ConsumerStatefulWidget {
@@ -33,8 +34,8 @@ class _TrackingState extends ConsumerState<ShipmentTrackingPage> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: const SahajomyScreenHeader(title: 'Shipment tracking'),
+  Widget build(BuildContext context) => CustomerScaffold(
+    title: 'Shipment tracking',
     body: FutureBuilder<List<Map<String, dynamic>>>(
       future: _events,
       builder: (context, snapshot) {
@@ -63,18 +64,19 @@ class _TrackingState extends ConsumerState<ShipmentTrackingPage> {
           onRefresh: _reload,
           child: ListView.builder(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
             itemCount: events.length + 1,
             itemBuilder: (context, index) {
               if (index == 0) {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const LogisticsIntro(
+                    const CustomerHeroCard(
                       eyebrow: 'Shipment visibility',
                       title: 'Follow your cargo',
-                      description: 'Latest warehouse and freight updates, as reported by your cargo provider.',
+                      subtitle: 'Latest warehouse and freight updates, as reported by your cargo provider.',
                     ),
+                    const SizedBox(height: 20),
                     TextField(
                       onChanged: (value) => setState(() => _search = value),
                       decoration: const InputDecoration(
@@ -84,7 +86,7 @@ class _TrackingState extends ConsumerState<ShipmentTrackingPage> {
                     ),
                     const SizedBox(height: 24),
                     if (events.isEmpty)
-                      const SahajomyMessageState(
+                      const CustomerEmptyState(
                         icon: Icons.route_outlined,
                         message: 'No shipment updates match this view. Warehouse and shipping events will appear as they are recorded.',
                       ),
@@ -126,14 +128,12 @@ class _TrackingState extends ConsumerState<ShipmentTrackingPage> {
                               sahajomyTitleCase(
                                 '${event['stage_label'] ?? event['event_type'] ?? 'Shipment update'}',
                               ),
-                              style: Theme.of(context).textTheme.titleMedium,
+                              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800, color: appInk),
                             ),
                             if (event['display_reference'] != null)
                               Text(
                                 '${event['display_reference']}',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                ),
+                                style: const TextStyle(fontWeight: FontWeight.w700),
                               ),
                             if (event['description'] != null) ...[
                               const SizedBox(height: 6),
@@ -142,7 +142,7 @@ class _TrackingState extends ConsumerState<ShipmentTrackingPage> {
                             const SizedBox(height: 8),
                             Text(
                               logisticsDate(event['timestamp']),
-                              style: Theme.of(context).textTheme.bodySmall,
+                              style: const TextStyle(fontSize: 12, color: appMuted),
                             ),
                           ],
                         ),

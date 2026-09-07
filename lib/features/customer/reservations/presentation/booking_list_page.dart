@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sahajomy_mobile/features/repository_providers.dart';
 
+import '../../presentation/customer_components.dart';
 import '../data/customer_booking_repository.dart';
 import 'booking_detail_page.dart';
 
@@ -23,56 +24,60 @@ class _BookingListPageState extends ConsumerState<BookingListPage> {
       setState(() => _bookings = _repository.listBookings());
 
   @override
-  Widget build(BuildContext context) =>
-      FutureBuilder<List<Map<String, dynamic>>>(
-        future: _bookings,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(
-              child: OutlinedButton(
-                onPressed: _retry,
-                child: const Text('Retry bookings'),
-              ),
-            );
-          }
-          final items = snapshot.data ?? [];
-          if (items.isEmpty) {
-            return Center(child: Column(mainAxisSize: MainAxisSize.min, children: [const Text('No sea freight bookings yet.'), const SizedBox(height: 16), FilledButton(onPressed: () => context.push('/customer/sea-bookings/new'), child: const Text('Book sea freight'))]));
-          }
-          return ListView(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
-            children: [
-              Text(
-                'My bookings',
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-              const SizedBox(height: 6),
-              const Text(
-                'Review active and previous container-space bookings.',
-              ),
-              const SizedBox(height: 20),
-              Card(
-                child: Column(
-                  children: [
-                    for (var index = 0; index < items.length; index++) ...[
-                      _BookingItem(item: items[index], index: index),
-                      if (index != items.length - 1) const Divider(height: 1),
-                    ],
-                  ],
-                ),
-              ),
-              const SizedBox(height: 18),
-              FilledButton(
-                onPressed: () => context.push('/customer/containers'),
-                child: const Text('Find container space'),
-              ),
-            ],
+  Widget build(BuildContext context) => CustomerScaffold(
+    title: 'My bookings',
+    body: FutureBuilder<List<Map<String, dynamic>>>(
+      future: _bookings,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return CustomerEmptyState(
+            icon: Icons.error_outline,
+            message: 'We could not load your bookings.',
+            actionLabel: 'Try again',
+            onAction: _retry,
           );
-        },
-      );
+        }
+        final items = snapshot.data ?? [];
+        if (items.isEmpty) {
+          return CustomerEmptyState(
+            icon: Icons.inventory_2_outlined,
+            message: 'No sea freight bookings yet.',
+            actionLabel: 'Book sea freight',
+            onAction: () => context.push('/customer/sea-bookings/new'),
+          );
+        }
+        return ListView(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
+          children: [
+            const CustomerHeroCard(
+              eyebrow: 'Bookings',
+              title: 'My bookings',
+              subtitle: 'Review active and previous container-space bookings.',
+            ),
+            const SizedBox(height: 24),
+            Card(
+              child: Column(
+                children: [
+                  for (var index = 0; index < items.length; index++) ...[
+                    _BookingItem(item: items[index], index: index),
+                    if (index != items.length - 1) const Divider(height: 1),
+                  ],
+                ],
+              ),
+            ),
+            const SizedBox(height: 18),
+            FilledButton(
+              onPressed: () => context.push('/customer/containers'),
+              child: const Text('Find container space'),
+            ),
+          ],
+        );
+      },
+    ),
+  );
 }
 
 class _BookingItem extends StatelessWidget {

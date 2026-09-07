@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/ui/logistics_ui.dart';
 import '../../../core/ui/sahajomy_ui.dart';
+import '../../customer/presentation/customer_components.dart';
 import '../../repository_providers.dart';
 import '../data/guided_booking_repository.dart';
 import 'components/booking_step_indicator.dart';
@@ -77,26 +78,22 @@ class _SeaCargoServicesPageState extends ConsumerState<SeaCargoServicesPage> {
           .contains(query);
     }).toList();
 
-    return Scaffold(
-      appBar: const SahajomyScreenHeader(
-        role: 'Customer',
-        title: 'Sea cargo services',
-      ),
+    return CustomerScaffold(
+      title: 'Sea cargo services',
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
         children: [
+          const CustomerHeroCard(
+            eyebrow: 'Sea cargo',
+            title: 'Choose your sailing',
+            subtitle: 'Compare cargo companies, available space and published rates.',
+          ),
+          const SizedBox(height: 20),
           const BookingStepIndicator(
             steps: ['Service', 'Cargo details', 'Review'],
             currentStep: 0,
           ),
-          const SizedBox(height: 24),
-          const LogisticsIntro(
-            eyebrow: 'Step 1 of 3',
-            title: 'Choose your sailing',
-            description:
-                'Compare cargo companies, available space and published rates.',
-          ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           TextField(
             onChanged: (value) => setState(() => _search = value),
             decoration: const InputDecoration(
@@ -106,7 +103,7 @@ class _SeaCargoServicesPageState extends ConsumerState<SeaCargoServicesPage> {
           ),
           const SizedBox(height: 20),
           if (_loading)
-            const Center(child: CircularProgressIndicator())
+            const CustomerSkeletonList()
           else if (_error != null && _services.isEmpty)
             SahajomyMessageState(
               icon: Icons.cloud_off_outlined,
@@ -115,7 +112,7 @@ class _SeaCargoServicesPageState extends ConsumerState<SeaCargoServicesPage> {
               onAction: _load,
             )
           else if (matches.isEmpty)
-            const SahajomyMessageState(
+            const CustomerEmptyState(
               icon: Icons.directions_boat_outlined,
               message: 'No sailings match your search.',
             )

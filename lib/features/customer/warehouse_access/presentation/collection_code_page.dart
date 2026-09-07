@@ -6,6 +6,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../../../app/theme.dart';
 import '../../../../core/ui/sahajomy_ui.dart';
+import '../../presentation/customer_components.dart';
 
 class CollectionCodePage extends StatefulWidget {
   const CollectionCodePage({required this.request, super.key});
@@ -78,33 +79,17 @@ class _CollectionCodePageState extends State<CollectionCodePage>
   Widget build(BuildContext context) {
     final minutes = _expired ? 0 : _remaining.inMinutes;
     final seconds = _expired ? 0 : _remaining.inSeconds.remainder(60);
-    return Scaffold(
-      appBar: const SahajomyScreenHeader(
-        role: 'Collection request',
-        title: 'Show warehouse staff',
-      ),
+    return CustomerScaffold(
+      title: 'Collection QR / PIN',
       body: ListView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
         children: [
-          Icon(
-            _expired ? Icons.timer_off_outlined : Icons.check_circle,
-            color: _expired ? const Color(0xFFB42318) : const Color(0xFF047857),
-            size: 40,
-          ),
-          const SizedBox(height: 12),
-          Text(
-            _expired
-                ? 'Collection code expired'
-                : '$_parcelCount parcels selected',
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          const SizedBox(height: 4),
-          Text(
-            _expired
-                ? 'Return and create a new single-use request.'
-                : 'Show this code only to authorised warehouse staff.',
-            textAlign: TextAlign.center,
+          CustomerHeroCard(
+            eyebrow: _expired ? 'Expired' : 'Ready for collection',
+            title: 'Collection code',
+            subtitle: _expired
+                ? 'This code has expired. Create a new single-use request to collect your goods.'
+                : 'Show this single-use code when collecting your goods.',
           ),
           const SizedBox(height: 24),
           if (!_expired && !_revealed)
@@ -115,79 +100,80 @@ class _CollectionCodePageState extends State<CollectionCodePage>
               onAction: () => setState(() => _revealed = true),
             )
           else if (!_expired)
-            Container(
-              padding: const EdgeInsets.all(24),
-              color: Colors.white,
-              child: Column(
-                children: [
-                  Semantics(
-                    label: 'Single-use collection QR code',
-                    image: true,
-                    child: QrImageView(
-                      data: _collectionCode,
-                      size: 176,
-                      eyeStyle: const QrEyeStyle(color: appInk),
-                      dataModuleStyle: const QrDataModuleStyle(color: appInk),
-                    ),
+            Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: appBorder),
                   ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    'COLLECTION PIN',
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  child: Column(
                     children: [
-                      ExcludeSemantics(
-                        child: Text(
-                          _pin,
-                          style: const TextStyle(
-                            fontSize: 36,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 8,
-                            color: brandNavy,
-                          ),
+                      Semantics(
+                        label: 'Single-use collection QR code',
+                        image: true,
+                        child: QrImageView(
+                          data: _collectionCode,
+                          size: 176,
+                          eyeStyle: const QrEyeStyle(color: appInk),
+                          dataModuleStyle: const QrDataModuleStyle(color: appInk),
                         ),
                       ),
-                      IconButton(
-                        tooltip: 'Read collection PIN aloud',
-                        onPressed: () => SemanticsService.sendAnnouncement(
-                          View.of(context),
-                          'Collection PIN $_pin',
-                          TextDirection.ltr,
-                        ),
-                        icon: const Icon(Icons.volume_up_outlined),
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ExcludeSemantics(
+                            child: Text(
+                              _pin,
+                              style: const TextStyle(
+                                fontSize: 36,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 8,
+                                color: brandNavy,
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            tooltip: 'Read collection PIN aloud',
+                            onPressed: () => SemanticsService.sendAnnouncement(
+                              View.of(context),
+                              'Collection PIN $_pin',
+                              TextDirection.ltr,
+                            ),
+                            icon: const Icon(Icons.volume_up_outlined),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  '$_parcelCount parcels · Expires ${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')} · Single use',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 13, color: appMuted),
+                ),
+                const SizedBox(height: 20),
+                OutlinedButton.icon(
+                  onPressed: () {},
+                  icon: const Icon(Icons.brightness_high_outlined),
+                  label: const Text('Maximize brightness'),
+                ),
+              ],
             ),
-          const SizedBox(height: 16),
-          Text(
-            _expired
-                ? 'Expired'
-                : 'Expires in ${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}',
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: Color(0xFFB45309),
-              fontWeight: FontWeight.w800,
+          if (_expired) ...[
+            const SizedBox(height: 24),
+            Icon(Icons.timer_off_outlined, size: 48, color: appError),
+            const SizedBox(height: 12),
+            const Text(
+              'Collection code expired',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
             ),
-          ),
-          const SizedBox(height: 20),
-          const SahajomySectionCard(
-            title: 'Single use',
-            children: [
-              Text(
-                'Staff must verify payment and physically hand over the selected parcels. You cannot mark them collected yourself.',
-              ),
-            ],
-          ),
+          ],
         ],
       ),
     );

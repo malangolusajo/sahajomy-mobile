@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sahajomy_mobile/features/repository_providers.dart';
 
-import '../../../../core/ui/sahajomy_ui.dart';
+import '../../presentation/customer_components.dart';
 import '../data/customer_booking_repository.dart';
 
 class BookingDetailPage extends ConsumerStatefulWidget {
@@ -28,11 +28,8 @@ class _BookingDetailPageState extends ConsumerState<BookingDetailPage> {
   void _retry() => setState(() => _booking = _load());
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: const SahajomyScreenHeader(
-      role: 'Customer',
-      title: 'Booking details',
-    ),
+  Widget build(BuildContext context) => CustomerScaffold(
+    title: 'Booking details',
     body: FutureBuilder<Map<String, dynamic>>(
       future: _booking,
       builder: (context, snapshot) {
@@ -40,44 +37,32 @@ class _BookingDetailPageState extends ConsumerState<BookingDetailPage> {
           return const Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError) {
-          return Center(
-            child: OutlinedButton(
-              onPressed: _retry,
-              child: const Text('Try again'),
-            ),
+          return CustomerEmptyState(
+            icon: Icons.error_outline,
+            message: 'We could not load this booking.',
+            actionLabel: 'Try again',
+            onAction: _retry,
           );
         }
         final booking = snapshot.data!;
-        final invoices = (booking['invoices'] as List? ?? const [])
-            .cast<Map<String, dynamic>>();
-        final receipts = (booking['receipts'] as List? ?? const [])
-            .cast<Map<String, dynamic>>();
-        final packingLists = (booking['packing_lists'] as List? ?? const [])
-            .cast<Map<String, dynamic>>();
+        final invoices = (booking['invoices'] as List? ?? const []).cast<Map<String, dynamic>>();
+        final receipts = (booking['receipts'] as List? ?? const []).cast<Map<String, dynamic>>();
+        final packingLists = (booking['packing_lists'] as List? ?? const []).cast<Map<String, dynamic>>();
         return ListView(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
           children: [
-            Text(
-              'Booking details',
-              style: Theme.of(context).textTheme.headlineMedium,
+            const CustomerHeroCard(
+              eyebrow: 'Booking',
+              title: 'Booking details',
+              subtitle: 'Review route, CBM, payment, goods state, documents, and tracking.',
             ),
-            const SizedBox(height: 6),
-            const Text(
-              'Review route, CBM, payment, goods state, documents, and tracking.',
-            ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             _SectionCard(
               title: 'Shipment',
               children: [
-                _DetailRow(
-                  'Reference',
-                  booking['sea_booking_id'] ?? booking['id'],
-                ),
+                _DetailRow('Reference', booking['sea_booking_id'] ?? booking['id']),
                 _DetailRow('Cargo status', booking['goods_status']),
-                _DetailRow(
-                  'Booked space',
-                  '${booking['cbm_booked'] ?? 0} CBM',
-                ),
+                _DetailRow('Booked space', '${booking['cbm_booked'] ?? 0} CBM'),
                 _DetailRow('Tracking', booking['tracking_number']),
                 _DetailRow('Latest update', booking['latest_update']),
               ],
@@ -86,32 +71,17 @@ class _BookingDetailPageState extends ConsumerState<BookingDetailPage> {
             _SectionCard(
               title: 'Payment',
               children: [
-                _DetailRow(
-                  'Logistics charge',
-                  '${booking['currency'] ?? 'TZS'} ${booking['logistics_charge'] ?? 0}',
-                ),
+                _DetailRow('Logistics charge', '${booking['currency'] ?? 'TZS'} ${booking['logistics_charge'] ?? 0}'),
                 _DetailRow('Payment status', booking['payment_status']),
                 _DetailRow('Goods status', booking['goods_status']),
               ],
             ),
             const SizedBox(height: 16),
-            _DocumentSection(
-              title: 'Invoices',
-              documents: invoices,
-              numberKey: 'invoice_number',
-            ),
+            _DocumentSection(title: 'Invoices', documents: invoices, numberKey: 'invoice_number'),
             const SizedBox(height: 16),
-            _DocumentSection(
-              title: 'Receipts',
-              documents: receipts,
-              numberKey: 'receipt_number',
-            ),
+            _DocumentSection(title: 'Receipts', documents: receipts, numberKey: 'receipt_number'),
             const SizedBox(height: 16),
-            _DocumentSection(
-              title: 'Packing lists',
-              documents: packingLists,
-              numberKey: 'id',
-            ),
+            _DocumentSection(title: 'Packing lists', documents: packingLists, numberKey: 'id'),
           ],
         );
       },

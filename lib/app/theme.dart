@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 
-// Sahajomy Brand Colors
-const brandNavy = Color(0xFF0B3857);
-const brandNavyDark = Color(0xFF062B44);
-const brandCoral = Color(0xFFF36B4B);
+// Sahajomy Brand Colors (design tokens)
+const brandNavy = Color(0xFF0F3D5E);
+const brandNavyDark = Color(0xFF0B2A40);
+const brandCoral = Color(0xFFFF6B4A);
+const brandCoralDark = Color(0xFFE85A3A);
 const brandCoralLight = Color(0xFFFFE7E0);
+const brandGold = Color(0xFFECBA20);
 const brandTeal = Color(0xFF11867A);
 const brandTealLight = Color(0xFFE0F5F2);
-const appCanvas = Color(0xFFF5F7FA);
-const appInk = Color(0xFF122230);
-const appMuted = Color(0xFF607386);
-const appBorder = Color(0xFFDDE5EC);
+const appCanvas = Color(0xFFF7F8FA);
+const appSurface = Color(0xFFFFFFFF);
+const appInk = Color(0xFF0F172A);
+const appMuted = Color(0xFF64748B);
+const appBorder = Color(0xFFE2E8F0);
 const appSuccess = Color(0xFF059669);
 const appWarning = Color(0xFFD97706);
-const appError = Color(0xFFB42318);
+const appError = Color(0xFFE11D48);
 const appErrorLight = Color(0xFFFFF1F0);
 
 // Spacing scale (4px base unit)
@@ -37,21 +40,21 @@ const double radiusRound = 999;
 // Elevation/Shadows
 const List<BoxShadow> shadowSm = [
   BoxShadow(
-    color: Color(0x0A0B3857),
+    color: Color(0x0A0F3D5E),
     blurRadius: 4,
     offset: Offset(0, 1),
   ),
 ];
 const List<BoxShadow> shadowMd = [
   BoxShadow(
-    color: Color(0x140B3857),
+    color: Color(0x140F3D5E),
     blurRadius: 12,
     offset: Offset(0, 4),
   ),
 ];
 const List<BoxShadow> shadowLg = [
   BoxShadow(
-    color: Color(0x1A0B3857),
+    color: Color(0x1A0F3D5E),
     blurRadius: 24,
     offset: Offset(0, 8),
   ),

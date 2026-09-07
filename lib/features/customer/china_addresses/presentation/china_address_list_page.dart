@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sahajomy_mobile/features/repository_providers.dart';
-import 'package:flutter/services.dart';
 
-import '../../../../core/ui/sahajomy_ui.dart';
+import '../../presentation/customer_components.dart';
 import '../data/customer_china_addresses_repository.dart';
 
 class ChinaAddressListPage extends ConsumerStatefulWidget {
@@ -24,11 +24,8 @@ class _ChinaAddressListPageState extends ConsumerState<ChinaAddressListPage> {
   void _retry() => setState(() => _addresses = _repository.listAddresses());
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: const SahajomyScreenHeader(
-      role: 'Customer',
-      title: 'China addresses',
-    ),
+  Widget build(BuildContext context) => CustomerScaffold(
+    title: 'My China Addresses',
     body: FutureBuilder<List<Map<String, dynamic>>>(
       future: _addresses,
       builder: (context, snapshot) {
@@ -36,7 +33,8 @@ class _ChinaAddressListPageState extends ConsumerState<ChinaAddressListPage> {
           return const Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError) {
-          return _MessageState(
+          return CustomerEmptyState(
+            icon: Icons.cloud_off_outlined,
             message: 'We could not load your China addresses.',
             actionLabel: 'Try again',
             onAction: _retry,
@@ -44,22 +42,20 @@ class _ChinaAddressListPageState extends ConsumerState<ChinaAddressListPage> {
         }
         final addresses = snapshot.data ?? [];
         if (addresses.isEmpty) {
-          return const _MessageState(
+          return const CustomerEmptyState(
+            icon: Icons.location_on_outlined,
             message: 'Your China delivery addresses will appear here when you book sea or air cargo.',
           );
         }
         return ListView(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
           children: [
-            Text(
-              'My China addresses',
-              style: Theme.of(context).textTheme.headlineMedium,
+            const CustomerHeroCard(
+              eyebrow: 'China forwarding',
+              title: 'My China Addresses',
+              subtitle: 'Addresses are prepared from the cargo services you actually book.',
             ),
-            const SizedBox(height: 6),
-            const Text(
-              'Use the correct warehouse address and shipping mark for every shipment.',
-            ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             for (final address in addresses) ...[
               _AddressCard(address: address),
               const SizedBox(height: 12),
@@ -141,29 +137,3 @@ class _AddressCard extends StatelessWidget {
   }
 }
 
-class _MessageState extends StatelessWidget {
-  const _MessageState({required this.message, this.actionLabel, this.onAction});
-
-  final String message;
-  final String? actionLabel;
-  final VoidCallback? onAction;
-
-  @override
-  Widget build(BuildContext context) => Center(
-    child: Padding(
-      padding: const EdgeInsets.all(32),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.location_on_outlined, size: 44),
-          const SizedBox(height: 14),
-          Text(message, textAlign: TextAlign.center),
-          if (onAction != null) ...[
-            const SizedBox(height: 16),
-            OutlinedButton(onPressed: onAction, child: Text(actionLabel!)),
-          ],
-        ],
-      ),
-    ),
-  );
-}

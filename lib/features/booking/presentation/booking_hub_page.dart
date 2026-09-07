@@ -2,75 +2,45 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/theme.dart';
-import '../../../core/ui/sahajomy_ui.dart';
+import '../../customer/presentation/customer_components.dart';
 
 class BookingHubPage extends StatelessWidget {
   const BookingHubPage({super.key});
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: const SahajomyScreenHeader(
-      role: 'Customer',
-      title: 'Book shipment',
-      showBack: false,
-    ),
+  Widget build(BuildContext context) => CustomerScaffold(
+    title: 'Book shipment',
     body: ListView(
-      padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
       children: [
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(28),
-          decoration: BoxDecoration(
-            color: brandNavyDark,
-            borderRadius: BorderRadius.circular(radiusXl),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'How are you\nshipping?',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.white,
-                  height: 1.15,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Choose the best option for your cargo.',
-                style: TextStyle(color: Color(0xFFD1DEE6), fontSize: 14),
-              ),
-            ],
-          ),
+        const CustomerHeroCard(
+          eyebrow: 'Book shipment',
+          title: 'How are you shipping?',
+          subtitle: 'Choose the service that fits your cargo. You can review pricing and operator details before confirming.',
         ),
-        const SizedBox(height: 28),
+        const SizedBox(height: 24),
         _ShippingOption(
-          icon: Icons.directions_boat_outlined,
+          badge: 'SEA',
+          badgeColor: brandCoral,
           title: 'Sea cargo',
-          description: 'Cost-effective for large or bulk shipments',
-          color: brandTeal,
+          description: 'Shared container space by CBM',
           onTap: () => context.push('/customer/booking/sea-services'),
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: 12),
         _ShippingOption(
-          icon: Icons.flight_outlined,
+          badge: 'AIR',
+          badgeColor: brandNavy,
           title: 'Air cargo',
-          description: 'Fastest option for time-sensitive goods',
-          color: brandCoral,
+          description: 'Faster shipping priced by weight',
           onTap: () => context.push('/customer/booking/air-services'),
         ),
-        const SizedBox(height: 14),
+        const SizedBox(height: 12),
         _ShippingOption(
-          icon: Icons.inventory_2_outlined,
-          title: 'FCL cargo',
-          description: 'Full container load for large volume',
-          color: brandNavy,
-          onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('FCL booking coming soon')),
-            );
-          },
+          badge: 'FCL',
+          badgeColor: brandNavy,
+          title: 'Full Container Load',
+          description: 'Request a dedicated container quote',
+          onTap: () => context.push('/customer/fcl-quote'),
         ),
       ],
     ),
@@ -79,39 +49,52 @@ class BookingHubPage extends StatelessWidget {
 
 class _ShippingOption extends StatelessWidget {
   const _ShippingOption({
-    required this.icon,
+    required this.badge,
+    required this.badgeColor,
     required this.title,
     required this.description,
-    required this.color,
     required this.onTap,
   });
 
-  final IconData icon;
+  final String badge;
+  final Color badgeColor;
   final String title;
   final String description;
-  final Color color;
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) => Card(
+  Widget build(BuildContext context) => Material(
+    color: Colors.white,
+    borderRadius: BorderRadius.circular(16),
     child: InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(radiusXl),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: appBorder, width: 1),
+        ),
         child: Row(
           children: [
             Container(
-              width: 52,
-              height: 52,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(radiusLg),
-              ),
+              width: 44,
+              height: 44,
               alignment: Alignment.center,
-              child: Icon(icon, size: 26, color: color),
+              decoration: BoxDecoration(
+                color: badgeColor.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                badge,
+                style: TextStyle(
+                  color: badgeColor,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
             ),
-            const SizedBox(width: 18),
+            const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,20 +102,20 @@ class _ShippingOption extends StatelessWidget {
                   Text(
                     title,
                     style: const TextStyle(
-                      fontSize: 16,
+                      fontSize: 15,
                       fontWeight: FontWeight.w800,
                       color: appInk,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 3),
                   Text(
                     description,
-                    style: const TextStyle(fontSize: 13, color: appMuted),
+                    style: const TextStyle(fontSize: 12.5, color: appMuted),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right_rounded, color: appMuted),
+            const Icon(Icons.chevron_right_rounded, color: appMuted, size: 20),
           ],
         ),
       ),

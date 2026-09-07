@@ -29,6 +29,8 @@ import '../features/booking/presentation/air_cargo_details_page.dart';
 import '../features/booking/presentation/air_review_booking_page.dart';
 import '../features/booking/presentation/my_bookings_page.dart';
 import '../features/customer/dashboard/presentation/customer_shell.dart';
+import '../features/customer/tracking/presentation/shipment_tracking_page.dart';
+import '../features/customer/warehouse_access/presentation/collection_entry_page.dart';
 import '../features/customer/warehouse_access/presentation/customer_warehouse_parcels_page.dart';
 import '../features/onboarding/presentation/onboarding_page.dart';
 import '../features/onboarding/presentation/splash_page.dart';
@@ -274,10 +276,33 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/customer/shipments',
-        builder: (_, _) => Scaffold(
-          appBar: AppBar(title: const Text('My shipments')),
-          body: const ShipmentListPage(),
+        builder: (_, _) => const ShipmentListPage(),
+      ),
+      GoRoute(
+        path: '/customer/track-shipment/:ref',
+        builder: (context, state) => ShipmentTrackingPage(
+          entityId: state.pathParameters['ref'],
         ),
+      ),
+      GoRoute(
+        path: '/customer/bookings',
+        redirect: (context, state) => '/customer/my-bookings',
+      ),
+      GoRoute(
+        path: '/customer/privacy',
+        redirect: (context, state) => '/privacy',
+      ),
+      GoRoute(
+        path: '/customer/support',
+        redirect: (context, state) => '/support',
+      ),
+      GoRoute(
+        path: '/customer/fcl-quote',
+        redirect: (context, state) => '/fcl-quote-request',
+      ),
+      GoRoute(
+        path: '/customer/collection',
+        builder: (context, state) => const CollectionEntryPage(),
       ),
       for (final entry in appRouteAliases.entries)
         GoRoute(
@@ -285,10 +310,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           builder: (context, state) {
             if (entry.value == 'customer-sea-bookings.html' ||
                 entry.value == 'customer-reservations.html') {
-              return Scaffold(
-                appBar: AppBar(title: const Text('Sea freight bookings')),
-                body: const BookingListPage(),
-              );
+              return const BookingListPage();
             }
             final bookingId = state.pathParameters['seaBookingId'];
             if (entry.value == 'customer-sea-booking-detail.html' &&

@@ -3,8 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/theme.dart';
-import '../../../core/ui/logistics_ui.dart';
-import '../../../core/ui/sahajomy_ui.dart';
+import '../../customer/presentation/customer_components.dart';
 import '../../repository_providers.dart';
 import '../../customer/air_cargo/data/customer_air_cargo_repository.dart';
 import 'components/booking_step_indicator.dart';
@@ -98,30 +97,26 @@ class _AirCargoDetailsPageState extends ConsumerState<AirCargoDetailsPage> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: const SahajomyScreenHeader(
-          role: 'Customer',
-          title: 'Cargo details',
-        ),
+  Widget build(BuildContext context) => CustomerScaffold(
+        title: 'Cargo details',
         body: AbsorbPointer(
           absorbing: _busy,
           child: Form(
             key: _form,
             child: ListView(
-              padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+              padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
               children: [
                 const BookingStepIndicator(
                   steps: ['Service', 'Cargo details', 'Review'],
                   currentStep: 1,
                 ),
                 const SizedBox(height: 24),
-                LogisticsIntro(
+                CustomerHeroCard(
                   eyebrow: 'Express Air Cargo',
                   title: 'Cargo details',
-                  description:
-                      '${widget.companyName} - ${widget.warehouseName}',
+                  subtitle: '${widget.companyName} - ${widget.warehouseName}',
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 24),
                 DropdownButtonFormField<String>(
                   isExpanded: true,
                   initialValue: _cargoTypeId,

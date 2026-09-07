@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:sahajomy_mobile/features/repository_providers.dart';
 
-import '../../../../core/ui/sahajomy_ui.dart';
+import '../../presentation/customer_components.dart';
 import '../data/customer_notifications_repository.dart';
 
 class CustomerNotificationsPage extends ConsumerStatefulWidget {
@@ -79,11 +79,8 @@ class _CustomerNotificationsPageState
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: const SahajomyScreenHeader(
-      role: 'Customer',
-      title: 'Notifications',
-    ),
+  Widget build(BuildContext context) => CustomerScaffold(
+    title: 'Notifications',
     body: FutureBuilder<List<Map<String, dynamic>>>(
       future: _notifications,
       builder: (context, snapshot) {
@@ -91,29 +88,29 @@ class _CustomerNotificationsPageState
           return const Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError) {
-          return Center(
-            child: OutlinedButton(
-              onPressed: _reload,
-              child: const Text('Try again'),
-            ),
+          return CustomerEmptyState(
+            icon: Icons.cloud_off_outlined,
+            message: 'We could not load your notifications.',
+            actionLabel: 'Try again',
+            onAction: _reload,
           );
         }
         final notifications = snapshot.data ?? [];
         if (notifications.isEmpty) {
-          return const Center(child: Text('You have no notifications yet.'));
+          return const CustomerEmptyState(
+            icon: Icons.notifications_none_rounded,
+            message: 'You have no notifications yet.',
+          );
         }
         return ListView(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
           children: [
-            Text(
-              'Updates for you',
-              style: Theme.of(context).textTheme.headlineMedium,
+            const CustomerHeroCard(
+              eyebrow: 'Updates',
+              title: 'Notifications',
+              subtitle: 'Important shipping, payment, and order activity appears here.',
             ),
-            const SizedBox(height: 6),
-            const Text(
-              'Important shipping, payment, and order activity appears here.',
-            ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             for (final notification in notifications) ...[
               _NotificationCard(
                 notification: notification,

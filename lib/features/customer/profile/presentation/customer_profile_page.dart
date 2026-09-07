@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../public_services/presentation/official_information_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../app/theme.dart';
 import '../../../../core/auth/session_store.dart';
 import '../../../../core/providers.dart';
-import '../../../../core/ui/sahajomy_ui.dart';
+import '../../presentation/customer_components.dart';
 import '../../../auth/data/auth_repository.dart';
+import '../../../public_services/presentation/official_information_page.dart';
 
 class CustomerProfilePage extends ConsumerStatefulWidget {
   const CustomerProfilePage({super.key});
@@ -36,8 +37,8 @@ class _CustomerProfilePageState extends ConsumerState<CustomerProfilePage> {
   void _retry() => setState(() => _profile = _loadProfile());
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: const SahajomyScreenHeader(role: 'Customer', title: 'Profile'),
+  Widget build(BuildContext context) => CustomerScaffold(
+    title: 'Profile',
     body: FutureBuilder<Map<String, dynamic>>(
       future: _profile,
       builder: (context, snapshot) {
@@ -45,11 +46,11 @@ class _CustomerProfilePageState extends ConsumerState<CustomerProfilePage> {
           return const Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError) {
-          return Center(
-            child: OutlinedButton(
-              onPressed: _retry,
-              child: const Text('Try again'),
-            ),
+          return CustomerEmptyState(
+            icon: Icons.person_outline,
+            message: 'We could not load your profile.',
+            actionLabel: 'Try again',
+            onAction: _retry,
           );
         }
         final profile = snapshot.data!;
@@ -72,21 +73,19 @@ class _CustomerProfilePageState extends ConsumerState<CustomerProfilePage> {
             .join()
             .toUpperCase();
         return ListView(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
           children: [
-            Text(name, style: Theme.of(context).textTheme.headlineMedium),
-            const SizedBox(height: 4),
-            Text(
-              'Customer account · ${profile['email'] ?? 'No email provided'}',
+            const CustomerHeroCard(
+              eyebrow: 'Profile',
+              title: 'Your profile',
+              subtitle: 'View your verified account details and contact information.',
             ),
             const SizedBox(height: 24),
             Row(
               children: [
                 CircleAvatar(
                   radius: 32,
-                  foregroundImage: safeImageUrl == null
-                      ? null
-                      : NetworkImage(safeImageUrl),
+                  foregroundImage: safeImageUrl == null ? null : NetworkImage(safeImageUrl),
                   child: Text(initials.isEmpty ? 'S' : initials),
                 ),
                 const SizedBox(width: 16),
@@ -94,29 +93,23 @@ class _CustomerProfilePageState extends ConsumerState<CustomerProfilePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(name, style: Theme.of(context).textTheme.titleLarge),
-                      Text(profile['email']?.toString() ?? 'No email provided'),
+                      Text(name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+                      Text(profile['email']?.toString() ?? 'No email provided', style: const TextStyle(color: appMuted)),
                     ],
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 24),
-            _ProfileField(
-              label: 'Mobile number',
-              value: profile['phone_number'],
-            ),
+            _ProfileField(label: 'Mobile number', value: profile['phone_number']),
             _ProfileField(label: 'Account role', value: profile['role']),
-            _ProfileField(
-              label: 'Address',
-              value: profile['address'] ?? 'Not provided',
-            ),
-            _ProfileField(
-              label: 'Account verification',
-              value: profile['is_verified'] == true ? 'Verified' : 'Pending',
-            ),
+            _ProfileField(label: 'Address', value: profile['address'] ?? 'Not provided'),
+            _ProfileField(label: 'Account verification', value: profile['is_verified'] == true ? 'Verified' : 'Pending'),
             const SizedBox(height: 12),
-            FilledButton(onPressed: () => context.push('/customer/china-addresses'), child: const Text('Manage China warehouse addresses')),
+            FilledButton(
+              onPressed: () => context.push('/customer/china-addresses'),
+              child: const Text('Manage China warehouse addresses'),
+            ),
             const SahajomyLegalLinks(),
           ],
         );

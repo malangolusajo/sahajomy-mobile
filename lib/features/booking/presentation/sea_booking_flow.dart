@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/ui/logistics_ui.dart';
 import '../../../core/ui/sahajomy_ui.dart';
+import '../../customer/presentation/customer_components.dart';
 import '../../repository_providers.dart';
 import '../data/guided_booking_repository.dart';
 
@@ -98,9 +99,8 @@ class _SeaBookingState extends ConsumerState<GuidedSeaBookingPage> {
   String? _required(String? value) => value == null || value.trim().length < 2 ? 'Enter at least two characters.' : null;
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: SahajomyScreenHeader(role: _customer ? 'Customer' : 'Sourcing Agent', title: 'Book sea freight'),
-    body: ListView(padding: const EdgeInsets.fromLTRB(24, 16, 24, 32), children: [
+  Widget build(BuildContext context) {
+    final body = ListView(padding: const EdgeInsets.fromLTRB(24, 12, 24, 32), children: [
       Row(children: [for (var i = 0; i < 3; i++) Expanded(child: Semantics(
         label: '${const ['Service', 'Cargo details', 'Review'][i]}, ${i < _step ? 'complete' : i == _step ? 'current' : 'upcoming'}',
         child: Column(children: [
@@ -111,8 +111,14 @@ class _SeaBookingState extends ConsumerState<GuidedSeaBookingPage> {
       const SizedBox(height: 28),
       if (_error != null) ...[Semantics(liveRegion: true, child: Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error))), const SizedBox(height: 16)],
       if (_step == 0) ..._servicesView() else if (_step == 1) _details() else if (_step == 2) ..._reviewView() else ..._confirmationView(),
-    ]),
-  );
+    ]);
+    return _customer
+        ? CustomerScaffold(title: 'Book sea freight', body: body)
+        : Scaffold(
+            appBar: SahajomyScreenHeader(role: 'Sourcing Agent', title: 'Book sea freight'),
+            body: body,
+          );
+  }
 
   List<Widget> _servicesView() {
     final matches = _services.where((s) => '${_route(s)} ${s['operator']} ${s['container_size']}'.toLowerCase().contains(_search.toLowerCase())).toList();

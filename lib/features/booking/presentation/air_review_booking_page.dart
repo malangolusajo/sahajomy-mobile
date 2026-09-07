@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/theme.dart';
 import '../../../core/ui/logistics_ui.dart';
-import '../../../core/ui/sahajomy_ui.dart';
+import '../../customer/presentation/customer_components.dart';
 import '../../repository_providers.dart';
 import '../../customer/air_cargo/data/customer_air_cargo_repository.dart';
 import 'components/booking_step_indicator.dart';
@@ -105,17 +105,20 @@ class _AirReviewBookingPageState extends ConsumerState<AirReviewBookingPage> {
     final dateStr =
         '${DateTime.parse(widget.shipmentDate).year}-${DateTime.parse(widget.shipmentDate).month.toString().padLeft(2, '0')}-${DateTime.parse(widget.shipmentDate).day.toString().padLeft(2, '0')}';
 
-    return Scaffold(
-      appBar: const SahajomyScreenHeader(
-        role: 'Customer',
-        title: 'Review booking',
-      ),
+    return CustomerScaffold(
+      title: 'Review booking',
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+        padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
         children: [
           const BookingStepIndicator(
             steps: ['Service', 'Cargo details', 'Review'],
             currentStep: 2,
+          ),
+          const SizedBox(height: 24),
+          const CustomerHeroCard(
+            eyebrow: 'Express Air Cargo',
+            title: 'Review booking',
+            subtitle: 'Confirm your air cargo booking details before submitting.',
           ),
           const SizedBox(height: 24),
           BookingSummaryCard(
@@ -154,49 +157,48 @@ class _AirReviewBookingPageState extends ConsumerState<AirReviewBookingPage> {
         _booking!['id'] ??
         'Pending';
 
-    return Scaffold(
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
-          children: [
-            const SizedBox(height: 32),
-            const Icon(
-              Icons.check_circle_outline_rounded,
-              size: 72,
-              color: appSuccess,
-            ),
-            const SizedBox(height: 24),
-            Text(
-              'Booking confirmed',
-              style: Theme.of(context).textTheme.headlineMedium,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Your air cargo booking has been created successfully.',
-              style: Theme.of(context).textTheme.bodyLarge,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 32),
-            BookingSummaryCard(
-              entries: {
-                'Tracking number': ref,
-                'Cargo company': widget.companyName,
-                'Weight': '${widget.weight} kg',
-                'Destination': '${widget.destination}, ${widget.country}',
-              },
-            ),
-            const SizedBox(height: 28),
-            FilledButton(
-              onPressed: () => context.go('/customer/my-bookings'),
-              child: const Text('View my bookings'),
-            ),
-            TextButton(
-              onPressed: () => context.go('/customer'),
-              child: const Text('Back to home'),
-            ),
-          ],
-        ),
+    return CustomerScaffold(
+      title: 'Booking confirmed',
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
+        children: [
+          const SizedBox(height: 32),
+          const Icon(
+            Icons.check_circle_outline_rounded,
+            size: 72,
+            color: appSuccess,
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'Booking confirmed',
+            style: Theme.of(context).textTheme.headlineMedium,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Your air cargo booking has been created successfully.',
+            style: Theme.of(context).textTheme.bodyLarge,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 32),
+          BookingSummaryCard(
+            entries: {
+              'Tracking number': ref,
+              'Cargo company': widget.companyName,
+              'Weight': '${widget.weight} kg',
+              'Destination': '${widget.destination}, ${widget.country}',
+            },
+          ),
+          const SizedBox(height: 28),
+          FilledButton(
+            onPressed: () => context.go('/customer/my-bookings'),
+            child: const Text('View my bookings'),
+          ),
+          TextButton(
+            onPressed: () => context.go('/customer'),
+            child: const Text('Back to home'),
+          ),
+        ],
       ),
     );
   }

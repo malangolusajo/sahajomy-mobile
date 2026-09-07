@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/ui/sahajomy_ui.dart';
+import '../../presentation/customer_components.dart';
 
 class BookingConfirmationPage extends StatelessWidget {
   const BookingConfirmationPage({required this.booking, super.key});
@@ -9,20 +9,17 @@ class BookingConfirmationPage extends StatelessWidget {
   final Map<String, dynamic> booking;
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: const SahajomyScreenHeader(
-      role: 'Customer',
-      title: 'Booking confirmed',
-    ),
+  Widget build(BuildContext context) => CustomerScaffold(
+    title: 'Booking confirmed',
     body: ListView(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
       children: [
-        Text('Space booked', style: Theme.of(context).textTheme.headlineMedium),
-        const SizedBox(height: 4),
-        const Text(
-          'Your request has been received. We will notify you once your booking is confirmed.',
+        const CustomerHeroCard(
+          eyebrow: 'Booking',
+          title: 'Booking confirmed',
+          subtitle: 'Your cargo space is locked and ready for shipping.',
         ),
-        const SizedBox(height: 48),
+        const SizedBox(height: 40),
         Center(
           child: Column(
             children: [

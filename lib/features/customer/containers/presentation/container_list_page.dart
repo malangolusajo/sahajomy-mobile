@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sahajomy_mobile/features/repository_providers.dart';
 
 import '../../../../core/ui/sahajomy_ui.dart';
+import '../../presentation/customer_components.dart';
 import '../data/customer_containers_repository.dart';
 import 'container_detail_page.dart';
 
@@ -21,55 +22,55 @@ class _ContainerListPageState extends ConsumerState<ContainerListPage> {
   );
   void _retry() => setState(() => _items = _repository.listContainers());
   @override
-  Widget build(BuildContext context) =>
-      FutureBuilder<List<Map<String, dynamic>>>(
-        future: _items,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(
-              child: OutlinedButton(
-                onPressed: _retry,
-                child: const Text('Retry containers'),
-              ),
-            );
-          }
-          final items = snapshot.data ?? [];
-          if (items.isEmpty) {
-            return const Center(
-              child: Text('No available containers right now.'),
-            );
-          }
-          return ListView(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
-            children: [
-              Text(
-                'Find container space',
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-              const SizedBox(height: 6),
-              const Text(
-                'Search available sailings and book the volume your business needs.',
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                onChanged: (value) => setState(() => _query = value.trim().toLowerCase()),
-                decoration: const InputDecoration(
-                  prefixIcon: Icon(Icons.search_rounded),
-                  hintText: 'Origin, destination, or container',
-                ),
-              ),
-              const SizedBox(height: 16),
-              for (final item in items.where((item) => '${item['origin']} ${item['destination']} ${item['operator']} ${item['container_size']}'.toLowerCase().contains(_query))) ...[
-                _ContainerRow(item: item, onBooked: _retry),
-                const SizedBox(height: 12),
-              ],
-            ],
+  Widget build(BuildContext context) => CustomerScaffold(
+    title: 'Find container space',
+    body: FutureBuilder<List<Map<String, dynamic>>>(
+      future: _items,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return CustomerEmptyState(
+            icon: Icons.error_outline,
+            message: 'We could not load available containers.',
+            actionLabel: 'Try again',
+            onAction: _retry,
           );
-        },
-      );
+        }
+        final items = snapshot.data ?? [];
+        if (items.isEmpty) {
+          return const CustomerEmptyState(
+            icon: Icons.inventory_2_outlined,
+            message: 'No available containers right now.',
+          );
+        }
+        return ListView(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
+          children: [
+            const CustomerHeroCard(
+              eyebrow: 'Sea freight',
+              title: 'Find container space',
+              subtitle: 'Search available sailings and book the volume your business needs.',
+            ),
+            const SizedBox(height: 24),
+            TextField(
+              onChanged: (value) => setState(() => _query = value.trim().toLowerCase()),
+              decoration: const InputDecoration(
+                prefixIcon: Icon(Icons.search_rounded),
+                hintText: 'Origin, destination, or container',
+              ),
+            ),
+            const SizedBox(height: 16),
+            for (final item in items.where((item) => '${item['origin']} ${item['destination']} ${item['operator']} ${item['container_size']}'.toLowerCase().contains(_query))) ...[
+              _ContainerRow(item: item, onBooked: _retry),
+              const SizedBox(height: 12),
+            ],
+          ],
+        );
+      },
+    ),
+  );
 }
 
 class _ContainerRow extends StatelessWidget {

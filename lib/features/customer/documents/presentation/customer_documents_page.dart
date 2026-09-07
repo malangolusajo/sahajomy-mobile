@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sahajomy_mobile/features/repository_providers.dart';
 
 import '../../../../core/ui/sahajomy_ui.dart';
+import '../../presentation/customer_components.dart';
 import '../../reservations/data/customer_booking_repository.dart';
 import '../../reservations/presentation/booking_detail_page.dart';
 
@@ -48,60 +49,45 @@ class _CustomerDocumentsPageState extends ConsumerState<CustomerDocumentsPage> {
   void _retry() => setState(() => _documents = _loadDocuments());
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: const SahajomyScreenHeader(role: 'Customer', title: 'Documents'),
-    body: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Padding(
-          padding: EdgeInsets.fromLTRB(20, 20, 20, 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Shipping documents',
-                style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800),
-              ),
-              SizedBox(height: 4),
-              Text(
-                'Review invoices, receipts and packing lists linked to your cargo bookings.',
-              ),
+  Widget build(BuildContext context) => CustomerScaffold(
+    title: 'Documents',
+    body: FutureBuilder<List<_CustomerDocument>>(
+      future: _documents,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return CustomerEmptyState(
+            icon: Icons.error_outline,
+            message: 'We could not load your shipping documents.',
+            actionLabel: 'Try again',
+            onAction: _retry,
+          );
+        }
+        final documents = snapshot.data!;
+        if (documents.isEmpty) {
+          return const CustomerEmptyState(
+            icon: Icons.description_outlined,
+            message: 'No shipping documents are available yet.',
+          );
+        }
+        return ListView(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
+          children: [
+            const CustomerHeroCard(
+              eyebrow: 'Financial documents',
+              title: 'Documents',
+              subtitle: 'Documents use the booking or order currency captured by the backend.',
+            ),
+            const SizedBox(height: 24),
+            for (final document in documents) ...[
+              _DocumentCard(document: document),
+              const SizedBox(height: 12),
             ],
-          ),
-        ),
-        Expanded(
-          child: FutureBuilder<List<_CustomerDocument>>(
-            future: _documents,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState != ConnectionState.done) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              if (snapshot.hasError) {
-                return SahajomyMessageState(
-                  icon: Icons.error_outline,
-                  message: 'We could not load your shipping documents.',
-                  actionLabel: 'Try again',
-                  onAction: _retry,
-                );
-              }
-              final documents = snapshot.data!;
-              if (documents.isEmpty) {
-                return const SahajomyMessageState(
-                  icon: Icons.description_outlined,
-                  message: 'No shipping documents are available yet.',
-                );
-              }
-              return ListView.separated(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
-                itemCount: documents.length,
-                separatorBuilder: (_, _) => const SizedBox(height: 12),
-                itemBuilder: (context, index) =>
-                    _DocumentCard(document: documents[index]),
-              );
-            },
-          ),
-        ),
-      ],
+          ],
+        );
+      },
     ),
   );
 }
